@@ -1,41 +1,71 @@
 # PubMed Sentence Matcher
 
-A standalone, high-accuracy sentence matching system that finds the most relevant sentences in PubMed articles for any given input sentences. 
+**Ground any claim in the biomedical literature.** Give the system one sentence; it searches PubMed, retrieves candidate evidence, reranks it with a biomedical cross-encoder, and returns the exact published sentences you can cite — each with a formatted citation (MLA / APA / Nature).
+
+🔬 **Live demo & overview:** [xuan13hao.github.io/citation_agents_system](https://xuan13hao.github.io/citation_agents_system/)
+
+> The task behind citation recommendation, claim attribution, and RAG faithfulness: a sentence can be *similar* to your claim without actually *supporting* it. A cheap first-pass similarity lets those false positives through — so a sharper second pass (a cross-encoder reranker) does the deciding.
+
+---
+
+## Pipeline
+
+The engine runs a multi-stage pipeline. The multi-signal similarity is a cheap first pass that shortlists candidates; the **MedCPT cross-encoder (Stage 4.5)** is the primary relevance signal.
+
+| # | Stage | Role |
+|---|-------|------|
+| 1 | **LLM query optimization** | Expand the claim into 3–5 PubMed queries (synonyms, MeSH-aware phrasing) |
+| 2 | **Multi-strategy PubMed search** | Run every query via NCBI E-utilities, merge PMIDs |
+| 3 | **Abstract retrieval + sentence split** | Fetch abstracts, segment into candidate sentences with context |
+| 4 | **Multi-signal similarity** | Semantic + keyword shortlist — cheap first pass, *not* the verdict |
+| 4.5 | **MedCPT cross-encoder rerank** ⭐ | Jointly score `(claim, passage)` pairs — the primary relevance signal |
+| 5 | **LLM verification** | Confirm the top candidates genuinely match before citing |
+| 6 | **Final ranking + dedup** | Blend rerank × verification × article quality; one best hit per article |
+
+### Why the reranker matters
+
+A controlled probe against *"Machine learning models can accurately predict patient outcomes."*:
+
+| Candidate sentence | First-pass | After MedCPT |
+|---|---|---|
+| The restaurant served excellent pasta on Tuesday evenings. | **0.80** (ranks #1 ✗) | **0.00** (demoted ✓) |
+| Random forest classifiers improved prognosis prediction in oncology cohorts. | 0.55 | **1.00** |
+| Deep learning achieved high accuracy predicting ICU patient outcomes. | 0.52 | **1.00** |
+
+The first-pass score ranks a decoy top by surface overlap; the cross-encoder drives it to zero and promotes the real evidence.
+
+---
+
 ## Features
 
-- **7-Stage Processing Pipeline**: LLM query optimization → Multi-strategy search → Abstract retrieval → Multi-signal similarity (first pass) → **Cross-encoder reranking (MedCPT)** → LLM verification → Final ranking
-- **MedCPT Cross-Encoder Reranking**: Biomedical-domain SOTA reranker (NCBI, PubMedBERT cross-encoder trained on 255M PubMed click logs). Jointly scores (query, passage) pairs — the single largest precision gain in modern retrieval pipelines. Runs on GPU if available, degrades gracefully if `torch`/`transformers` are missing.
-- **Multi-Signal Similarity**: Cheap first-pass shortlist (semantic embeddings + keyword/structure/context) feeding the reranker
-- **LLM-Enhanced**: Uses LLM for query optimization and result verification
-- **Multiple Citation Formats**: Supports MLA, APA, and Nature citation styles
-- **MCP Server**: Exposes the whole system as [Model Context Protocol](https://modelcontextprotocol.io) tools (official SDK / FastMCP) so Claude Code, Claude Desktop, and other agents can call it directly
-- **Standalone**: No dependencies on GPT-Researcher framework
+- **MedCPT cross-encoder reranking** — biomedical-domain SOTA reranker ([NCBI MedCPT](https://github.com/ncbi/MedCPT), a PubMedBERT cross-encoder trained on 255M PubMed click logs). Runs on GPU if available, and degrades gracefully to the multi-signal score if `torch`/`transformers` or the model are unavailable.
+- **MCP server** — exposes the whole system as [Model Context Protocol](https://modelcontextprotocol.io) tools (official SDK / FastMCP) so Claude Code, Claude Desktop, and other agents can call it directly.
+- **Multiple citation formats** — MLA, APA, and Nature.
+- **Multi-signal first pass** — semantic embeddings + keyword/structure/context, used to shortlist candidates for the reranker.
+- **LLM-enhanced** — LLM for query optimization and result verification.
+- **Standalone** — no dependency on any external research framework.
+
+---
 
 ## Installation
 
-1. Clone or copy this project folder
+Requires **Python 3.10+**.
 
-2. Install dependencies:
 ```bash
+# 1. Install dependencies
 pip install -r requirements.txt
-```
 
-3. Download NLTK data (optional, for better sentence tokenization):
-```bash
+# 2. (Optional) Download NLTK data for better sentence tokenization
 python -c "import nltk; nltk.download('punkt')"
-```
 
-4. Set up environment variables:
-```bash
+# 3. Configure environment
 cp .env.example .env
 # Edit .env and add your OPENAI_API_KEY
 ```
 
-Or set environment variables directly:
-```bash
-export OPENAI_API_KEY='your-api-key-here'
-export PUBMED_EMAIL='your-email@example.com'
-```
+> **Reranker note:** `transformers` must match your installed `torch`. For `torch` 2.1–2.5 use `transformers>=4.44,<5` (as tested); for `torch>=2.6` use `transformers>=5`. The MedCPT model (~400 MB) downloads automatically on first use. GPU is optional but strongly recommended.
+
+---
 
 ## Quick Start
 
@@ -45,96 +75,43 @@ from pubmed_sentence_matcher import PubMedSentenceMatcher
 from pubmed_sentence_matcher.config import Config
 
 async def main():
-    config = Config()
     matcher = PubMedSentenceMatcher(
         email="your-email@example.com",
-        config=config,
+        config=Config(),
         similarity_threshold=0.5,
+        use_reranker=True,   # MedCPT cross-encoder (Stage 4.5)
     )
-    
+
     results = await matcher.find_matching_sentences(
         input_sentence="Machine learning models can accurately predict patient outcomes.",
         top_k=10,
         max_articles=50,
-        citation_format="mla"
+        citation_format="mla",
     )
-    
-    for result in results:
-        print(f"Match: {result['sentence']}")
-        print(f"Score: {result['scores']['final']:.3f}")
-        print(f"Citation: {result['citation']}\n")
+
+    for r in results:
+        print(f"[{r['scores'].get('rerank', 0):.3f}] {r['sentence']}")
+        print(f"         {r['citation']}\n")
 
 asyncio.run(main())
 ```
 
-## Run Example
+### Runnable examples
 
 ```bash
 cd examples
-python example_usage.py
+python example_usage.py            # full pipeline (needs OPENAI_API_KEY)
+python retrieval_rerank_demo.py    # retrieval + MedCPT rerank only — no API key needed
 ```
 
-The results will be saved to a JSON file automatically.
-
-## Configuration
-
-### Environment Variables
-
-- `OPENAI_API_KEY` (required): Your OpenAI API key
-- `PUBMED_EMAIL` (optional): Email for PubMed API identification
-- `OPENAI_BASE_URL` (optional): Custom base URL for OpenAI-compatible APIs
-- `EMBEDDING` (optional): Embedding model, default: `openai:text-embedding-3-small`
-- `SMART_LLM` (optional): LLM model, default: `openai:gpt-4-turbo`
-
-### Matcher Parameters
-
-```python
-matcher = PubMedSentenceMatcher(
-    email="your-email@example.com",
-    config=config,
-    similarity_threshold=0.5,      # Minimum similarity (0-1)
-    semantic_weight=0.5,           # Semantic similarity weight
-    keyword_weight=0.25,           # Keyword overlap weight
-    structure_weight=0.15,         # Structure similarity weight
-    context_weight=0.1,            # Context relevance weight
-)
-```
-
-## Output Format
-
-Each result contains:
-- `sentence`: The matched sentence text
-- `article`: Article metadata (title, authors, journal, year, PMID)
-- `scores`: Similarity scores (semantic, keyword, structure, context, final)
-- `llm_verification`: LLM verification with relevance score and reasoning
-- `citation`: Formatted citation (MLA/APA/Nature)
-- `context`: Sentence context from the article
-
-## Project Structure
-
-```
-pubmed_sentence_matcher_project/
-├── pubmed_sentence_matcher/
-│   ├── __init__.py
-│   ├── pubmed_sentence_matcher.py  # Main matcher class
-│   ├── pubmed_citation.py          # Citation formatting
-│   ├── config.py                   # Configuration
-│   ├── llm_utils.py                # LLM utilities
-│   └── embeddings.py               # Embedding utilities
-├── examples/
-│   └── example_usage.py            # Example script
-├── requirements.txt
-├── .env.example
-└── README.md
-```
+---
 
 ## MCP Server
 
-The system is exposed as an MCP server (official SDK / FastMCP) in
-[`mcp_servers/citation_server.py`](mcp_servers/citation_server.py), with two tools:
+Rebuilt on the official MCP SDK (FastMCP), [`mcp_servers/citation_server.py`](mcp_servers/citation_server.py) exposes two tools:
 
-- `find_citations(sentence, top_k, citation_format, max_articles)` — end-to-end citation grounding
-- `pubmed_search(query, max_results)` — low-level PMID search
+- **`find_citations(sentence, top_k, citation_format, max_articles)`** — end-to-end citation grounding
+- **`pubmed_search(query, max_results)`** — low-level PMID search
 
 Run it (stdio transport):
 
@@ -148,43 +125,105 @@ Register with Claude Code:
 claude mcp add citation-matcher -- python /abs/path/to/mcp_servers/citation_server.py
 ```
 
-Environment toggles: `CITATION_USE_RERANKER=0` disables reranking,
-`CITATION_SIM_THRESHOLD` sets the first-pass threshold, `PUBMED_EMAIL` sets the
-NCBI identification email.
+Environment toggles: `CITATION_USE_RERANKER=0` disables reranking · `CITATION_SIM_THRESHOLD` sets the first-pass threshold · `PUBMED_EMAIL` sets the NCBI identification email.
 
-> Note: the server redirects pipeline stdout to stderr so the stdio JSON-RPC
-> stream stays clean. The earlier hand-rolled JSON-RPC implementation
-> (`mcp_servers/pubmed_server.py`, `mcp_client.py`) is superseded by this.
+> The server redirects pipeline stdout to stderr so the stdio JSON-RPC stream stays clean. The earlier hand-rolled JSON-RPC files (`mcp_servers/pubmed_server.py`, `pubmed_sentence_matcher/mcp_client.py`) are superseded by this.
 
-## Reranking (MedCPT)
+---
 
-Reranking is on by default. Control it via the matcher constructor:
+## Configuration
+
+### Environment variables
+
+| Variable | Required | Description |
+|---|---|---|
+| `OPENAI_API_KEY` | ✅ | Used for query optimization, embeddings, and LLM verification |
+| `PUBMED_EMAIL` | — | Email for NCBI API identification (recommended) |
+| `NCBI_API_KEY` | — | Raises E-utilities rate limit from 3 → 10 req/s |
+| `OPENAI_BASE_URL` | — | Custom endpoint for OpenAI-compatible APIs |
+| `EMBEDDING` | — | Embedding model (default `openai:text-embedding-3-small`) |
+| `SMART_LLM` | — | LLM model (default `openai:gpt-4-turbo`) |
+
+### Reranker parameters
 
 ```python
 matcher = PubMedSentenceMatcher(
     email="you@example.com",
     config=Config(),
-    use_reranker=True,                       # Stage 4.5
+    use_reranker=True,                        # Stage 4.5 on/off
     reranker_model="ncbi/MedCPT-Cross-Encoder",
-    rerank_candidates=50,                    # top-N shortlisted for the cross-encoder
-    reranker_device=None,                    # None = auto (cuda if available)
+    rerank_candidates=50,                     # top-N shortlisted for the cross-encoder
+    reranker_device=None,                     # None = auto (cuda if available)
+    # first-pass multi-signal weights:
+    similarity_threshold=0.5,
+    semantic_weight=0.5, keyword_weight=0.25,
+    structure_weight=0.15, context_weight=0.1,
 )
 ```
 
-Each result's `scores` dict gains `rerank` (normalized 0-1), `rerank_raw` (logit),
-and `primary` (the score the final ranking is built on). If `torch`/`transformers`
-or the model are unavailable, the pipeline silently falls back to the multi-signal
-score.
+---
 
-## How It Works
+## Output Format
 
-1. **Stage 1**: LLM generates optimized PubMed search queries from input sentence
-2. **Stage 2**: Multi-strategy PubMed search using generated queries
-3. **Stage 3**: Fetch article abstracts, split into sentences
-4. **Stage 4**: Multi-signal similarity (semantic + keyword + structure + context) — cheap first-pass shortlist
-5. **Stage 4.5**: **MedCPT cross-encoder reranking** of the shortlist — primary relevance signal
-6. **Stage 5**: LLM verifies matches for accuracy and relevance
-7. **Stage 6**: Final ranking with deduplication and quality scoring
+Each result is a dict containing:
+
+- `sentence` — the matched sentence text
+- `article` — metadata (title, authors, journal, year, PMID)
+- `scores` — `rerank` (normalized 0–1), `rerank_raw` (logit), `primary` (score the final ranking is built on), plus the first-pass `semantic` / `keyword` / `structure` / `context` / `final`
+- `llm_verification` — relevance score and reasoning
+- `citation` — formatted citation (MLA / APA / Nature)
+- `context` — surrounding sentences from the article
+
+---
+
+## Project Structure
+
+```
+citation_agents_system/
+├── pubmed_sentence_matcher/
+│   ├── pubmed_sentence_matcher.py  # Main matcher (the 7-stage pipeline)
+│   ├── reranker.py                 # MedCPT cross-encoder reranker (Stage 4.5)
+│   ├── pubmed_citation.py          # Citation formatting (MLA / APA / Nature)
+│   ├── config.py                   # Configuration
+│   ├── llm_utils.py                # LLM utilities
+│   └── embeddings.py               # Embedding utilities
+├── mcp_servers/
+│   └── citation_server.py          # Official MCP (FastMCP) server
+├── examples/
+│   ├── example_usage.py            # Full pipeline example
+│   └── retrieval_rerank_demo.py    # Key-free retrieval + rerank demo
+├── docs/                           # GitHub Pages promo site
+├── requirements.txt
+├── .env.example
+└── README.md
+```
+
+---
+
+## Background
+
+The design follows the current state of the art for scientific citation grounding, which converges on a four-stage shape — **retrieve → fuse → cross-encoder rerank → entailment-check**:
+
+- **Cross-encoder reranking** is the single largest quality gain reported (+17.2pp MRR@3, +12.1pp Recall@5 over unreranked retrieval) — see [*How Good are LLM-based Rerankers?*](https://aclanthology.org/2025.findings-emnlp.305.pdf) (EMNLP Findings 2025).
+- **MedCPT** sets SOTA on biomedical IR zero-shot — [Jin et al., *Bioinformatics* 2023](https://pmc.ncbi.nlm.nih.gov/articles/PMC10627406/).
+- Full grounding verdicts (SUPPORTS / REFUTES / NEI) build on [SciFact](https://www.alphaxiv.org/abs/2004.14974) and the attribution literature.
+
+### Roadmap
+
+- **Dense retrieval + RRF** — add MedCPT's query encoder alongside keyword search, fused with Reciprocal Rank Fusion, to raise recall at Stage 2.
+- **NLI entailment verdict** — upgrade "similar" to SUPPORTS / REFUTES / NEI with rationale spans (NLI → LLM-judge cascade).
+- **PMC full text** — wire the BioC API for open-access full text, escalating from abstract to passage-level evidence.
+
+---
+
+## Requirements
+
+- Python 3.10+
+- OpenAI API key (for query optimization, embeddings, LLM verification)
+- Internet connection (PubMed / NCBI E-utilities)
+- `torch` + `transformers` for reranking (GPU recommended; optional — falls back gracefully)
+
+---
 
 ## ✍️ Citation
 If you have obtained permission and are using this software in your project, please cite the software repository as follows:
@@ -200,11 +239,3 @@ If you have obtained permission and are using this software in your project, ple
 ## Copyright (c) 2026 Hao Xuan. All Rights Reserved.
 This software and its associated documentation files are proprietary. Explicit written permission from the author is required for any use, reproduction, modification, or distribution of this code, whether for commercial or non-commercial purposes.
 To request permission, please contact:xuan13hao@gmail.com
-
-## Requirements
-
-- Python 3.8+
-- OpenAI API key
-- Internet connection (for PubMed API)
-
-
