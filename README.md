@@ -3,10 +3,12 @@
 A standalone, high-accuracy sentence matching system that finds the most relevant sentences in PubMed articles for any given input sentences. 
 ## Features
 
-- **6-Stage Processing Pipeline**: LLM query optimization → Multi-strategy search → Full-text retrieval → Multi-signal similarity → LLM verification → Final ranking
-- **Multi-Signal Similarity**: Combines semantic (embeddings), keyword, structure, and context signals
+- **7-Stage Processing Pipeline**: LLM query optimization → Multi-strategy search → Abstract retrieval → Multi-signal similarity (first pass) → **Cross-encoder reranking (MedCPT)** → LLM verification → Final ranking
+- **MedCPT Cross-Encoder Reranking**: Biomedical-domain SOTA reranker (NCBI, PubMedBERT cross-encoder trained on 255M PubMed click logs). Jointly scores (query, passage) pairs — the single largest precision gain in modern retrieval pipelines. Runs on GPU if available, degrades gracefully if `torch`/`transformers` are missing.
+- **Multi-Signal Similarity**: Cheap first-pass shortlist (semantic embeddings + keyword/structure/context) feeding the reranker
 - **LLM-Enhanced**: Uses LLM for query optimization and result verification
 - **Multiple Citation Formats**: Supports MLA, APA, and Nature citation styles
+- **MCP Server**: Exposes the whole system as [Model Context Protocol](https://modelcontextprotocol.io) tools (official SDK / FastMCP) so Claude Code, Claude Desktop, and other agents can call it directly
 - **Standalone**: No dependencies on GPT-Researcher framework
 
 ## Installation
@@ -126,14 +128,64 @@ pubmed_sentence_matcher_project/
 └── README.md
 ```
 
+## MCP Server
+
+The system is exposed as an MCP server (official SDK / FastMCP) in
+[`mcp_servers/citation_server.py`](mcp_servers/citation_server.py), with two tools:
+
+- `find_citations(sentence, top_k, citation_format, max_articles)` — end-to-end citation grounding
+- `pubmed_search(query, max_results)` — low-level PMID search
+
+Run it (stdio transport):
+
+```bash
+python -m mcp_servers.citation_server
+```
+
+Register with Claude Code:
+
+```bash
+claude mcp add citation-matcher -- python /abs/path/to/mcp_servers/citation_server.py
+```
+
+Environment toggles: `CITATION_USE_RERANKER=0` disables reranking,
+`CITATION_SIM_THRESHOLD` sets the first-pass threshold, `PUBMED_EMAIL` sets the
+NCBI identification email.
+
+> Note: the server redirects pipeline stdout to stderr so the stdio JSON-RPC
+> stream stays clean. The earlier hand-rolled JSON-RPC implementation
+> (`mcp_servers/pubmed_server.py`, `mcp_client.py`) is superseded by this.
+
+## Reranking (MedCPT)
+
+Reranking is on by default. Control it via the matcher constructor:
+
+```python
+matcher = PubMedSentenceMatcher(
+    email="you@example.com",
+    config=Config(),
+    use_reranker=True,                       # Stage 4.5
+    reranker_model="ncbi/MedCPT-Cross-Encoder",
+    rerank_candidates=50,                    # top-N shortlisted for the cross-encoder
+    reranker_device=None,                    # None = auto (cuda if available)
+)
+```
+
+Each result's `scores` dict gains `rerank` (normalized 0-1), `rerank_raw` (logit),
+and `primary` (the score the final ranking is built on). If `torch`/`transformers`
+or the model are unavailable, the pipeline silently falls back to the multi-signal
+score.
+
 ## How It Works
 
 1. **Stage 1**: LLM generates optimized PubMed search queries from input sentence
 2. **Stage 2**: Multi-strategy PubMed search using generated queries
-3. **Stage 3**: Fetch article abstracts and full text, split into sentences
-4. **Stage 4**: Calculate multi-signal similarity (semantic + keyword + structure + context)
-5. **Stage 5**: LLM verifies matches for accuracy and relevance
-6. **Stage 6**: Final ranking with deduplication and quality scoring
+3. **Stage 3**: Fetch article abstracts, split into sentences
+4. **Stage 4**: Multi-signal similarity (semantic + keyword + structure + context) — cheap first-pass shortlist
+5. **Stage 4.5**: **MedCPT cross-encoder reranking** of the shortlist — primary relevance signal
+6. **Stage 5**: LLM verifies matches for accuracy and relevance
+7. **Stage 6**: Final ranking with deduplication and quality scoring
+
 ## ✍️ Citation
 If you have obtained permission and are using this software in your project, please cite the software repository as follows:
 **Software Citation (BibTeX):**
@@ -148,6 +200,7 @@ If you have obtained permission and are using this software in your project, ple
 ## Copyright (c) 2026 Hao Xuan. All Rights Reserved.
 This software and its associated documentation files are proprietary. Explicit written permission from the author is required for any use, reproduction, modification, or distribution of this code, whether for commercial or non-commercial purposes.
 To request permission, please contact:xuan13hao@gmail.com
+
 ## Requirements
 
 - Python 3.8+

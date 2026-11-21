@@ -40,6 +40,7 @@ from .llm_utils import create_chat_completion
 from .embeddings import Memory
 from .config import Config
 from .pubmed_citation import PubMedCitationEnhancer
+from .reranker import CrossEncoderReranker, DEFAULT_RERANKER_MODEL
 
 
 class PubMedSentenceMatcher:
@@ -59,10 +60,14 @@ class PubMedSentenceMatcher:
         keyword_weight: float = 0.25,
         structure_weight: float = 0.15,
         context_weight: float = 0.1,
+        use_reranker: bool = True,
+        reranker_model: str = DEFAULT_RERANKER_MODEL,
+        rerank_candidates: int = 50,
+        reranker_device: Optional[str] = None,
     ):
         """
         Initialize the PubMed sentence matcher.
-        
+
         Args:
             email: Email for PubMed API identification
             tool: Tool name for PubMed API
@@ -72,11 +77,27 @@ class PubMedSentenceMatcher:
             keyword_weight: Weight for keyword overlap (0-1)
             structure_weight: Weight for structure similarity (0-1)
             context_weight: Weight for context relevance (0-1)
+            use_reranker: Enable cross-encoder reranking stage (highest-leverage
+                precision improvement). Falls back gracefully to the multi-signal
+                score if torch/transformers or the model are unavailable.
+            reranker_model: HuggingFace model id for the cross-encoder reranker.
+            rerank_candidates: Max candidates (by first-pass score) sent to the
+                reranker. Cross-encoders are expensive, so we bound the top-N.
+            reranker_device: Force 'cuda' / 'cpu' (None = auto-detect).
         """
         self.email = email
         self.tool = tool
         self.config = config or Config()
         self.similarity_threshold = similarity_threshold
+
+        # Cross-encoder reranker (lazy-loaded on first use)
+        self.use_reranker = use_reranker
+        self.rerank_candidates = rerank_candidates
+        self.reranker = (
+            CrossEncoderReranker(model_name=reranker_model, device=reranker_device)
+            if use_reranker
+            else None
+        )
         
         # Validate weights sum to 1.0
         total_weight = semantic_weight + keyword_weight + structure_weight + context_weight
@@ -642,6 +663,64 @@ Respond with ONLY a JSON array of query strings, no other text:
         
         return scores
     
+    # ==================== Stage 4.5: Cross-Encoder Reranking ====================
+
+    async def _rerank_matches(
+        self,
+        input_sentence: str,
+        matches: List[Dict],
+    ) -> List[Dict]:
+        """
+        Stage 4.5: Rerank first-pass candidates with a cross-encoder.
+
+        The multi-signal score (Stage 4) is a cheap bi-encoder-style first pass
+        used only to shortlist candidates. A cross-encoder (MedCPT) then jointly
+        scores (query, passage) pairs for fine-grained relevance. This is the
+        single largest precision gain in modern retrieval pipelines.
+
+        Adds `scores['rerank']` (normalized) and `scores['rerank_raw']` (logit)
+        to each match, and sets `scores['primary']` to the rerank score. If the
+        reranker is unavailable, `scores['primary']` falls back to the Stage 4
+        `final` score so downstream stages are unaffected.
+
+        Args:
+            input_sentence: Original input sentence (query).
+            matches: Candidate matches from Stage 4.
+
+        Returns:
+            Matches sorted by primary score (descending).
+        """
+        # Default: primary score == Stage 4 multi-signal score.
+        for m in matches:
+            m['scores']['primary'] = m['scores']['final']
+
+        if not self.use_reranker or self.reranker is None or not matches:
+            return sorted(matches, key=lambda x: x['scores']['primary'], reverse=True)
+
+        # Bound cross-encoder cost: only rerank the top-N by first-pass score.
+        shortlisted = sorted(
+            matches, key=lambda x: x['scores']['final'], reverse=True
+        )[: self.rerank_candidates]
+
+        # Score passage text (with a little context helps the cross-encoder).
+        passages = [
+            (m.get('context') or m['sentence'])[:1000] for m in shortlisted
+        ]
+        raw_scores = await self.reranker.score(input_sentence, passages)
+
+        if not raw_scores:  # reranker unavailable -> keep first-pass ordering
+            return sorted(matches, key=lambda x: x['scores']['primary'], reverse=True)
+
+        from .reranker import _sigmoid
+        for m, raw in zip(shortlisted, raw_scores):
+            m['scores']['rerank_raw'] = raw
+            m['scores']['rerank'] = _sigmoid(raw)
+            m['scores']['primary'] = m['scores']['rerank']
+
+        # Candidates beyond the shortlist keep their first-pass primary score and
+        # sort below the reranked ones (they were lower-ranked to begin with).
+        return sorted(matches, key=lambda x: x['scores']['primary'], reverse=True)
+
     # ==================== Stage 5: LLM Verification ====================
     
     async def _llm_verify_matches(
@@ -765,11 +844,14 @@ Respond with ONLY valid JSON, no other text:
         # Calculate article quality scores
         for match in verified_matches:
             article_quality = self._calculate_article_quality(match['article'])
-            
-            # Final rank score = similarity * LLM verification * article quality
+
+            # Final rank score = primary relevance * LLM verification * quality.
+            # `primary` is the cross-encoder rerank score when available, else the
+            # Stage 4 multi-signal score (set in _rerank_matches).
+            primary = match['scores'].get('primary', match['scores']['final'])
             llm_score = match.get('llm_verification', {}).get('relevance_score', 1.0)
             match['final_rank_score'] = (
-                match['scores']['final'] *
+                primary *
                 llm_score *
                 article_quality
             )
@@ -904,17 +986,18 @@ Respond with ONLY valid JSON, no other text:
         if not matches:
             print("   No matches found")
             return []
-        
-        # Sort by similarity score
-        matches = sorted(
-            matches,
-            key=lambda x: x['scores']['final'],
-            reverse=True
-        )
-        
-        # Take top candidates for LLM verification
+
+        # Stage 4.5: Cross-Encoder Reranking (MedCPT)
+        if self.use_reranker:
+            print("🎯 Stage 4.5: Reranking candidates with cross-encoder...")
+        matches = await self._rerank_matches(input_sentence, matches)
+        if self.use_reranker:
+            reranked = sum(1 for m in matches if 'rerank' in m['scores'])
+            print(f"   Reranked {reranked} candidates")
+
+        # Take top candidates for LLM verification (now ordered by rerank score)
         top_candidates = matches[:top_k * 2]  # Verify more than we need
-        
+
         # Stage 5: LLM Verification
         print("✅ Stage 5: Verifying matches with LLM...")
         verified_matches = await self._llm_verify_matches(input_sentence, top_candidates)

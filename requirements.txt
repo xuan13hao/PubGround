@@ -14,7 +14,13 @@ langchain-community>=0.0.20
 # Optional: for numerical operations (speeds up cosine similarity)
 numpy>=1.24.0
 
-# MCP (Model Context Protocol) support
-# Note: This project includes a simplified MCP implementation
-# For production use, consider using the official MCP SDK when available
+# Cross-encoder reranking (MedCPT). GPU optional but strongly recommended.
+# Pin transformers to a release compatible with your installed torch:
+#   torch >= 2.6  -> transformers >= 5
+#   torch 2.1-2.5 -> transformers 4.44.x  (as used/tested here)
+torch>=2.1.0
+transformers>=4.44,<5
+
+# MCP (Model Context Protocol) support — official SDK (FastMCP)
+mcp>=1.2.0
 
