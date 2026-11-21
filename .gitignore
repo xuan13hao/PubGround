@@ -13,3 +13,8 @@ venv/
 results.json
 examples/results.json
 scratch_*
+
+# Benchmark data (downloadable) and run logs
+benchmark/data/
+benchmark/*.log
+benchmark/*.stdout

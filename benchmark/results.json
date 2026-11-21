@@ -1,0 +1,45 @@
+{
+  "dataset": "SciFact (BEIR)",
+  "corpus_size": 5183,
+  "n_queries": 300,
+  "topk": 100,
+  "metrics": [
+    "ndcg@10",
+    "recall@10",
+    "recall@100",
+    "mrr@10",
+    "p@1"
+  ],
+  "results": {
+    "BM25": {
+      "ndcg@10": 0.6523,
+      "recall@10": 0.7757,
+      "recall@100": 0.8731,
+      "mrr@10": 0.6184,
+      "p@1": 0.5233
+    },
+    "BM25 + MedCPT rerank": {
+      "ndcg@10": 0.7587,
+      "recall@10": 0.8547,
+      "recall@100": 0.8731,
+      "mrr@10": 0.7342,
+      "p@1": 0.66
+    },
+    "MedCPT dense": {
+      "ndcg@10": 0.737,
+      "recall@10": 0.8758,
+      "recall@100": 0.9817,
+      "mrr@10": 0.7008,
+      "p@1": 0.6067
+    }
+  },
+  "timing_sec": {
+    "BM25": 3.6,
+    "BM25 + MedCPT rerank": 556.2,
+    "MedCPT dense": 115.2
+  },
+  "published_anchors": {
+    "BM25 ndcg@10": 0.665,
+    "MedCPT dense ndcg@10": 0.761
+  }
+}

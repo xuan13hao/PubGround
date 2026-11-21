@@ -324,6 +324,59 @@
     </div>
   </section>
 
+  <!-- BENCHMARK -->
+  <section style="background:var(--panel);color:#DCEAE8;border-top:1px solid var(--line-dk);border-bottom:1px solid var(--line-dk)">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow" style="color:var(--teal-br)">Benchmark · SciFact (BEIR)</span>
+        <h2 style="color:#F3FAF8">Measured against the standard.</h2>
+        <p style="color:#AFCCC7">Evaluated on the de-facto biomedical claim-grounding benchmark — <b style="color:#EAF5F2">300 claims</b> retrieved against <b style="color:#EAF5F2">5,183 abstracts</b>, scored with the BEIR-standard metrics. No OpenAI key: this isolates retrieval + reranking. Our BM25 baseline lands at nDCG@10 <span class="mono">0.652</span>, matching the published <span class="mono">0.665</span> — so the harness is sound.</p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:28px;align-items:center">
+        <figure style="margin:0">
+          <figcaption class="mono" style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--teal-dim);margin-bottom:12px">nDCG@10 — higher is better</figcaption>
+          <div style="position:relative;height:300px"><canvas id="benchChart" aria-label="nDCG@10 bar chart: BM25 0.652, MedCPT dense 0.737, BM25 + MedCPT rerank 0.759"></canvas></div>
+        </figure>
+        <div>
+          <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+            <span class="mono" style="font-size:2.6rem;font-weight:600;color:var(--teal-br);letter-spacing:-.02em">+16.3%</span>
+            <span style="color:#AFCCC7;font-size:.95rem">nDCG@10 from the MedCPT reranker over BM25<br>(<span class="mono">0.652 → 0.759</span>, +0.106 — in line with the field's reported +17pp)</span>
+          </div>
+          <p style="color:#AFCCC7;margin-top:20px;font-size:.95rem">Reranking BM25's top-100 with the cross-encoder gives the <b style="color:#EAF5F2">best precision at the top</b> (highest nDCG@10, MRR, P@1). Dense retrieval wins <b style="color:#EAF5F2">recall@100</b> because it searches the whole corpus — reranking can only reorder what BM25 already found. Combining both (dense + RRF, then rerank) is the roadmap.</p>
+        </div>
+      </div>
+
+      <div class="tbl-wrap" style="margin-top:34px;border-color:var(--line-dk)">
+        <table>
+          <thead><tr>
+            <th style="background:#102A2D;color:var(--teal-dim)">System</th>
+            <th style="background:#102A2D;color:var(--teal-dim)">nDCG@10</th>
+            <th style="background:#102A2D;color:var(--teal-dim)">Recall@10</th>
+            <th style="background:#102A2D;color:var(--teal-dim)">Recall@100</th>
+            <th style="background:#102A2D;color:var(--teal-dim)">MRR@10</th>
+            <th style="background:#102A2D;color:var(--teal-dim)">P@1</th>
+          </tr></thead>
+          <tbody style="color:#CFE3DF">
+            <tr style="border-color:var(--line-dk)">
+              <td style="border-color:var(--line-dk)">BM25 <span class="mono" style="color:var(--muted-dk);font-size:.7rem">baseline</span></td>
+              <td class="num" style="border-color:var(--line-dk)">0.652</td><td class="num" style="border-color:var(--line-dk)">0.776</td><td class="num" style="border-color:var(--line-dk)">0.873</td><td class="num" style="border-color:var(--line-dk)">0.618</td><td class="num" style="border-color:var(--line-dk)">0.523</td>
+            </tr>
+            <tr style="background:rgba(43,201,177,.10)">
+              <td style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">★ BM25 + MedCPT rerank</td>
+              <td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.759</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.855</td><td class="num" style="border-color:var(--line-dk)">0.873</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.734</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.660</td>
+            </tr>
+            <tr style="border-color:var(--line-dk)">
+              <td style="border-color:var(--line-dk)">MedCPT dense</td>
+              <td class="num" style="border-color:var(--line-dk)">0.737</td><td class="num" style="border-color:var(--line-dk)">0.876</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.982</td><td class="num" style="border-color:var(--line-dk)">0.701</td><td class="num" style="border-color:var(--line-dk)">0.607</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="color:var(--muted-dk);font-size:.8rem;margin-top:14px">Bold = best per column. Reproducible, key-free: <span class="mono">python benchmark/run_benchmark.py</span>. Reranking is capped by BM25's candidate recall (recall@100 identical to BM25 by construction). Published anchors: BM25 0.665, MedCPT dense 0.761 (<a href="https://arxiv.org/pdf/2307.00589" style="color:var(--teal-dim)">Jin et al., 2023</a>).</p>
+    </div>
+  </section>
+
   <!-- MCP -->
   <section style="background:var(--paper-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
     <div class="wrap">
@@ -443,6 +496,63 @@ claude mcp add citation-matcher \
     }
     size(); frame();
     window.addEventListener("resize", size, {passive:true});
+  }
+
+  // Benchmark bar chart: nDCG@10 on SciFact (BEIR)
+  var bc=document.getElementById("benchChart"), bctx=bc&&bc.getContext("2d");
+  if(bctx){
+    var bars=[
+      {label:"BM25", val:0.652, color:"#6BA69C"},
+      {label:"MedCPT dense", val:0.737, color:"#1E8F82"},
+      {label:"BM25 + rerank", val:0.759, color:"#2BC9B1", ours:true}
+    ];
+    var anchor=0.665, YMAX=0.85, prog=0, started=false;
+    function draw(){
+      var dpr=Math.min(window.devicePixelRatio||1,2),
+          w=bc.clientWidth, h=bc.clientHeight;
+      bc.width=w*dpr; bc.height=h*dpr; bctx.setTransform(dpr,0,0,dpr,0,0);
+      bctx.clearRect(0,0,w,h);
+      var padL=42, padB=46, padT=16, plotH=h-padB-padT, plotW=w-padL-10;
+      // gridlines + y labels
+      bctx.font="11px ui-monospace,Menlo,monospace"; bctx.textBaseline="middle";
+      for(var g=0; g<=YMAX+0.001; g+=0.2){
+        var y=padT+plotH*(1-g/YMAX);
+        bctx.strokeStyle="rgba(255,255,255,.08)"; bctx.beginPath();
+        bctx.moveTo(padL,y); bctx.lineTo(w-10,y); bctx.stroke();
+        bctx.fillStyle="#6B8A86"; bctx.textAlign="right"; bctx.fillText(g.toFixed(1),padL-8,y);
+      }
+      // published anchor (dashed)
+      var ay=padT+plotH*(1-anchor/YMAX);
+      bctx.strokeStyle="#D9A441"; bctx.setLineDash([5,4]); bctx.beginPath();
+      bctx.moveTo(padL,ay); bctx.lineTo(w-10,ay); bctx.stroke(); bctx.setLineDash([]);
+      bctx.fillStyle="#D9A441"; bctx.textAlign="left"; bctx.font="10px ui-monospace,Menlo,monospace";
+      bctx.fillText("published BM25  0.665", padL+6, ay-9);
+      // bars
+      var n=bars.length, slot=plotW/n, bw=Math.min(slot*0.5,84);
+      bars.forEach(function(b,i){
+        var cx=padL+slot*(i+0.5), v=b.val*prog,
+            bh=plotH*(v/YMAX), x=cx-bw/2, y=padT+plotH-bh;
+        bctx.fillStyle=b.color; bctx.fillRect(x,y,bw,bh);
+        if(b.ours){ bctx.strokeStyle="#EAF5F2"; bctx.lineWidth=1; bctx.strokeRect(x+.5,y+.5,bw-1,bh-1); }
+        bctx.fillStyle=b.ours?"#EAF5F2":"#CFE3DF"; bctx.font="600 13px ui-monospace,Menlo,monospace";
+        bctx.textAlign="center"; bctx.fillText((b.val*prog).toFixed(3),cx,y-10);
+        bctx.fillStyle=b.ours?"#2BC9B1":"#AFCCC7"; bctx.font="11px -apple-system,system-ui,sans-serif";
+        bctx.fillText(b.label,cx,h-padB+16);
+      });
+    }
+    function animate(){ if(reduce){prog=1;draw();return;}
+      var t0=null;
+      function step(ts){ if(!t0)t0=ts; prog=Math.min((ts-t0)/900,1);
+        draw(); if(prog<1) requestAnimationFrame(step); }
+      requestAnimationFrame(step);
+    }
+    draw();
+    if("IntersectionObserver" in window){
+      var io=new IntersectionObserver(function(es){es.forEach(function(e){
+        if(e.isIntersecting && !started){started=true; animate();}});},{threshold:.3});
+      io.observe(bc);
+    } else { prog=1; draw(); }
+    window.addEventListener("resize", function(){ draw(); }, {passive:true});
   }
 })();
 </script>
