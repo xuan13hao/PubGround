@@ -263,13 +263,13 @@
   },
   "timing_sec": {
     "rerank (key-free)": 1.4,
-    "LLM stages [claude-haiku-5.5]": 15.8,
-    "LLM stages [deepseek-v4.1-flash-1017]": 13.9
+    "LLM stages [claude-haiku-5.5]": 14.7,
+    "LLM stages [deepseek-v4.1-flash-1017]": 14.8
   },
   "llm_cost_usd_cumulative": {
-    "anthropic/claude-haiku-5.5": 0.2623,
-    "deepseek/deepseek-v4.1-flash-1017": 0.142,
-    "anthropic/claude-sonnet-5.5": 5.066
+    "anthropic/claude-haiku-5.5": 0.4256,
+    "deepseek/deepseek-v4.1-flash-1017": 0.2216,
+    "anthropic/claude-sonnet-5.5": 7.7436
   },
-  "wall_sec": 55.7
+  "wall_sec": 35.4
 }
