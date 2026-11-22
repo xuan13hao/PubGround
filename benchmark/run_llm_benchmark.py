@@ -331,6 +331,9 @@ def main():
         qe_hyb_rr = rr.rerank({q: rrf([qe_runs[q], dense_runs[q]], args.topk) for q in test_q}, args.topk)
         results[f"Hybrid(LLM-QE, dense) + rerank [{tag}]"] = evaluate(qe_hyb_rr, qrels)
         json.dump(expanded, open(f"{DATA}/stage1_queries_{tag}.json", "w"), indent=1)
+        if not args.max_queries:  # per-query runs, for bootstrap_ci.py
+            os.makedirs(f"{DATA}/baseline_runs", exist_ok=True)
+            json.dump(qe_rr, open(f"{DATA}/baseline_runs/LLM-QE + MedCPT [{tag}].json", "w"))
         info[tag] = {"stage1_parse_fallbacks": n_fb,
                      "stage1_mean_queries": round(sum(len(v) for v in expanded.values()) / len(expanded), 2)}
         timing[f"LLM stages [{tag}]"] = round(time.time() - t, 1)
