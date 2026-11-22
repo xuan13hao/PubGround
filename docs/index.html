@@ -247,7 +247,7 @@
         </div>
         <div class="ref">
           <span class="metric">NLI→LLM</span>
-          <span class="d">For true grounding, verdict the evidence as SUPPORTS / REFUTES / NEI with a cheap NLI model, escalating to an LLM judge only on borderline cases (ALCE / SciFact lineage). The planned next stage.
+          <span class="d">For true grounding, verdict the evidence as SUPPORTS / REFUTES / NEI with a cheap NLI model, escalating to an LLM judge only on borderline cases (ALCE / SciFact lineage). Benchmarked below; not yet in the shipped pipeline.
             <span class="cite"><a href="https://www.alphaxiv.org/abs/2004.14974">SciFact</a> · <a href="https://arxiv.org/pdf/2508.15396">Attribution survey, 2025</a></span></span>
         </div>
       </div>
@@ -259,8 +259,8 @@
     <div class="wrap">
       <div class="section-head">
         <span class="eyebrow">The system</span>
-        <h2>Seven stages, one new linchpin.</h2>
-        <p>The original engine was a sound multi-stage design using 2020-era hand-tuned similarity. Stage 4.5 replaces the weak middle with the field's highest-leverage component — the multi-signal score is demoted to a cheap shortlist feeding the cross-encoder.</p>
+        <h2>Six stages, one new linchpin.</h2>
+        <p>The original engine was a sound multi-stage design using 2020-era hand-tuned similarity. Stage 4.5 replaces the weak middle with the field's highest-leverage component — the multi-signal score is demoted to a cheap shortlist feeding the cross-encoder. An LLM re-verification stage was benchmarked and removed: on top of the reranker it added at most 0.007 nDCG@10 while costing ~20 extra LLM calls per query.</p>
       </div>
       <div class="pipe">
         <div class="step"><span><span class="st-name">LLM query optimization</span><span class="st-desc">Expand the claim into 3–5 PubMed queries with MeSH-aware phrasing.</span></span><span class="st-kind">LLM</span></div>
@@ -268,8 +268,7 @@
         <div class="step"><span><span class="st-name">Abstract retrieval + sentence split</span><span class="st-desc">Batch efetch, segment into candidate sentences with context.</span></span><span class="st-kind">Fetch</span></div>
         <div class="step"><span><span class="st-name">Multi-signal similarity</span><span class="st-desc">Semantic + keyword shortlist — now a cheap first pass, not the verdict.</span></span><span class="st-kind">First pass</span></div>
         <div class="step key"><span><span class="st-name">MedCPT cross-encoder rerank</span><span class="st-desc">Jointly score (claim, passage) pairs. Primary relevance signal. Runs on GPU.</span></span><span class="st-kind">New · Rerank</span></div>
-        <div class="step"><span><span class="st-name">LLM verification</span><span class="st-desc">Confirm the top candidates genuinely match before citing.</span></span><span class="st-kind">LLM</span></div>
-        <div class="step"><span><span class="st-name">Final ranking + dedup</span><span class="st-desc">Blend rerank × verification × article quality; one best hit per article.</span></span><span class="st-kind">Rank</span></div>
+        <div class="step"><span><span class="st-name">Final ranking + dedup</span><span class="st-desc">Blend rerank × article quality; one best hit per article.</span></span><span class="st-kind">Rank</span></div>
       </div>
     </div>
   </section>
@@ -328,52 +327,88 @@
   <section style="background:var(--panel);color:#DCEAE8;border-top:1px solid var(--line-dk);border-bottom:1px solid var(--line-dk)">
     <div class="wrap">
       <div class="section-head">
-        <span class="eyebrow" style="color:var(--teal-br)">Benchmark · SciFact (BEIR)</span>
-        <h2 style="color:#F3FAF8">Measured against the standard.</h2>
-        <p style="color:#AFCCC7">Evaluated on the de-facto biomedical claim-grounding benchmark — <b style="color:#EAF5F2">300 claims</b> retrieved against <b style="color:#EAF5F2">5,183 abstracts</b>, scored with the BEIR-standard metrics. No OpenAI key: this isolates retrieval + reranking. Our BM25 baseline lands at nDCG@10 <span class="mono">0.652</span>, matching the published <span class="mono">0.665</span> — so the harness is sound.</p>
+        <span class="eyebrow" style="color:var(--teal-br)">Benchmark · SciFact · SciFact-Open · HealthVer</span>
+        <h2 style="color:#F3FAF8">Measured against the field, at two scales.</h2>
+        <p style="color:#AFCCC7">Three public datasets: <b style="color:#EAF5F2">SciFact</b> (300 claims, 5,183 abstracts), <b style="color:#EAF5F2">SciFact-Open</b> (279 claims against <b style="color:#EAF5F2">500,000</b> abstracts) and <b style="color:#EAF5F2">HealthVer</b> (230 COVID health claims). Every system — ours, four open-source rerankers, five embedders, two published verifiers — sees the same claims, candidate lists and metrics, with 95% bootstrap intervals over claims.</p>
       </div>
 
-      <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:28px;align-items:center">
+      <div style="display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:28px;align-items:center">
         <figure style="margin:0">
-          <figcaption class="mono" style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--teal-dim);margin-bottom:12px">nDCG@10 — higher is better</figcaption>
-          <div style="position:relative;height:300px"><canvas id="benchChart" aria-label="nDCG@10 bar chart: BM25 0.652, MedCPT dense 0.737, BM25 + MedCPT rerank 0.759"></canvas></div>
+          <figcaption class="mono" style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--teal-dim);margin-bottom:12px">Rerankers on identical Hybrid top-100 · nDCG@10</figcaption>
+          <div style="position:relative;height:320px"><canvas id="benchChart" aria-label="nDCG@10 of five rerankers on SciFact and SciFact-Open: MiniLM 0.692 and 0.639, bge-reranker 0.734 and 0.737, MedCPT 0.792 and 0.750, monoT5-3B 0.770 and 0.778, Qwen3-Reranker-4B 0.802 and 0.806"></canvas></div>
         </figure>
         <div>
           <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
-            <span class="mono" style="font-size:2.6rem;font-weight:600;color:var(--teal-br);letter-spacing:-.02em">+16.3%</span>
-            <span style="color:#AFCCC7;font-size:.95rem">nDCG@10 from the MedCPT reranker over BM25<br>(<span class="mono">0.652 → 0.759</span>, +0.106 — in line with the field's reported +17pp)</span>
+            <span class="mono" style="font-size:2.6rem;font-weight:600;color:var(--teal-br);letter-spacing:-.02em">1/18</span>
+            <span style="color:#AFCCC7;font-size:.95rem">of the scoring time of Qwen3-Reranker-4B, with no significant nDCG@10 gap on SciFact<br>(<span class="mono">0.792 vs 0.802</span>, difference 95% CI −0.013 to 0.032; 59 s vs 1,062 s for 40K pairs)</span>
           </div>
-          <p style="color:#AFCCC7;margin-top:20px;font-size:.95rem">Reranking BM25's top-100 with the cross-encoder gives the <b style="color:#EAF5F2">best precision at the top</b> (highest nDCG@10, MRR, P@1). Dense retrieval wins <b style="color:#EAF5F2">recall@100</b> because it searches the whole corpus — reranking can only reorder what BM25 already found. Combining both (dense + RRF, then rerank) is the roadmap.</p>
+          <p style="color:#AFCCC7;margin-top:20px;font-size:.95rem">At 500K abstracts the larger reranker pulls ahead (<span class="mono">0.806 vs 0.750</span>, significant). Fusing BM25 with MedCPT dense retrieval gives the <b style="color:#EAF5F2">best Recall@100 on both corpora</b> and lifts every reranker; LLM query expansion matches it but adds nothing on top. A <b style="color:#EAF5F2">zero-shot LLM judge</b> beats every verifier not trained in-domain — but a supervised model trained on HealthVer still wins there.</p>
         </div>
       </div>
 
-      <div class="tbl-wrap" style="margin-top:34px;border-color:var(--line-dk)">
+      <div class="tbl-wrap" style="margin-top:22px;border-color:var(--line-dk)">
         <table>
-          <thead><tr>
-            <th style="background:#102A2D;color:var(--teal-dim)">System</th>
-            <th style="background:#102A2D;color:var(--teal-dim)">nDCG@10</th>
-            <th style="background:#102A2D;color:var(--teal-dim)">Recall@10</th>
-            <th style="background:#102A2D;color:var(--teal-dim)">Recall@100</th>
-            <th style="background:#102A2D;color:var(--teal-dim)">MRR@10</th>
-            <th style="background:#102A2D;color:var(--teal-dim)">P@1</th>
-          </tr></thead>
+          <thead><tr><th style="background:#102A2D;color:var(--teal-dim)">System (Hybrid = RRF of BM25 + MedCPT dense)</th><th style="background:#102A2D;color:var(--teal-dim)">SciFact nDCG@10</th><th style="background:#102A2D;color:var(--teal-dim)">SciFact R@100</th><th style="background:#102A2D;color:var(--teal-dim)">SciFact-Open nDCG@10</th><th style="background:#102A2D;color:var(--teal-dim)">SciFact-Open R@100</th></tr></thead>
           <tbody style="color:#CFE3DF">
             <tr style="border-color:var(--line-dk)">
               <td style="border-color:var(--line-dk)">BM25 <span class="mono" style="color:var(--muted-dk);font-size:.7rem">baseline</span></td>
-              <td class="num" style="border-color:var(--line-dk)">0.652</td><td class="num" style="border-color:var(--line-dk)">0.776</td><td class="num" style="border-color:var(--line-dk)">0.873</td><td class="num" style="border-color:var(--line-dk)">0.618</td><td class="num" style="border-color:var(--line-dk)">0.523</td>
-            </tr>
-            <tr style="background:rgba(43,201,177,.10)">
-              <td style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">★ BM25 + MedCPT rerank</td>
-              <td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.759</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.855</td><td class="num" style="border-color:var(--line-dk)">0.873</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.734</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.660</td>
+              <td class="num" style="border-color:var(--line-dk)">0.652</td><td class="num" style="border-color:var(--line-dk)">0.873</td><td class="num" style="border-color:var(--line-dk)">0.561</td><td class="num" style="border-color:var(--line-dk)">0.864</td>
             </tr>
             <tr style="border-color:var(--line-dk)">
-              <td style="border-color:var(--line-dk)">MedCPT dense</td>
-              <td class="num" style="border-color:var(--line-dk)">0.737</td><td class="num" style="border-color:var(--line-dk)">0.876</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.982</td><td class="num" style="border-color:var(--line-dk)">0.701</td><td class="num" style="border-color:var(--line-dk)">0.607</td>
+              <td style="border-color:var(--line-dk)">Best single embedder <span class="mono" style="color:var(--muted-dk);font-size:.7rem">Qwen3-Emb-4B / bge-large</span></td>
+              <td class="num" style="border-color:var(--line-dk)">0.784</td><td class="num" style="border-color:var(--line-dk)">0.977</td><td class="num" style="border-color:var(--line-dk)">0.699</td><td class="num" style="border-color:var(--line-dk)">0.933</td>
+            </tr>
+            <tr style="background:rgba(43,201,177,.10)">
+              <td style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">★ Hybrid + MedCPT rerank</td>
+              <td class="num" style="border-color:var(--line-dk)">0.792</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.973</td><td class="num" style="border-color:var(--line-dk)">0.750</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.964</td>
+            </tr>
+            <tr style="background:rgba(43,201,177,.10)">
+              <td style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">★ LLM query expansion + MedCPT rerank</td>
+              <td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.798</td><td class="num" style="border-color:var(--line-dk)">0.958</td><td class="num" style="border-color:var(--line-dk)">0.754</td><td class="num" style="border-color:var(--line-dk)">0.944</td>
+            </tr>
+            <tr style="border-color:var(--line-dk)">
+              <td style="border-color:var(--line-dk)">Hybrid + monoT5-3B</td>
+              <td class="num" style="border-color:var(--line-dk)">0.770</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.973</td><td class="num" style="border-color:var(--line-dk)">0.778</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.964</td>
+            </tr>
+            <tr style="border-color:var(--line-dk)">
+              <td style="border-color:var(--line-dk)">Hybrid + Qwen3-Reranker-4B</td>
+              <td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.802</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.973</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.806</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.964</td>
             </tr>
           </tbody>
         </table>
       </div>
-      <p style="color:var(--muted-dk);font-size:.8rem;margin-top:14px">Bold = best per column. Reproducible, key-free: <span class="mono">python benchmark/run_benchmark.py</span>. Reranking is capped by BM25's candidate recall (recall@100 identical to BM25 by construction). Published anchors: BM25 0.665, MedCPT dense 0.761 (<a href="https://arxiv.org/pdf/2307.00589" style="color:var(--teal-dim)">Jin et al., 2023</a>).</p>
+      <div class="tbl-wrap" style="margin-top:22px;border-color:var(--line-dk)">
+        <table>
+          <thead><tr><th style="background:#102A2D;color:var(--teal-dim)">Verifier (abstract-level label F1)</th><th style="background:#102A2D;color:var(--teal-dim)">SciFact, gold abstract</th><th style="background:#102A2D;color:var(--teal-dim)">SciFact, end-to-end</th><th style="background:#102A2D;color:var(--teal-dim)">SciFact-Open, end-to-end</th><th style="background:#102A2D;color:var(--teal-dim)">HealthVer</th></tr></thead>
+          <tbody style="color:#CFE3DF">
+            <tr style="border-color:var(--line-dk)">
+              <td style="border-color:var(--line-dk)">VeriSci <span class="mono" style="color:var(--muted-dk);font-size:.7rem">supervised, SciFact</span></td>
+              <td class="num" style="border-color:var(--line-dk)">0.734</td><td class="num" style="border-color:var(--line-dk)">0.552</td><td class="num" style="border-color:var(--line-dk)">0.349</td><td class="num" style="border-color:var(--line-dk)">0.198</td>
+            </tr>
+            <tr style="border-color:var(--line-dk)">
+              <td style="border-color:var(--line-dk)">MultiVerS <span class="mono" style="color:var(--muted-dk);font-size:.7rem">zero-shot</span></td>
+              <td class="num" style="border-color:var(--line-dk)">0.631</td><td class="num" style="border-color:var(--line-dk)">0.552</td><td class="num" style="border-color:var(--line-dk)">0.314</td><td class="num" style="border-color:var(--line-dk)">0.307</td>
+            </tr>
+            <tr style="border-color:var(--line-dk)">
+              <td style="border-color:var(--line-dk)">MultiVerS <span class="mono" style="color:var(--muted-dk);font-size:.7rem">supervised, in-domain</span></td>
+              <td class="num" style="border-color:var(--line-dk)">—</td><td class="num" style="border-color:var(--line-dk)">—</td><td class="num" style="border-color:var(--line-dk)">0.438</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.777</td>
+            </tr>
+            <tr style="background:rgba(43,201,177,.10)">
+              <td style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">★ LLM judge, Claude Sonnet 5.5</td>
+              <td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.873</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.660</td><td class="num" style="border-color:var(--line-dk)">0.466</td><td class="num" style="border-color:var(--line-dk)">0.514</td>
+            </tr>
+            <tr style="background:rgba(43,201,177,.10)">
+              <td style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">★ LLM judge, DeepSeek V4.1 Flash</td>
+              <td class="num" style="border-color:var(--line-dk)">0.833</td><td class="num" style="border-color:var(--line-dk)">0.643</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.470</td><td class="num" style="border-color:var(--line-dk)">0.481</td>
+            </tr>
+            <tr style="background:rgba(43,201,177,.10)">
+              <td style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">★ LLM judge, local Qwen3-8B</td>
+              <td class="num" style="border-color:var(--line-dk)">0.711</td><td class="num" style="border-color:var(--line-dk)">0.419</td><td class="num" style="border-color:var(--line-dk)">0.350</td><td class="num" style="border-color:var(--line-dk)">0.618</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="color:var(--muted-dk);font-size:.8rem;margin-top:14px">Highlighted = best per column. “End-to-end” = verdicts on the top-3 retrieved abstracts. The released MultiVerS SciFact checkpoint was trained on the SciFact evaluation claims, so it is only compared where fair (SciFact-Open uses the held-out test claims). SciFact-Open labels come from pooling, which lowers every system's precision. Full tables, intervals and caveats: <a href="https://github.com/xuan13hao/citation_agents_system/blob/main/benchmark/RESULTS.md" style="color:var(--teal-dim)">benchmark/RESULTS.md</a>.</p>
     </div>
   </section>
 
@@ -428,12 +463,12 @@ claude mcp add citation-matcher \
         <div class="card">
           <span class="divider-label">recall</span>
           <h3>Dense retrieval + RRF</h3>
-          <p>Add MedCPT's query encoder alongside keyword search and fuse with Reciprocal Rank Fusion — stops relevant papers being missed at stage 2.</p>
+          <p>Add MedCPT's query encoder alongside keyword search and fuse with Reciprocal Rank Fusion. Benchmarked: best Recall@100 on both corpora (0.973 / 0.964) and a lift for every reranker — next to ship.</p>
         </div>
         <div class="card">
           <span class="divider-label">truth</span>
           <h3>NLI entailment verdict</h3>
-          <p>Upgrade “similar” to SUPPORTS / REFUTES / NEI with rationale spans, cascading NLI → LLM judge. Turns matches into attributed evidence.</p>
+          <p>Upgrade “similar” to SUPPORTS / REFUTES / NEI with rationale spans. Benchmarked: a zero-shot LLM judge beats VeriSci and zero-shot MultiVerS on all three datasets; it needs a less strict prompt for HealthVer-style “partial support”.</p>
         </div>
         <div class="card">
           <span class="divider-label">depth</span>
@@ -498,46 +533,49 @@ claude mcp add citation-matcher \
     window.addEventListener("resize", size, {passive:true});
   }
 
-  // Benchmark bar chart: nDCG@10 on SciFact (BEIR)
+  // Benchmark chart: rerankers on identical Hybrid top-100, nDCG@10 on two corpora
   var bc=document.getElementById("benchChart"), bctx=bc&&bc.getContext("2d");
   if(bctx){
-    var bars=[
-      {label:"BM25", val:0.652, color:"#6BA69C"},
-      {label:"MedCPT dense", val:0.737, color:"#1E8F82"},
-      {label:"BM25 + rerank", val:0.759, color:"#2BC9B1", ours:true}
+    var groups=[
+      {label:"MiniLM-L12", v:[0.692,0.639]},
+      {label:"bge-rr-m3", v:[0.734,0.737]},
+      {label:"MedCPT", v:[0.792,0.750], ours:true},
+      {label:"monoT5-3B", v:[0.770,0.778]},
+      {label:"Qwen3-RR-4B", v:[0.802,0.806]}
     ];
-    var anchor=0.665, YMAX=0.85, prog=0, started=false;
+    var series=[{name:"SciFact · 5K", color:"#2BC9B1"},{name:"SciFact-Open · 500K", color:"#4F7F79"}];
+    var YMIN=0.5, YMAX=0.85, prog=0, started=false;
     function draw(){
       var dpr=Math.min(window.devicePixelRatio||1,2),
           w=bc.clientWidth, h=bc.clientHeight;
       bc.width=w*dpr; bc.height=h*dpr; bctx.setTransform(dpr,0,0,dpr,0,0);
       bctx.clearRect(0,0,w,h);
-      var padL=42, padB=46, padT=16, plotH=h-padB-padT, plotW=w-padL-10;
-      // gridlines + y labels
+      var padL=42, padB=40, padT=34, plotH=h-padB-padT, plotW=w-padL-10;
+      function yOf(v){ return padT+plotH*(1-(v-YMIN)/(YMAX-YMIN)); }
       bctx.font="11px ui-monospace,Menlo,monospace"; bctx.textBaseline="middle";
-      for(var g=0; g<=YMAX+0.001; g+=0.2){
-        var y=padT+plotH*(1-g/YMAX);
+      for(var g=YMIN; g<=YMAX+0.001; g+=0.1){
+        var y=yOf(g);
         bctx.strokeStyle="rgba(255,255,255,.08)"; bctx.beginPath();
         bctx.moveTo(padL,y); bctx.lineTo(w-10,y); bctx.stroke();
         bctx.fillStyle="#6B8A86"; bctx.textAlign="right"; bctx.fillText(g.toFixed(1),padL-8,y);
       }
-      // published anchor (dashed)
-      var ay=padT+plotH*(1-anchor/YMAX);
-      bctx.strokeStyle="#D9A441"; bctx.setLineDash([5,4]); bctx.beginPath();
-      bctx.moveTo(padL,ay); bctx.lineTo(w-10,ay); bctx.stroke(); bctx.setLineDash([]);
-      bctx.fillStyle="#D9A441"; bctx.textAlign="left"; bctx.font="10px ui-monospace,Menlo,monospace";
-      bctx.fillText("published BM25  0.665", padL+6, ay-9);
-      // bars
-      var n=bars.length, slot=plotW/n, bw=Math.min(slot*0.5,84);
-      bars.forEach(function(b,i){
-        var cx=padL+slot*(i+0.5), v=b.val*prog,
-            bh=plotH*(v/YMAX), x=cx-bw/2, y=padT+plotH-bh;
-        bctx.fillStyle=b.color; bctx.fillRect(x,y,bw,bh);
-        if(b.ours){ bctx.strokeStyle="#EAF5F2"; bctx.lineWidth=1; bctx.strokeRect(x+.5,y+.5,bw-1,bh-1); }
-        bctx.fillStyle=b.ours?"#EAF5F2":"#CFE3DF"; bctx.font="600 13px ui-monospace,Menlo,monospace";
-        bctx.textAlign="center"; bctx.fillText((b.val*prog).toFixed(3),cx,y-10);
-        bctx.fillStyle=b.ours?"#2BC9B1":"#AFCCC7"; bctx.font="11px -apple-system,system-ui,sans-serif";
-        bctx.fillText(b.label,cx,h-padB+16);
+      // legend
+      bctx.textAlign="left"; bctx.font="11px -apple-system,system-ui,sans-serif";
+      var lx=padL;
+      series.forEach(function(s){ bctx.fillStyle=s.color; bctx.fillRect(lx,10,10,10);
+        bctx.fillStyle="#CFE3DF"; bctx.fillText(s.name,lx+15,15); lx+=bctx.measureText(s.name).width+34; });
+      var slot=plotW/groups.length, bw=Math.min(slot*0.32,34);
+      groups.forEach(function(gp,i){
+        var cx=padL+slot*(i+0.5);
+        gp.v.forEach(function(val,j){
+          var v=YMIN+(val-YMIN)*prog, x=cx+(j-1)*bw+(j===0?-1:1), y=yOf(v), bh=yOf(YMIN)-y;
+          bctx.fillStyle=series[j].color; bctx.fillRect(x,y,bw,bh);
+          if(gp.ours){ bctx.strokeStyle="#EAF5F2"; bctx.lineWidth=1; bctx.strokeRect(x+.5,y+.5,bw-1,bh-1); }
+          bctx.fillStyle=gp.ours?"#EAF5F2":"#CFE3DF"; bctx.font="600 10px ui-monospace,Menlo,monospace";
+          bctx.textAlign="center"; bctx.fillText(v.toFixed(3).slice(1),x+bw/2,y-8);
+        });
+        bctx.fillStyle=gp.ours?"#2BC9B1":"#AFCCC7"; bctx.font=(gp.ours?"600 ":"")+"11px -apple-system,system-ui,sans-serif";
+        bctx.textAlign="center"; bctx.fillText(gp.label,cx,h-padB+16);
       });
     }
     function animate(){ if(reduce){prog=1;draw();return;}
