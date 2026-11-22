@@ -329,7 +329,7 @@
       <div class="section-head">
         <span class="eyebrow" style="color:var(--teal-br)">Benchmark · SciFact · SciFact-Open · HealthVer</span>
         <h2 style="color:#F3FAF8">Measured against the field, at two scales.</h2>
-        <p style="color:#AFCCC7">Three public datasets: <b style="color:#EAF5F2">SciFact</b> (300 claims, 5,183 abstracts), <b style="color:#EAF5F2">SciFact-Open</b> (279 claims against <b style="color:#EAF5F2">500,000</b> abstracts) and <b style="color:#EAF5F2">HealthVer</b> (230 COVID health claims). Every system — ours, four open-source rerankers, five embedders, two published verifiers — sees the same claims, candidate lists and metrics, with 95% bootstrap intervals over claims.</p>
+        <p style="color:#AFCCC7">Three public datasets: <b style="color:#EAF5F2">SciFact</b> (300 claims, 5,183 abstracts), <b style="color:#EAF5F2">SciFact-Open</b> (279 claims against <b style="color:#EAF5F2">500,000</b> abstracts) and <b style="color:#EAF5F2">HealthVer</b> (230 COVID health claims). Every system — PubGround's components, four open-source rerankers, four embedders, two published verifiers — sees the same claims, candidate lists and metrics, with 95% bootstrap intervals over claims.</p>
       </div>
 
       <div style="display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:28px;align-items:center">
@@ -340,9 +340,9 @@
         <div>
           <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
             <span class="mono" style="font-size:2.6rem;font-weight:600;color:var(--teal-br);letter-spacing:-.02em">1/18</span>
-            <span style="color:#AFCCC7;font-size:.95rem">of the scoring time of Qwen3-Reranker-4B, with no significant nDCG@10 gap on SciFact<br>(<span class="mono">0.792 vs 0.802</span>, difference 95% CI −0.013 to 0.032; 59 s vs 1,062 s for 40K pairs)</span>
+            <span style="color:#AFCCC7;font-size:.95rem">of the wall-clock time of Qwen3-Reranker-4B, with no significant nDCG@10 gap on SciFact<br>(<span class="mono">0.792 vs 0.802</span>, difference 95% CI −0.013 to 0.032; 59 s vs 1,062 s for 40,634 pairs, single run incl. model loading)</span>
           </div>
-          <p style="color:#AFCCC7;margin-top:20px;font-size:.95rem">At 500K abstracts the larger reranker pulls ahead (<span class="mono">0.806 vs 0.750</span>, significant). Fusing BM25 with MedCPT dense retrieval gives the <b style="color:#EAF5F2">best Recall@100 on both corpora</b> and lifts every reranker; LLM query expansion matches it but adds nothing on top. A <b style="color:#EAF5F2">zero-shot LLM judge</b> beats every verifier not trained in-domain — but a supervised model trained on HealthVer still wins there.</p>
+          <p style="color:#AFCCC7;margin-top:20px;font-size:.95rem">At 500K abstracts the larger reranker pulls ahead (<span class="mono">0.806 vs 0.750</span>, significant). Fusing BM25 with MedCPT dense retrieval <b style="color:#EAF5F2">lifts Recall@100 over BM25 on both corpora</b> (best first stage at 500K abstracts) and lifts every reranker tested; LLM query expansion matches it but adds nothing on top. A <b style="color:#EAF5F2">zero-shot LLM judge</b> beats every verifier not trained in-domain — but a supervised model trained on HealthVer still wins there.</p>
         </div>
       </div>
 
@@ -356,23 +356,23 @@
             </tr>
             <tr style="border-color:var(--line-dk)">
               <td style="border-color:var(--line-dk)">Best single embedder <span class="mono" style="color:var(--muted-dk);font-size:.7rem">Qwen3-Emb-4B / bge-large</span></td>
-              <td class="num" style="border-color:var(--line-dk)">0.784</td><td class="num" style="border-color:var(--line-dk)">0.977</td><td class="num" style="border-color:var(--line-dk)">0.699</td><td class="num" style="border-color:var(--line-dk)">0.933</td>
+              <td class="num" style="border-color:var(--line-dk)">0.784</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.977</td><td class="num" style="border-color:var(--line-dk)">0.699</td><td class="num" style="border-color:var(--line-dk)">0.933</td>
             </tr>
             <tr style="background:rgba(43,201,177,.10)">
               <td style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">★ Hybrid + MedCPT rerank</td>
-              <td class="num" style="border-color:var(--line-dk)">0.792</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.973</td><td class="num" style="border-color:var(--line-dk)">0.750</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.964</td>
+              <td class="num" style="border-color:var(--line-dk)">0.792</td><td class="num" style="border-color:var(--line-dk)">0.973</td><td class="num" style="border-color:var(--line-dk)">0.750</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.964</td>
             </tr>
             <tr style="background:rgba(43,201,177,.10)">
               <td style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">★ LLM query expansion + MedCPT rerank</td>
-              <td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.798</td><td class="num" style="border-color:var(--line-dk)">0.958</td><td class="num" style="border-color:var(--line-dk)">0.754</td><td class="num" style="border-color:var(--line-dk)">0.944</td>
+              <td class="num" style="border-color:var(--line-dk)">0.798</td><td class="num" style="border-color:var(--line-dk)">0.958</td><td class="num" style="border-color:var(--line-dk)">0.754</td><td class="num" style="border-color:var(--line-dk)">0.944</td>
             </tr>
             <tr style="border-color:var(--line-dk)">
               <td style="border-color:var(--line-dk)">Hybrid + monoT5-3B</td>
-              <td class="num" style="border-color:var(--line-dk)">0.770</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.973</td><td class="num" style="border-color:var(--line-dk)">0.778</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.964</td>
+              <td class="num" style="border-color:var(--line-dk)">0.770</td><td class="num" style="border-color:var(--line-dk)">0.973</td><td class="num" style="border-color:var(--line-dk)">0.778</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.964</td>
             </tr>
             <tr style="border-color:var(--line-dk)">
               <td style="border-color:var(--line-dk)">Hybrid + Qwen3-Reranker-4B</td>
-              <td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.802</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.973</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.806</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.964</td>
+              <td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.802</td><td class="num" style="border-color:var(--line-dk)">0.973</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.806</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.964</td>
             </tr>
           </tbody>
         </table>
@@ -394,15 +394,15 @@
               <td class="num" style="border-color:var(--line-dk)">—</td><td class="num" style="border-color:var(--line-dk)">—</td><td class="num" style="border-color:var(--line-dk)">0.438</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.777</td>
             </tr>
             <tr style="background:rgba(43,201,177,.10)">
-              <td style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">★ LLM judge, Claude Sonnet 5.5</td>
+              <td style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">★ PubGround judge, Claude Sonnet 5.5</td>
               <td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.873</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.660</td><td class="num" style="border-color:var(--line-dk)">0.466</td><td class="num" style="border-color:var(--line-dk)">0.514</td>
             </tr>
             <tr style="background:rgba(43,201,177,.10)">
-              <td style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">★ LLM judge, DeepSeek V4.1 Flash</td>
+              <td style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">★ PubGround judge, DeepSeek V4.1 Flash</td>
               <td class="num" style="border-color:var(--line-dk)">0.833</td><td class="num" style="border-color:var(--line-dk)">0.643</td><td class="num" style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">0.470</td><td class="num" style="border-color:var(--line-dk)">0.481</td>
             </tr>
             <tr style="background:rgba(43,201,177,.10)">
-              <td style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">★ LLM judge, local Qwen3-8B</td>
+              <td style="border-color:var(--line-dk);color:var(--teal-br);font-weight:600">★ PubGround judge, local Qwen3-8B</td>
               <td class="num" style="border-color:var(--line-dk)">0.711</td><td class="num" style="border-color:var(--line-dk)">0.419</td><td class="num" style="border-color:var(--line-dk)">0.350</td><td class="num" style="border-color:var(--line-dk)">0.618</td>
             </tr>
           </tbody>
@@ -463,7 +463,7 @@ claude mcp add citation-matcher \
         <div class="card">
           <span class="divider-label">recall</span>
           <h3>Dense retrieval + RRF</h3>
-          <p>Add MedCPT's query encoder alongside keyword search and fuse with Reciprocal Rank Fusion. Benchmarked: best Recall@100 on both corpora (0.973 / 0.964) and a lift for every reranker — next to ship.</p>
+          <p>Add MedCPT's query encoder alongside keyword search and fuse with Reciprocal Rank Fusion. Benchmarked: Recall@100 rises from 0.873 / 0.864 (BM25) to 0.973 / 0.964 — the best first stage at 500K abstracts — and every reranker tested gains. Next to ship.</p>
         </div>
         <div class="card">
           <span class="divider-label">truth</span>

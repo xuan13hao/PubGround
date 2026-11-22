@@ -22,6 +22,11 @@ def table(rows, header):
     return "\n".join(out)
 
 
+def disp(k):
+    """Display name: the LLM verdict stage is PubGround's judge, run with different models."""
+    return "PubGround judge: " + k[4:] if k.startswith("LLM ") else k
+
+
 def fmt(x):
     return f"{x:.3f}"
 
@@ -41,39 +46,39 @@ def scifact_retrieval():
     _, _, qrels = load_data()
     R = lambda n: evaluate({q: v for q, v in load(f"{DATA}/baseline_runs/{n}.json").items()}, qrels)
     first = [("BM25", "BM25"), ("SPLADE", "SPLADE"), ("e5-large-v2", "e5-large-v2"),
-             ("MedCPT dense *(ours)*", "MedCPT dense"), ("bge-large-en-v1.5", "bge-large-en-v1.5"),
+             ("MedCPT dense *(PubGround)*", "MedCPT dense"), ("bge-large-en-v1.5", "bge-large-en-v1.5"),
              ("Qwen3-Embedding-4B", "Qwen3-Embedding-4B")]
     rows1 = [(a, R(b)) for a, b in first]
     hyb = load(f"{HERE}/results_baselines_retrieval.json")["results"]
-    rows1.append(("Hybrid RRF(BM25, MedCPT dense) *(ours)*", hyb["Hybrid RRF (BM25 + MedCPT dense)"]))
+    rows1.append(("Hybrid RRF(BM25, MedCPT dense) *(PubGround)*", hyb["Hybrid RRF (BM25 + MedCPT dense)"]))
     rr = []
     for n, label in [("MiniLM-L12", "ms-marco-MiniLM-L-12"), ("bge-reranker-v2-m3", "bge-reranker-v2-m3"),
-                     ("monoT5-3B", "monoT5-3B"), ("MedCPT", "MedCPT cross-encoder *(ours)*"),
+                     ("monoT5-3B", "monoT5-3B"), ("MedCPT", "MedCPT cross-encoder *(PubGround)*"),
                      ("Qwen3-Reranker-4B", "Qwen3-Reranker-4B")]:
         rr.append((label, hyb[f"Hybrid top-100 -> {n}"], hyb[f"BM25 top-100 -> {n}"]["ndcg@10"]))
     llm = load(f"{HERE}/results_llm.json")["retrieval"]
     llmq = load(f"{HERE}/results_llm_qwen3-8b.json")["retrieval"]
     rows3 = []
     for tag, src in [("claude-haiku-5.5", llm), ("deepseek-v4.1-flash-1017", llm), ("qwen3-8b", llmq)]:
-        rows3.append((f"Stage 1 LLM-QE -> BM25 [{tag}]", src[f"BM25 + Stage1 LLM-QE [{tag}]"]))
-        rows3.append((f"Stage 1 LLM-QE -> BM25 -> MedCPT [{tag}]", src[f"BM25 + Stage1 LLM-QE + rerank [{tag}]"]))
+        rows3.append((f"PubGround Stage 1 LLM-QE -> BM25 [{tag}]", src[f"BM25 + Stage1 LLM-QE [{tag}]"]))
+        rows3.append((f"PubGround Stage 1 LLM-QE -> BM25 -> MedCPT [{tag}]", src[f"BM25 + Stage1 LLM-QE + rerank [{tag}]"]))
     return rows1, rr, rows3
 
 
 def scifact_open_retrieval():
     r = load(f"{HERE}/results_scifact_open.json")["retrieval"]
-    first = [("BM25 (Lucene)", "BM25"), ("MedCPT dense *(ours)*", "MedCPT dense"), ("e5-large-v2", "e5-large-v2"),
+    first = [("BM25 (Lucene)", "BM25"), ("MedCPT dense *(PubGround)*", "MedCPT dense"), ("e5-large-v2", "e5-large-v2"),
              ("Qwen3-Embedding-4B", "Qwen3-Embedding-4B"), ("bge-large-en-v1.5", "bge-large-en-v1.5"),
-             ("Hybrid RRF(BM25, MedCPT dense) *(ours)*", "Hybrid")]
+             ("Hybrid RRF(BM25, MedCPT dense) *(PubGround)*", "Hybrid")]
     rr = [(lab, r[f"Hybrid + {n}"]) for n, lab in [("MiniLM-L12", "ms-marco-MiniLM-L-12"),
                                                     ("bge-reranker-v2-m3", "bge-reranker-v2-m3"),
-                                                    ("MedCPT", "MedCPT cross-encoder *(ours)*"),
+                                                    ("MedCPT", "MedCPT cross-encoder *(PubGround)*"),
                                                     ("monoT5-3B", "monoT5-3B"),
                                                     ("Qwen3-Reranker-4B", "Qwen3-Reranker-4B")]]
     llm = []
     for tag in ["claude-haiku-5.5", "deepseek-v4.1-flash-1017", "qwen3-8b"]:
-        llm.append((f"Stage 1 LLM-QE -> BM25 [{tag}]", r[f"LLM-QE [{tag}]"]))
-        llm.append((f"Stage 1 LLM-QE -> BM25 -> MedCPT [{tag}]", r[f"LLM-QE + MedCPT [{tag}]"]))
+        llm.append((f"PubGround Stage 1 LLM-QE -> BM25 [{tag}]", r[f"LLM-QE [{tag}]"]))
+        llm.append((f"PubGround Stage 1 LLM-QE -> BM25 -> MedCPT [{tag}]", r[f"LLM-QE + MedCPT [{tag}]"]))
     return [(a, r[b]) for a, b in first], rr, llm
 
 
@@ -105,7 +110,7 @@ def main():
     rows = []
     for k, r in v["results"].items():
         o, a, p = r["oracle_3class"], r["oracle_abstract_level"], r["open_abstract_level"]
-        rows.append([k.replace("CONTAMINATED", "contaminated, not comparable"), fmt(o["accuracy"]), fmt(o["macro_f1"]),
+        rows.append([disp(k).replace("CONTAMINATED", "contaminated, not comparable"), fmt(o["accuracy"]), fmt(o["macro_f1"]),
                      fmt(a["label_only"]["F1"]), fmt(a["rationale_selected"]["F1"]),
                      f"{fmt(p['label_only']['F1'])} ({fmt(p['label_only']['P'])} / {fmt(p['label_only']['R'])})",
                      fmt(p["rationale_selected"]["F1"])])
@@ -130,7 +135,7 @@ def main():
     rows = []
     for k, r in so["verdict"].items():
         p = r["open_abstract_level"]["label_only"]
-        rows.append([k, fmt(r["oracle"]["accuracy"]), f"{fmt(p['F1'])} ({fmt(p['P'])} / {fmt(p['R'])})"])
+        rows.append([disp(k), fmt(r["oracle"]["accuracy"]), f"{fmt(p['F1'])} ({fmt(p['P'])} / {fmt(p['R'])})"])
     w(table(rows, ["Verifier", "Evidence-pair acc", "Open label F1 (P / R)"]) + "\n")
 
     # ---------------- HealthVer
@@ -140,7 +145,7 @@ def main():
     rows = []
     for k, r in hv.items():
         o, a = r["oracle"], r["oracle_abstract_level"]
-        rows.append([k, fmt(o["accuracy"]), fmt(o["macro_f1"]),
+        rows.append([disp(k), fmt(o["accuracy"]), fmt(o["macro_f1"]),
                      f"{fmt(a['label_only']['F1'])} ({fmt(a['label_only']['P'])} / {fmt(a['label_only']['R'])})",
                      fmt(a["rationale_selected"]["F1"])])
     w(table(rows, ["Verifier", "3-class acc", "3-class macro-F1", "Label F1 (P / R)", "Rationale F1"]) + "\n")

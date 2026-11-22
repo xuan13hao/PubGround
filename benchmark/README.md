@@ -32,7 +32,8 @@ run in this harness on the same claims, corpus, candidate lists and metrics.
   - Train/eval claim overlap was checked for every comparison (see caveats).
 
 The removed Stage 5 (LLM re-verification of reranked matches) is not part of the pipeline or of
-this benchmark. An earlier run found it changed nDCG@10 by at most +0.007 on SciFact.
+this benchmark. An earlier run on SciFact found it improved nDCG@10 by at most +0.007 with API models
+(Haiku +0.0068, DeepSeek −0.0004) and lowered it with the local Qwen3-8B (−0.0165).
 
 ## Headline results
 
@@ -42,8 +43,8 @@ this benchmark. An earlier run found it changed nDCG@10 by at most +0.007 on Sci
 |---|---|---|
 | BM25 | 0.652 | 0.561 |
 | Best single first-stage model | 0.784 (Qwen3-Embedding-4B) | 0.699 (bge-large) |
-| **Hybrid + MedCPT rerank (ours, no LLM)** | 0.792 | 0.750 |
-| Stage 1 LLM-QE + MedCPT rerank (ours, best LLM) | **0.798** | 0.754 |
+| **Hybrid + MedCPT rerank (PubGround components, no LLM)** | 0.792 | 0.750 |
+| PubGround Stage 1 LLM-QE + MedCPT rerank (best LLM) | 0.798 | 0.754 |
 | Hybrid + monoT5-3B | 0.770 | 0.778 |
 | Hybrid + Qwen3-Reranker-4B | **0.802** | **0.806** |
 
@@ -54,17 +55,20 @@ this benchmark. An earlier run found it changed nDCG@10 by at most +0.007 on Sci
 | VeriSci | 0.734 | 0.552 | 0.349 | 0.198 |
 | MultiVerS zero-shot | 0.631 | 0.552 | 0.314 | 0.307 |
 | MultiVerS supervised (in-domain where fair) | contaminated | contaminated | 0.438 | **0.777** |
-| **LLM judge (ours), best of Haiku / DeepSeek / Sonnet** | **0.873** | **0.660** | **0.470** | 0.514 |
-| LLM judge (ours), local Qwen3-8B | 0.711 | 0.419 | 0.350 | 0.618 |
+| **PubGround judge, best of Haiku / DeepSeek / Sonnet** | **0.873** | **0.660** | **0.470** | 0.514 |
+| PubGround judge, local Qwen3-8B | 0.711 | 0.419 | 0.350 | 0.618 |
 
 ## Findings
 
 1. **Hybrid retrieval is the most robust component.**
-   - Fusing BM25 with MedCPT dense gives the best Recall@100 on both corpora (0.973 / 0.964).
-   - It raises every reranker's nDCG@10 by 0.02–0.05 compared with BM25 candidates.
+   - Fusing BM25 with MedCPT dense raises Recall@100 over BM25 on both corpora (0.873 → 0.973; 0.864 → 0.964).
+     It is the best first stage on SciFact-Open; on SciFact, MedCPT dense (0.982) and Qwen3-Embedding-4B (0.977)
+     alone are marginally higher.
+   - On SciFact it raises every reranker's nDCG@10 by 0.018–0.046 compared with BM25 candidates
+     (on SciFact-Open only MedCPT was run on both: +0.031).
 2. **MedCPT reranking is competitive on the small corpus but not at 500K scale.**
-   - On SciFact it is within 0.010 of Qwen3-Reranker-4B with ~1/36 of the parameters and ~1/18 of the scoring time
-     (59 s vs 1,062 s for 40K pairs on one H100).
+   - On SciFact it is within 0.010 of Qwen3-Reranker-4B (difference not significant) with ~1/36 of the parameters
+     and ~1/18 of the wall-clock time (59 s vs 1,062 s for 40,634 pairs on one H100, single run, including model loading).
    - On SciFact-Open it falls to third (0.750 vs 0.806 for Qwen3-Reranker-4B and 0.778 for monoT5-3B).
    - MedCPT dense likewise trails general-purpose embedders at scale.
 3. **LLM query expansion (Stage 1) adds recall over BM25 but not over hybrid retrieval.**
@@ -72,15 +76,15 @@ this benchmark. An earlier run found it changed nDCG@10 by at most +0.007 on Sci
    - A local Qwen3-8B is about as good here as API models.
 4. **The zero-shot LLM judge beats every verifier that was not trained in-domain.**
    - With the right abstract, it beats VeriSci and MultiVerS on both SciFact datasets: label F1 +0.14 over VeriSci,
-     and evidence-pair accuracy 0.82–0.87 vs 0.44–0.52.
-   - On SciFact-Open it also beats the supervised MultiVerS end to end (0.470 vs 0.438).
+     and on SciFact-Open evidence-pair accuracy 0.815–0.874 vs 0.402–0.515.
+   - On SciFact-Open end to end it is comparable to the supervised MultiVerS (0.457–0.470 vs 0.438; 95% intervals overlap).
    - On HealthVer, the in-domain supervised MultiVerS wins clearly (0.777 vs ≤0.514).
      The API LLMs predict NEI too often there (recall 0.35–0.40).
      The verdict prompt requires sentences that *directly* establish the claim, which is stricter than HealthVer's annotation.
 5. **End-to-end precision is the bottleneck.** Sending the top-3 abstracts to the judge gives
-   P ≈ 0.53–0.57 on SciFact: related but uncited abstracts get labelled SUPPORT/CONTRADICT.
-6. **Small local judges are not reliable end to end.** Qwen3-8B labels gold evidence well but
-   over-calls SUPPORT/CONTRADICT on retrieved abstracts (open precision 0.29–0.31).
+   P = 0.555–0.573 on SciFact: related but uncited abstracts get labelled SUPPORT/CONTRADICT.
+6. **Small local judges are not reliable end to end.** Qwen3-8B labels SciFact-Open gold evidence well (accuracy 0.865)
+   but over-calls SUPPORT/CONTRADICT on retrieved abstracts (open precision 0.295–0.314).
 
 ## Caveats
 
@@ -96,8 +100,13 @@ this benchmark. An earlier run found it changed nDCG@10 by at most +0.007 on Sci
 - **SciFact-Open labels come from pooling** (4 older systems, including a monoT5-based one).
   Relevant abstracts no pooled system found count as negatives. This lowers every system's precision
   and may favour systems similar to the pooled ones.
-- **Single runs, no significance tests.** With 206–300 claims, differences below ~0.02 nDCG@10 should not be
-  read as real.
+- **Uncertainty.** Each system was run once; 95% bootstrap intervals over claims and paired differences are in
+  `results_ci.json` (`bootstrap_ci.py`). With 206–300 claims, differences below ~0.02 nDCG@10 are generally not
+  significant.
+- **Timing.** Reranker times are single-run wall-clock seconds that include model loading, with different batch sizes
+  and precisions per model; treat the ratios as indicative.
+- **Ties.** Qwen3-Reranker-4B scores (bf16 log-probabilities) saturate, so many candidates tie and keep the hybrid order;
+  this changes its nDCG@10 by at most 0.006.
 - **BM25.** BM25 on SciFact uses `rank_bm25` (0.652). On SciFact-Open it uses a Lucene-parameter BM25
   (k1=0.9, b=0.4), which gives 0.661 on SciFact vs 0.665 published.
 - **LLM settings.** Reasoning is disabled where the endpoint allows it; Sonnet 5.5 requires it.
