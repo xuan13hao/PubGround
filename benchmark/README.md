@@ -1,6 +1,6 @@
 # Benchmark
 
-How well does this project ground a biomedical claim in the literature, compared with
+How well does PubGround ground a biomedical claim in the literature, compared with
 widely used open-source retrievers, rerankers and published claim verifiers? Every system is
 run in this harness on the same claims, corpus, candidate lists and metrics.
 
@@ -16,7 +16,7 @@ run in this harness on the same claims, corpus, candidate lists and metrics.
 
 ## Systems
 
-- **This project.**
+- **PubGround (this project).**
   - Retrieval: BM25, MedCPT dense, Hybrid RRF(BM25, MedCPT dense), the MedCPT cross-encoder
     reranker, and Stage 1 LLM query expansion (the pipeline's own prompt).
   - Verdict: an LLM judge that outputs SUPPORT / CONTRADICT / NEI plus rationale sentences.

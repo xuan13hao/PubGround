@@ -1,4 +1,6 @@
-# PubMed Sentence Matcher
+# PubGround
+
+*Formerly PubMed Sentence Matcher. The Python package keeps its import name, `pubmed_sentence_matcher`.*
 
 **Ground any claim in the biomedical literature.** Give the system one sentence; it searches PubMed, retrieves candidate evidence, reranks it with a biomedical cross-encoder, and returns the exact published sentences you can cite — each with a formatted citation (MLA / APA / Nature).
 
@@ -227,9 +229,9 @@ The design follows the current state of the art for scientific citation groundin
 If you have obtained permission and are using this software in your project, please cite the software repository as follows:
 **Software Citation (BibTeX):**
 ```bibtex
-@software{pubmed_sentence_matcher_2026,
+@software{pubground_2026,
   author = {Xuan, Hao},
-  title = {PubMed Sentence Matcher: A multi-stage high-accuracy sentence matching system for biomedical literature},
+  title = {PubGround: training-free grounding of biomedical claims in PubMed},
   year = {2026},
   url = {https://github.com/xuan13hao/citation_agents_system}
 }

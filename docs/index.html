@@ -1,4 +1,4 @@
-<title>Citation Grounding Engine — PubMed evidence, reranked</title>
+<title>PubGround — PubMed evidence, reranked</title>
 <style>
   :root{
     --paper:#EEF3F3; --paper-2:#F7FAFA; --card:#FBFDFD;
@@ -152,11 +152,11 @@
 <header class="hero">
   <canvas id="bg" aria-hidden="true"></canvas>
   <div class="wrap">
-    <span class="eyebrow">Biomedical Citation Grounding</span>
+    <span class="eyebrow">PubGround · Biomedical Citation Grounding</span>
     <h1>Find the sentence<br>that actually <em>supports</em><br>your claim.</h1>
     <p class="lead">A multi-stage engine that takes one claim, searches PubMed, and returns the exact published sentences you can cite for it — now reranked by a biomedical cross-encoder that tells <span class="claim">relevant</span> from merely <span class="claim">similar</span>.</p>
     <div class="hero-meta">
-      <span class="chip"><b>7</b>-stage pipeline</span>
+      <span class="chip"><b>6</b>-stage pipeline</span>
       <span class="chip">MedCPT <b>cross-encoder</b> rerank</span>
       <span class="chip">Official <b>MCP</b> server</span>
       <span class="chip">255M PubMed click-logs <b>trained</b></span>
@@ -482,7 +482,7 @@ claude mcp add citation-matcher \
 
 <footer>
   <div class="wrap">
-    <span class="mono">Citation Grounding Engine · PubMed + MedCPT + MCP</span>
+    <span class="mono">PubGround · PubMed + MedCPT + MCP</span>
     <span class="mono">retrieve → fuse → <span style="color:var(--teal-br)">rerank</span> → verify</span>
   </div>
 </footer>
