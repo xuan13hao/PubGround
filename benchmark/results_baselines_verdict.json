@@ -1,0 +1,367 @@
+{
+  "dataset": "SciFact dev (= BEIR test claims)",
+  "open_input": "top-3 of full pipeline [claude-haiku-5.5]",
+  "n_oracle_pairs": 340,
+  "n_open_pairs": 900,
+  "results": {
+    "VeriSci": {
+      "oracle_3class": {
+        "n": 340,
+        "accuracy": 0.7529,
+        "macro_f1": 0.7303,
+        "per_class_f1": {
+          "SUPPORT": 0.7812,
+          "CONTRADICT": 0.6333,
+          "NEI": 0.7763
+        },
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 38,
+          "CONTRADICT->NEI": 25,
+          "CONTRADICT->SUPPORT": 8,
+          "NEI->CONTRADICT": 3,
+          "NEI->NEI": 118,
+          "NEI->SUPPORT": 10,
+          "SUPPORT->CONTRADICT": 8,
+          "SUPPORT->NEI": 30,
+          "SUPPORT->SUPPORT": 100
+        }
+      },
+      "oracle_abstract_level": {
+        "label_only": {
+          "P": 0.8263,
+          "R": 0.6603,
+          "F1": 0.734
+        },
+        "rationale_selected": {
+          "P": 0.7784,
+          "R": 0.622,
+          "F1": 0.6915
+        },
+        "n_pred_evidence": 167,
+        "n_gold_evidence": 209
+      },
+      "open_abstract_level": {
+        "label_only": {
+          "P": 0.5236,
+          "R": 0.5837,
+          "F1": 0.552
+        },
+        "rationale_selected": {
+          "P": 0.4936,
+          "R": 0.5502,
+          "F1": 0.5204
+        },
+        "n_pred_evidence": 233,
+        "n_gold_evidence": 209
+      }
+    },
+    "MultiVerS-zs (fever_sci)": {
+      "oracle_3class": {
+        "n": 340,
+        "accuracy": 0.6794,
+        "macro_f1": 0.5989,
+        "per_class_f1": {
+          "SUPPORT": 0.7341,
+          "CONTRADICT": 0.3297,
+          "NEI": 0.7329
+        },
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 15,
+          "CONTRADICT->NEI": 36,
+          "CONTRADICT->SUPPORT": 20,
+          "NEI->CONTRADICT": 2,
+          "NEI->NEI": 118,
+          "NEI->SUPPORT": 11,
+          "SUPPORT->CONTRADICT": 3,
+          "SUPPORT->NEI": 37,
+          "SUPPORT->SUPPORT": 98
+        }
+      },
+      "oracle_abstract_level": {
+        "label_only": {
+          "P": 0.7584,
+          "R": 0.5407,
+          "F1": 0.6313
+        },
+        "rationale_selected": {
+          "P": 0.2617,
+          "R": 0.1866,
+          "F1": 0.2179
+        },
+        "n_pred_evidence": 149,
+        "n_gold_evidence": 209
+      },
+      "open_abstract_level": {
+        "label_only": {
+          "P": 0.6057,
+          "R": 0.5072,
+          "F1": 0.5521
+        },
+        "rationale_selected": {
+          "P": 0.2114,
+          "R": 0.177,
+          "F1": 0.1927
+        },
+        "n_pred_evidence": 175,
+        "n_gold_evidence": 209
+      }
+    },
+    "MultiVerS-sf* (scifact, CONTAMINATED)": {
+      "oracle_3class": {
+        "n": 340,
+        "accuracy": 1.0,
+        "macro_f1": 1.0,
+        "per_class_f1": {
+          "SUPPORT": 1.0,
+          "CONTRADICT": 1.0,
+          "NEI": 1.0
+        },
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 71,
+          "NEI->NEI": 131,
+          "SUPPORT->SUPPORT": 138
+        }
+      },
+      "oracle_abstract_level": {
+        "label_only": {
+          "P": 1.0,
+          "R": 1.0,
+          "F1": 1.0
+        },
+        "rationale_selected": {
+          "P": 1.0,
+          "R": 1.0,
+          "F1": 1.0
+        },
+        "n_pred_evidence": 209,
+        "n_gold_evidence": 209
+      },
+      "open_abstract_level": {
+        "label_only": {
+          "P": 0.8916,
+          "R": 0.866,
+          "F1": 0.8786
+        },
+        "rationale_selected": {
+          "P": 0.8916,
+          "R": 0.866,
+          "F1": 0.8786
+        },
+        "n_pred_evidence": 203,
+        "n_gold_evidence": 209
+      }
+    },
+    "LLM claude-haiku-5.5": {
+      "oracle_3class": {
+        "n": 340,
+        "accuracy": 0.8235,
+        "macro_f1": 0.8163,
+        "per_class_f1": {
+          "SUPPORT": 0.8444,
+          "CONTRADICT": 0.7755,
+          "NEI": 0.8289
+        },
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 57,
+          "CONTRADICT->NEI": 7,
+          "CONTRADICT->SUPPORT": 7,
+          "NEI->CONTRADICT": 11,
+          "NEI->NEI": 109,
+          "NEI->SUPPORT": 11,
+          "SUPPORT->CONTRADICT": 8,
+          "SUPPORT->NEI": 16,
+          "SUPPORT->SUPPORT": 114
+        }
+      },
+      "oracle_abstract_level": {
+        "label_only": {
+          "P": 0.8221,
+          "R": 0.8182,
+          "F1": 0.8201
+        },
+        "rationale_selected": {
+          "P": 0.774,
+          "R": 0.7703,
+          "F1": 0.7722
+        },
+        "n_pred_evidence": 208,
+        "n_gold_evidence": 209
+      },
+      "open_abstract_level": {
+        "label_only": {
+          "P": 0.5547,
+          "R": 0.7273,
+          "F1": 0.6294
+        },
+        "rationale_selected": {
+          "P": 0.5255,
+          "R": 0.689,
+          "F1": 0.5963
+        },
+        "n_pred_evidence": 274,
+        "n_gold_evidence": 209
+      },
+      "parse_failures": 7
+    },
+    "LLM deepseek-v4.1-flash-1017": {
+      "oracle_3class": {
+        "n": 340,
+        "accuracy": 0.8294,
+        "macro_f1": 0.8273,
+        "per_class_f1": {
+          "SUPPORT": 0.845,
+          "CONTRADICT": 0.8129,
+          "NEI": 0.824
+        },
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 63,
+          "CONTRADICT->NEI": 6,
+          "CONTRADICT->SUPPORT": 2,
+          "NEI->CONTRADICT": 12,
+          "NEI->NEI": 110,
+          "NEI->SUPPORT": 9,
+          "SUPPORT->CONTRADICT": 9,
+          "SUPPORT->NEI": 20,
+          "SUPPORT->SUPPORT": 109
+        }
+      },
+      "oracle_abstract_level": {
+        "label_only": {
+          "P": 0.8431,
+          "R": 0.823,
+          "F1": 0.8329
+        },
+        "rationale_selected": {
+          "P": 0.7941,
+          "R": 0.7751,
+          "F1": 0.7845
+        },
+        "n_pred_evidence": 204,
+        "n_gold_evidence": 209
+      },
+      "open_abstract_level": {
+        "label_only": {
+          "P": 0.573,
+          "R": 0.7321,
+          "F1": 0.6429
+        },
+        "rationale_selected": {
+          "P": 0.5393,
+          "R": 0.689,
+          "F1": 0.605
+        },
+        "n_pred_evidence": 267,
+        "n_gold_evidence": 209
+      },
+      "parse_failures": 0
+    },
+    "LLM claude-sonnet-5.5": {
+      "oracle_3class": {
+        "n": 340,
+        "accuracy": 0.8676,
+        "macro_f1": 0.8659,
+        "per_class_f1": {
+          "SUPPORT": 0.8824,
+          "CONTRADICT": 0.8571,
+          "NEI": 0.8583
+        },
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 66,
+          "CONTRADICT->NEI": 1,
+          "CONTRADICT->SUPPORT": 4,
+          "NEI->CONTRADICT": 12,
+          "NEI->NEI": 109,
+          "NEI->SUPPORT": 10,
+          "SUPPORT->CONTRADICT": 5,
+          "SUPPORT->NEI": 13,
+          "SUPPORT->SUPPORT": 120
+        }
+      },
+      "oracle_abstract_level": {
+        "label_only": {
+          "P": 0.8571,
+          "R": 0.89,
+          "F1": 0.8732
+        },
+        "rationale_selected": {
+          "P": 0.8203,
+          "R": 0.8517,
+          "F1": 0.8357
+        },
+        "n_pred_evidence": 217,
+        "n_gold_evidence": 209
+      },
+      "open_abstract_level": {
+        "label_only": {
+          "P": 0.567,
+          "R": 0.7895,
+          "F1": 0.66
+        },
+        "rationale_selected": {
+          "P": 0.543,
+          "R": 0.756,
+          "F1": 0.632
+        },
+        "n_pred_evidence": 291,
+        "n_gold_evidence": 209
+      },
+      "parse_failures": 8
+    },
+    "LLM qwen3-8b": {
+      "oracle_3class": {
+        "n": 340,
+        "accuracy": 0.6794,
+        "macro_f1": 0.6653,
+        "per_class_f1": {
+          "SUPPORT": 0.7801,
+          "CONTRADICT": 0.6117,
+          "NEI": 0.6042
+        },
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 63,
+          "CONTRADICT->NEI": 1,
+          "CONTRADICT->SUPPORT": 7,
+          "NEI->CONTRADICT": 46,
+          "NEI->NEI": 58,
+          "NEI->SUPPORT": 27,
+          "SUPPORT->CONTRADICT": 26,
+          "SUPPORT->NEI": 2,
+          "SUPPORT->SUPPORT": 110
+        }
+      },
+      "oracle_abstract_level": {
+        "label_only": {
+          "P": 0.6223,
+          "R": 0.8278,
+          "F1": 0.7105
+        },
+        "rationale_selected": {
+          "P": 0.5683,
+          "R": 0.756,
+          "F1": 0.6489
+        },
+        "n_pred_evidence": 278,
+        "n_gold_evidence": 209
+      },
+      "open_abstract_level": {
+        "label_only": {
+          "P": 0.2949,
+          "R": 0.7225,
+          "F1": 0.4189
+        },
+        "rationale_selected": {
+          "P": 0.2715,
+          "R": 0.6651,
+          "F1": 0.3856
+        },
+        "n_pred_evidence": 512,
+        "n_gold_evidence": 209
+      },
+      "parse_failures": 0
+    }
+  },
+  "notes": {
+    "MultiVerS-sf*": "trained on a file that contains all 300 evaluation claims; not comparable",
+    "VeriSci": "trained on SciFact train; dev used for checkpoint selection in the original paper"
+  }
+}

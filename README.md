@@ -19,8 +19,7 @@ The engine runs a multi-stage pipeline. The multi-signal similarity is a cheap f
 | 3 | **Abstract retrieval + sentence split** | Fetch abstracts, segment into candidate sentences with context |
 | 4 | **Multi-signal similarity** | Semantic + keyword shortlist — cheap first pass, *not* the verdict |
 | 4.5 | **MedCPT cross-encoder rerank** ⭐ | Jointly score `(claim, passage)` pairs — the primary relevance signal |
-| 5 | **LLM verification** | Confirm the top candidates genuinely match before citing |
-| 6 | **Final ranking + dedup** | Blend rerank × verification × article quality; one best hit per article |
+| 5 | **Final ranking + dedup** | Blend rerank × article quality; one best hit per article |
 
 ### Why the reranker matters
 
@@ -42,7 +41,7 @@ The first-pass score ranks a decoy top by surface overlap; the cross-encoder dri
 - **MCP server** — exposes the whole system as [Model Context Protocol](https://modelcontextprotocol.io) tools (official SDK / FastMCP) so Claude Code, Claude Desktop, and other agents can call it directly.
 - **Multiple citation formats** — MLA, APA, and Nature.
 - **Multi-signal first pass** — semantic embeddings + keyword/structure/context, used to shortlist candidates for the reranker.
-- **LLM-enhanced** — LLM for query optimization and result verification.
+- **LLM-enhanced** — LLM for query optimization (one call per query).
 - **Standalone** — no dependency on any external research framework.
 
 ---
@@ -137,7 +136,7 @@ Environment toggles: `CITATION_USE_RERANKER=0` disables reranking · `CITATION_S
 
 | Variable | Required | Description |
 |---|---|---|
-| `OPENAI_API_KEY` | ✅ | Used for query optimization, embeddings, and LLM verification |
+| `OPENAI_API_KEY` | ✅ | Used for query optimization and embeddings |
 | `PUBMED_EMAIL` | — | Email for NCBI API identification (recommended) |
 | `NCBI_API_KEY` | — | Raises E-utilities rate limit from 3 → 10 req/s |
 | `OPENAI_BASE_URL` | — | Custom endpoint for OpenAI-compatible APIs |
@@ -170,7 +169,6 @@ Each result is a dict containing:
 - `sentence` — the matched sentence text
 - `article` — metadata (title, authors, journal, year, PMID)
 - `scores` — `rerank` (normalized 0–1), `rerank_raw` (logit), `primary` (score the final ranking is built on), plus the first-pass `semantic` / `keyword` / `structure` / `context` / `final`
-- `llm_verification` — relevance score and reasoning
 - `citation` — formatted citation (MLA / APA / Nature)
 - `context` — surrounding sentences from the article
 
@@ -181,7 +179,7 @@ Each result is a dict containing:
 ```
 citation_agents_system/
 ├── pubmed_sentence_matcher/
-│   ├── pubmed_sentence_matcher.py  # Main matcher (the 7-stage pipeline)
+│   ├── pubmed_sentence_matcher.py  # Main matcher (the multi-stage pipeline)
 │   ├── reranker.py                 # MedCPT cross-encoder reranker (Stage 4.5)
 │   ├── pubmed_citation.py          # Citation formatting (MLA / APA / Nature)
 │   ├── config.py                   # Configuration
@@ -219,7 +217,7 @@ The design follows the current state of the art for scientific citation groundin
 ## Requirements
 
 - Python 3.10+
-- OpenAI API key (for query optimization, embeddings, LLM verification)
+- OpenAI API key (for query optimization and embeddings)
 - Internet connection (PubMed / NCBI E-utilities)
 - `torch` + `transformers` for reranking (GPU recommended; optional — falls back gracefully)
 

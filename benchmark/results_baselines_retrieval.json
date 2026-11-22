@@ -1,0 +1,142 @@
+{
+  "dataset": "SciFact (BEIR test)",
+  "n_queries": 300,
+  "topk": 100,
+  "results": {
+    "BM25": {
+      "ndcg@10": 0.6523,
+      "recall@10": 0.7757,
+      "recall@100": 0.8731,
+      "mrr@10": 0.6184,
+      "p@1": 0.5233
+    },
+    "MedCPT dense": {
+      "ndcg@10": 0.737,
+      "recall@10": 0.8758,
+      "recall@100": 0.9817,
+      "mrr@10": 0.7008,
+      "p@1": 0.6067
+    },
+    "e5-large-v2": {
+      "ndcg@10": 0.7213,
+      "recall@10": 0.8478,
+      "recall@100": 0.9627,
+      "mrr@10": 0.685,
+      "p@1": 0.5967
+    },
+    "bge-large-en-v1.5": {
+      "ndcg@10": 0.7464,
+      "recall@10": 0.8732,
+      "recall@100": 0.9517,
+      "mrr@10": 0.7125,
+      "p@1": 0.64
+    },
+    "SPLADE": {
+      "ndcg@10": 0.7079,
+      "recall@10": 0.8186,
+      "recall@100": 0.9487,
+      "mrr@10": 0.6788,
+      "p@1": 0.5933
+    },
+    "Qwen3-Embedding-4B": {
+      "ndcg@10": 0.7836,
+      "recall@10": 0.925,
+      "recall@100": 0.9767,
+      "mrr@10": 0.7416,
+      "p@1": 0.6433
+    },
+    "BM25 top-100 -> MedCPT": {
+      "ndcg@10": 0.7609,
+      "recall@10": 0.8574,
+      "recall@100": 0.8731,
+      "mrr@10": 0.7361,
+      "p@1": 0.6633
+    },
+    "BM25 top-100 -> MiniLM-L12": {
+      "ndcg@10": 0.6735,
+      "recall@10": 0.7896,
+      "recall@100": 0.8731,
+      "mrr@10": 0.6432,
+      "p@1": 0.5633
+    },
+    "BM25 top-100 -> bge-reranker-v2-m3": {
+      "ndcg@10": 0.7158,
+      "recall@10": 0.8124,
+      "recall@100": 0.8731,
+      "mrr@10": 0.6926,
+      "p@1": 0.63
+    },
+    "BM25 top-100 -> monoT5-3B": {
+      "ndcg@10": 0.7385,
+      "recall@10": 0.8497,
+      "recall@100": 0.8731,
+      "mrr@10": 0.7106,
+      "p@1": 0.63
+    },
+    "BM25 top-100 -> Qwen3-Reranker-4B": {
+      "ndcg@10": 0.7562,
+      "recall@10": 0.8497,
+      "recall@100": 0.8731,
+      "mrr@10": 0.7341,
+      "p@1": 0.6733
+    },
+    "Hybrid RRF (BM25 + MedCPT dense)": {
+      "ndcg@10": 0.7148,
+      "recall@10": 0.8464,
+      "recall@100": 0.9733,
+      "mrr@10": 0.6783,
+      "p@1": 0.5767
+    },
+    "Hybrid top-100 -> MedCPT": {
+      "ndcg@10": 0.792,
+      "recall@10": 0.9079,
+      "recall@100": 0.9733,
+      "mrr@10": 0.7586,
+      "p@1": 0.6767
+    },
+    "Hybrid top-100 -> MiniLM-L12": {
+      "ndcg@10": 0.6923,
+      "recall@10": 0.8122,
+      "recall@100": 0.9733,
+      "mrr@10": 0.6605,
+      "p@1": 0.5767
+    },
+    "Hybrid top-100 -> bge-reranker-v2-m3": {
+      "ndcg@10": 0.7337,
+      "recall@10": 0.8462,
+      "recall@100": 0.9733,
+      "mrr@10": 0.7039,
+      "p@1": 0.6333
+    },
+    "Hybrid top-100 -> monoT5-3B": {
+      "ndcg@10": 0.7703,
+      "recall@10": 0.908,
+      "recall@100": 0.9733,
+      "mrr@10": 0.7332,
+      "p@1": 0.6433
+    },
+    "Hybrid top-100 -> Qwen3-Reranker-4B": {
+      "ndcg@10": 0.802,
+      "recall@10": 0.9242,
+      "recall@100": 0.9733,
+      "mrr@10": 0.7688,
+      "p@1": 0.7033
+    }
+  },
+  "timing_sec": {
+    "e5-large-v2": 42.2,
+    "bge-large-en-v1.5": 7.8,
+    "rerank MedCPT": 59.0,
+    "rerank MiniLM-L12": 33.1,
+    "rerank bge-reranker-v2-m3": 77.4,
+    "SPLADE": 69.9,
+    "Qwen3-Embedding-4B": 92.8,
+    "rerank monoT5-3B": 408.5,
+    "rerank Qwen3-Reranker-4B": 1062.3
+  },
+  "ours": [
+    "BM25",
+    "MedCPT dense",
+    "MedCPT"
+  ]
+}

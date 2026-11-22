@@ -1,0 +1,140 @@
+{
+  "dataset": "SciFact (BEIR test = SciFact dev claims)",
+  "corpus_size": 5183,
+  "n_queries": 300,
+  "topk": 100,
+  "verdict_k": 3,
+  "models": [
+    "local:/N/project/mrust01/LLM_NER/models/qwen3-8b"
+  ],
+  "verdict_only_models": [],
+  "retrieval": {
+    "BM25": {
+      "ndcg@10": 0.6523,
+      "recall@10": 0.7757,
+      "recall@100": 0.8731,
+      "mrr@10": 0.6184,
+      "p@1": 0.5233
+    },
+    "MedCPT dense": {
+      "ndcg@10": 0.737,
+      "recall@10": 0.8758,
+      "recall@100": 0.9817,
+      "mrr@10": 0.7008,
+      "p@1": 0.6067
+    },
+    "BM25 + MedCPT rerank": {
+      "ndcg@10": 0.7587,
+      "recall@10": 0.8547,
+      "recall@100": 0.8731,
+      "mrr@10": 0.7342,
+      "p@1": 0.66
+    },
+    "Hybrid RRF (BM25+dense)": {
+      "ndcg@10": 0.7148,
+      "recall@10": 0.8464,
+      "recall@100": 0.9733,
+      "mrr@10": 0.6783,
+      "p@1": 0.5767
+    },
+    "Hybrid RRF + MedCPT rerank": {
+      "ndcg@10": 0.7899,
+      "recall@10": 0.9052,
+      "recall@100": 0.9733,
+      "mrr@10": 0.7567,
+      "p@1": 0.6733
+    },
+    "BM25 + Stage1 LLM-QE [qwen3-8b]": {
+      "ndcg@10": 0.6597,
+      "recall@10": 0.7827,
+      "recall@100": 0.9283,
+      "mrr@10": 0.6302,
+      "p@1": 0.5433
+    },
+    "BM25 + Stage1 LLM-QE + rerank [qwen3-8b]": {
+      "ndcg@10": 0.7846,
+      "recall@10": 0.8942,
+      "recall@100": 0.9283,
+      "mrr@10": 0.7541,
+      "p@1": 0.6733
+    },
+    "Hybrid(LLM-QE, dense) + rerank [qwen3-8b]": {
+      "ndcg@10": 0.7899,
+      "recall@10": 0.9052,
+      "recall@100": 0.9733,
+      "mrr@10": 0.7567,
+      "p@1": 0.6733
+    }
+  },
+  "verdict": {
+    "qwen3-8b": {
+      "oracle_3class": {
+        "n": 340,
+        "accuracy": 0.6794,
+        "macro_f1": 0.6653,
+        "per_class_f1": {
+          "SUPPORT": 0.7801,
+          "CONTRADICT": 0.6117,
+          "NEI": 0.6042
+        },
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 63,
+          "CONTRADICT->NEI": 1,
+          "CONTRADICT->SUPPORT": 7,
+          "NEI->CONTRADICT": 46,
+          "NEI->NEI": 58,
+          "NEI->SUPPORT": 27,
+          "SUPPORT->CONTRADICT": 26,
+          "SUPPORT->NEI": 2,
+          "SUPPORT->SUPPORT": 110
+        }
+      },
+      "oracle_abstract_level": {
+        "label_only": {
+          "P": 0.6223,
+          "R": 0.8278,
+          "F1": 0.7105
+        },
+        "rationale_selected": {
+          "P": 0.5683,
+          "R": 0.756,
+          "F1": 0.6489
+        },
+        "n_pred_evidence": 278,
+        "n_gold_evidence": 209
+      },
+      "open_abstract_level": {
+        "label_only": {
+          "P": 0.2955,
+          "R": 0.7225,
+          "F1": 0.4194
+        },
+        "rationale_selected": {
+          "P": 0.272,
+          "R": 0.6651,
+          "F1": 0.3861
+        },
+        "n_pred_evidence": 511,
+        "n_gold_evidence": 209
+      },
+      "open_retrieval_from": "qwen3-8b",
+      "parse_failures": 0
+    }
+  },
+  "info": {
+    "qwen3-8b": {
+      "stage1_parse_fallbacks": 0,
+      "stage1_mean_queries": 5.0
+    }
+  },
+  "timing_sec": {
+    "rerank (key-free)": 1.3,
+    "LLM stages [qwen3-8b]": 11.0
+  },
+  "llm_cost_usd_cumulative": {
+    "anthropic/claude-haiku-5.5": 0.2623,
+    "deepseek/deepseek-v4.1-flash-1017": 0.142,
+    "anthropic/claude-sonnet-5.5": 5.066
+  },
+  "wall_sec": 35.4
+}
