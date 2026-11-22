@@ -226,7 +226,7 @@ The design follows the current state of the art for scientific citation groundin
 ---
 
 ## ✍️ Citation
-If you have obtained permission and are using this software in your project, please cite the software repository as follows:
+If you use PubGround in your work, please cite the software repository:
 **Software Citation (BibTeX):**
 ```bibtex
 @software{pubground_2026,
@@ -236,6 +236,6 @@ If you have obtained permission and are using this software in your project, ple
   url = {https://github.com/xuan13hao/citation_agents_system}
 }
 ```
-## Copyright (c) 2026 Hao Xuan. All Rights Reserved.
-This software and its associated documentation files are proprietary. Explicit written permission from the author is required for any use, reproduction, modification, or distribution of this code, whether for commercial or non-commercial purposes.
-To request permission, please contact:xuan13hao@gmail.com
+## License
+
+PubGround is released under the [MIT License](LICENSE). Copyright (c) 2026 Hao Xuan.
