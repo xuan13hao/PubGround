@@ -7,7 +7,7 @@ relevant sentences in PubMed articles for a given input sentence, using:
 2. Multi-strategy PubMed search
 3. Full-text retrieval and intelligent sentence splitting
 4. Multi-signal similarity calculation (semantic + keyword + structure + context)
-5. LLM verification
+5. MedCPT cross-encoder reranking
 6. Final ranking and deduplication
 """
 
@@ -721,144 +721,36 @@ Respond with ONLY a JSON array of query strings, no other text:
         # sort below the reranked ones (they were lower-ranked to begin with).
         return sorted(matches, key=lambda x: x['scores']['primary'], reverse=True)
 
-    # ==================== Stage 5: LLM Verification ====================
-    
-    async def _llm_verify_matches(
-        self,
-        input_sentence: str,
-        top_matches: List[Dict]
-    ) -> List[Dict]:
-        """
-        Stage 5: Use LLM to verify match accuracy.
-        
-        Args:
-            input_sentence: Original input sentence
-            top_matches: Top matches from similarity calculation
-            
-        Returns:
-            Verified matches with LLM scores
-        """
-        verified_matches = []
-        
-        # Process in batches to avoid too many LLM calls
-        batch_size = 5
-        for i in range(0, len(top_matches), batch_size):
-            batch = top_matches[i:i+batch_size]
-            
-            tasks = [
-                self._verify_single_match(input_sentence, match)
-                for match in batch
-            ]
-            batch_results = await asyncio.gather(*tasks, return_exceptions=True)
-            
-            for match, verification in zip(batch, batch_results):
-                if isinstance(verification, dict) and verification.get('is_valid'):
-                    match['llm_verification'] = verification
-                    # Adjust final score with LLM verification
-                    match['scores']['final'] *= verification.get('relevance_score', 1.0)
-                    verified_matches.append(match)
-                elif not isinstance(verification, Exception):
-                    # If verification failed but not an exception, still include
-                    verified_matches.append(match)
-        
-        return verified_matches
-    
-    async def _verify_single_match(
-        self,
-        input_sentence: str,
-        match: Dict
-    ) -> Dict:
-        """Verify a single match using LLM."""
-        messages = [
-            {
-                "role": "system",
-                "content": "You are an expert at evaluating semantic similarity between scientific statements."
-            },
-            {
-                "role": "user",
-                "content": f"""Input sentence: "{input_sentence}"
-
-Matched sentence from article: "{match['sentence']}"
-Article context: "{match.get('context', '')[:500]}"
-Article title: "{match['article'].get('title', '')}"
-
-Rate the semantic similarity and relevance on a scale of 0-1:
-1. Do they express the same or very similar meaning?
-2. Is the matched sentence from a relevant scientific context?
-3. Would this citation be appropriate for the input sentence?
-
-Respond with ONLY valid JSON, no other text:
-{{
-    "relevance_score": 0.0-1.0,
-    "reasoning": "brief explanation",
-    "is_valid": true/false
-}}"""
-            }
-        ]
-        
-        try:
-            response = await create_chat_completion(
-                messages=messages,
-                model=self.config.smart_llm_model,
-                llm_provider=self.config.smart_llm_provider,
-                temperature=0.2,
-                max_tokens=200,
-                llm_kwargs=self.config.llm_kwargs,
-            )
-            
-            # Parse JSON
-            response = response.strip()
-            if response.startswith("```"):
-                response = re.sub(r'^```(?:json)?\s*', '', response)
-                response = re.sub(r'\s*```$', '', response)
-            
-            verification = json.loads(response)
-            return verification
-            
-        except Exception as e:
-            print(f"Error in LLM verification: {e}")
-            # Return default verification
-            return {
-                "relevance_score": 0.8,
-                "reasoning": "Verification failed, using default score",
-                "is_valid": True
-            }
-    
-    # ==================== Stage 6: Final Ranking ====================
+    # ==================== Stage 5: Final Ranking ====================
     
     def _final_ranking(
         self,
-        verified_matches: List[Dict],
+        candidates: List[Dict],
         top_k: int = 10
     ) -> List[Dict]:
         """
-        Stage 6: Final ranking considering multiple factors.
+        Stage 5: Final ranking considering multiple factors.
         
         Args:
-            verified_matches: Verified matches
+            candidates: Reranked candidate matches
             top_k: Number of top results to return
             
         Returns:
             Final ranked and deduplicated results
         """
         # Calculate article quality scores
-        for match in verified_matches:
+        for match in candidates:
             article_quality = self._calculate_article_quality(match['article'])
 
-            # Final rank score = primary relevance * LLM verification * quality.
+            # Final rank score = primary relevance * article quality.
             # `primary` is the cross-encoder rerank score when available, else the
             # Stage 4 multi-signal score (set in _rerank_matches).
             primary = match['scores'].get('primary', match['scores']['final'])
-            llm_score = match.get('llm_verification', {}).get('relevance_score', 1.0)
-            match['final_rank_score'] = (
-                primary *
-                llm_score *
-                article_quality
-            )
+            match['final_rank_score'] = primary * article_quality
         
         # Sort by final rank score
         sorted_matches = sorted(
-            verified_matches,
+            candidates,
             key=lambda x: x.get('final_rank_score', 0),
             reverse=True
         )
@@ -995,17 +887,15 @@ Respond with ONLY valid JSON, no other text:
             reranked = sum(1 for m in matches if 'rerank' in m['scores'])
             print(f"   Reranked {reranked} candidates")
 
-        # Take top candidates for LLM verification (now ordered by rerank score)
-        top_candidates = matches[:top_k * 2]  # Verify more than we need
+        # Top candidates (ordered by rerank score); extra headroom for per-article dedup.
+        # An LLM verification stage used to sit here; it was removed because on
+        # SciFact it added <=0.007 nDCG@10 over the MedCPT rerank at ~2*top_k LLM
+        # calls per query (see benchmark/README.md).
+        top_candidates = matches[:top_k * 2]
 
-        # Stage 5: LLM Verification
-        print("✅ Stage 5: Verifying matches with LLM...")
-        verified_matches = await self._llm_verify_matches(input_sentence, top_candidates)
-        print(f"   Verified {len(verified_matches)} matches")
-        
-        # Stage 6: Final Ranking
-        print("🏆 Stage 6: Final ranking...")
-        final_results = self._final_ranking(verified_matches, top_k)
+        # Stage 5: Final Ranking
+        print("🏆 Stage 5: Final ranking...")
+        final_results = self._final_ranking(top_candidates, top_k)
         
         # Format citations
         for result in final_results:

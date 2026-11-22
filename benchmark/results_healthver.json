@@ -1,0 +1,301 @@
+{
+  "dataset": "HealthVer test",
+  "n_claims": 230,
+  "n_pairs": 903,
+  "verdict": {
+    "VeriSci": {
+      "oracle": {
+        "n": 903,
+        "accuracy": 0.3965,
+        "macro_f1": 0.2996,
+        "per_class_f1": {
+          "SUPPORT": 0.2257,
+          "CONTRADICT": 0.1496,
+          "NEI": 0.5236
+        },
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 19,
+          "CONTRADICT->NEI": 192,
+          "CONTRADICT->SUPPORT": 14,
+          "NEI->CONTRADICT": 3,
+          "NEI->NEI": 288,
+          "NEI->SUPPORT": 13,
+          "SUPPORT->CONTRADICT": 7,
+          "SUPPORT->NEI": 316,
+          "SUPPORT->SUPPORT": 51
+        }
+      },
+      "oracle_abstract_level": {
+        "label_only": {
+          "P": 0.6542,
+          "R": 0.1169,
+          "F1": 0.1983
+        },
+        "rationale_selected": {
+          "P": 0.3925,
+          "R": 0.0701,
+          "F1": 0.119
+        },
+        "n_pred_evidence": 107,
+        "n_gold_evidence": 599
+      }
+    },
+    "MultiVerS-zs (fever_sci)": {
+      "oracle": {
+        "n": 903,
+        "accuracy": 0.433,
+        "macro_f1": 0.3671,
+        "per_class_f1": {
+          "SUPPORT": 0.3602,
+          "CONTRADICT": 0.2071,
+          "NEI": 0.5339
+        },
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 29,
+          "CONTRADICT->NEI": 171,
+          "CONTRADICT->SUPPORT": 25,
+          "NEI->CONTRADICT": 7,
+          "NEI->NEI": 268,
+          "NEI->SUPPORT": 29,
+          "SUPPORT->CONTRADICT": 19,
+          "SUPPORT->NEI": 261,
+          "SUPPORT->SUPPORT": 94
+        }
+      },
+      "oracle_abstract_level": {
+        "label_only": {
+          "P": 0.6059,
+          "R": 0.2053,
+          "F1": 0.3067
+        },
+        "rationale_selected": {
+          "P": 0.064,
+          "R": 0.0217,
+          "F1": 0.0324
+        },
+        "n_pred_evidence": 203,
+        "n_gold_evidence": 599
+      }
+    },
+    "MultiVerS-scifact (supervised, SciFact train+dev)": {
+      "oracle": {
+        "n": 903,
+        "accuracy": 0.3588,
+        "macro_f1": 0.21,
+        "per_class_f1": {
+          "SUPPORT": 0.0916,
+          "CONTRADICT": 0.0261,
+          "NEI": 0.5123
+        },
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 3,
+          "CONTRADICT->NEI": 222,
+          "NEI->NEI": 303,
+          "NEI->SUPPORT": 1,
+          "SUPPORT->CONTRADICT": 2,
+          "SUPPORT->NEI": 354,
+          "SUPPORT->SUPPORT": 18
+        }
+      },
+      "oracle_abstract_level": {
+        "label_only": {
+          "P": 0.875,
+          "R": 0.0351,
+          "F1": 0.0674
+        },
+        "rationale_selected": {
+          "P": 0.5833,
+          "R": 0.0234,
+          "F1": 0.0449
+        },
+        "n_pred_evidence": 24,
+        "n_gold_evidence": 599
+      }
+    },
+    "MultiVerS-healthver (supervised, HealthVer train)": {
+      "oracle": {
+        "n": 903,
+        "accuracy": 0.7774,
+        "macro_f1": 0.7712,
+        "per_class_f1": {
+          "SUPPORT": 0.8,
+          "CONTRADICT": 0.7346,
+          "NEI": 0.779
+        },
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 155,
+          "CONTRADICT->NEI": 29,
+          "CONTRADICT->SUPPORT": 41,
+          "NEI->CONTRADICT": 21,
+          "NEI->NEI": 245,
+          "NEI->SUPPORT": 38,
+          "SUPPORT->CONTRADICT": 21,
+          "SUPPORT->NEI": 51,
+          "SUPPORT->SUPPORT": 302
+        }
+      },
+      "oracle_abstract_level": {
+        "label_only": {
+          "P": 0.7907,
+          "R": 0.7629,
+          "F1": 0.7766
+        },
+        "rationale_selected": {
+          "P": 0.7422,
+          "R": 0.7162,
+          "F1": 0.729
+        },
+        "n_pred_evidence": 578,
+        "n_gold_evidence": 599
+      }
+    },
+    "LLM claude-haiku-5.5": {
+      "oracle": {
+        "n": 903,
+        "accuracy": 0.5194,
+        "macro_f1": 0.5042,
+        "per_class_f1": {
+          "SUPPORT": 0.4215,
+          "CONTRADICT": 0.5117,
+          "NEI": 0.5794
+        },
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 98,
+          "CONTRADICT->NEI": 112,
+          "CONTRADICT->SUPPORT": 15,
+          "NEI->CONTRADICT": 20,
+          "NEI->NEI": 261,
+          "NEI->SUPPORT": 23,
+          "SUPPORT->CONTRADICT": 40,
+          "SUPPORT->NEI": 224,
+          "SUPPORT->SUPPORT": 110
+        }
+      },
+      "oracle_abstract_level": {
+        "label_only": {
+          "P": 0.6797,
+          "R": 0.3472,
+          "F1": 0.4597
+        },
+        "rationale_selected": {
+          "P": 0.5654,
+          "R": 0.2888,
+          "F1": 0.3823
+        },
+        "n_pred_evidence": 306,
+        "n_gold_evidence": 599
+      }
+    },
+    "LLM deepseek-v4.1-flash-1017": {
+      "oracle": {
+        "n": 903,
+        "accuracy": 0.5293,
+        "macro_f1": 0.5136,
+        "per_class_f1": {
+          "SUPPORT": 0.4787,
+          "CONTRADICT": 0.485,
+          "NEI": 0.5771
+        },
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 81,
+          "CONTRADICT->NEI": 119,
+          "CONTRADICT->SUPPORT": 25,
+          "NEI->CONTRADICT": 12,
+          "NEI->NEI": 262,
+          "NEI->SUPPORT": 30,
+          "SUPPORT->CONTRADICT": 16,
+          "SUPPORT->NEI": 223,
+          "SUPPORT->SUPPORT": 135
+        }
+      },
+      "oracle_abstract_level": {
+        "label_only": {
+          "P": 0.7224,
+          "R": 0.3606,
+          "F1": 0.4811
+        },
+        "rationale_selected": {
+          "P": 0.5719,
+          "R": 0.2855,
+          "F1": 0.3808
+        },
+        "n_pred_evidence": 299,
+        "n_gold_evidence": 599
+      }
+    },
+    "LLM claude-sonnet-5.5": {
+      "oracle": {
+        "n": 903,
+        "accuracy": 0.5471,
+        "macro_f1": 0.5318,
+        "per_class_f1": {
+          "SUPPORT": 0.5329,
+          "CONTRADICT": 0.4802,
+          "NEI": 0.5823
+        },
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 79,
+          "CONTRADICT->NEI": 115,
+          "CONTRADICT->SUPPORT": 31,
+          "NEI->CONTRADICT": 10,
+          "NEI->NEI": 253,
+          "NEI->SUPPORT": 41,
+          "SUPPORT->CONTRADICT": 15,
+          "SUPPORT->NEI": 197,
+          "SUPPORT->SUPPORT": 162
+        }
+      },
+      "oracle_abstract_level": {
+        "label_only": {
+          "P": 0.713,
+          "R": 0.4023,
+          "F1": 0.5144
+        },
+        "rationale_selected": {
+          "P": 0.568,
+          "R": 0.3205,
+          "F1": 0.4098
+        },
+        "n_pred_evidence": 338,
+        "n_gold_evidence": 599
+      }
+    },
+    "LLM qwen3-8b": {
+      "oracle": {
+        "n": 903,
+        "accuracy": 0.6058,
+        "macro_f1": 0.5996,
+        "per_class_f1": {
+          "SUPPORT": 0.6497,
+          "CONTRADICT": 0.5703,
+          "NEI": 0.5789
+        },
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 140,
+          "CONTRADICT->NEI": 36,
+          "CONTRADICT->SUPPORT": 49,
+          "NEI->CONTRADICT": 59,
+          "NEI->NEI": 165,
+          "NEI->SUPPORT": 80,
+          "SUPPORT->CONTRADICT": 67,
+          "SUPPORT->NEI": 65,
+          "SUPPORT->SUPPORT": 242
+        }
+      },
+      "oracle_abstract_level": {
+        "label_only": {
+          "P": 0.5997,
+          "R": 0.6377,
+          "F1": 0.6181
+        },
+        "rationale_selected": {
+          "P": 0.4066,
+          "R": 0.4324,
+          "F1": 0.4191
+        },
+        "n_pred_evidence": 637,
+        "n_gold_evidence": 599
+      }
+    }
+  }
+}

@@ -57,7 +57,6 @@ def _trim_result(r: dict) -> dict:
     """Shrink a pipeline result into a compact, JSON-friendly citation record."""
     article = r.get("article", {}) or {}
     scores = r.get("scores", {}) or {}
-    verification = r.get("llm_verification", {}) or {}
     return {
         "sentence": r.get("sentence", ""),
         "citation": r.get("citation", ""),
@@ -77,8 +76,6 @@ def _trim_result(r: dict) -> dict:
             "semantic": round(scores.get("semantic", 0.0), 4),
             "multi_signal": round(scores.get("final", 0.0), 4),
         },
-        "llm_relevance": verification.get("relevance_score"),
-        "llm_reasoning": verification.get("reasoning", ""),
     }
 
 
@@ -94,7 +91,7 @@ async def find_citations(
 
     Runs the full multi-stage pipeline: LLM query optimization -> multi-strategy
     PubMed search -> abstract retrieval -> multi-signal similarity -> MedCPT
-    cross-encoder reranking -> LLM verification -> ranking, then formats a
+    cross-encoder reranking -> ranking, then formats a
     citation for each match.
 
     Args:
@@ -106,7 +103,7 @@ async def find_citations(
 
     Returns:
         {"query": str, "count": int, "results": [ {sentence, citation, article,
-        scores, llm_relevance, llm_reasoning}, ... ]}
+        scores}, ... ]}
     """
     matcher = _get_matcher()
     with contextlib.redirect_stdout(sys.stderr):

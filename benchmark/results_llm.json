@@ -1,0 +1,275 @@
+{
+  "dataset": "SciFact (BEIR test = SciFact dev claims)",
+  "corpus_size": 5183,
+  "n_queries": 300,
+  "topk": 100,
+  "verdict_k": 3,
+  "models": [
+    "anthropic/claude-haiku-5.5",
+    "deepseek/deepseek-v4.1-flash-1017"
+  ],
+  "verdict_only_models": [
+    "anthropic/claude-sonnet-5.5"
+  ],
+  "retrieval": {
+    "BM25": {
+      "ndcg@10": 0.6523,
+      "recall@10": 0.7757,
+      "recall@100": 0.8731,
+      "mrr@10": 0.6184,
+      "p@1": 0.5233
+    },
+    "MedCPT dense": {
+      "ndcg@10": 0.737,
+      "recall@10": 0.8758,
+      "recall@100": 0.9817,
+      "mrr@10": 0.7008,
+      "p@1": 0.6067
+    },
+    "BM25 + MedCPT rerank": {
+      "ndcg@10": 0.7587,
+      "recall@10": 0.8547,
+      "recall@100": 0.8731,
+      "mrr@10": 0.7342,
+      "p@1": 0.66
+    },
+    "Hybrid RRF (BM25+dense)": {
+      "ndcg@10": 0.7148,
+      "recall@10": 0.8464,
+      "recall@100": 0.9733,
+      "mrr@10": 0.6783,
+      "p@1": 0.5767
+    },
+    "Hybrid RRF + MedCPT rerank": {
+      "ndcg@10": 0.7899,
+      "recall@10": 0.9052,
+      "recall@100": 0.9733,
+      "mrr@10": 0.7567,
+      "p@1": 0.6733
+    },
+    "BM25 + Stage1 LLM-QE [claude-haiku-5.5]": {
+      "ndcg@10": 0.6932,
+      "recall@10": 0.8504,
+      "recall@100": 0.9592,
+      "mrr@10": 0.6533,
+      "p@1": 0.5433
+    },
+    "BM25 + Stage1 LLM-QE + rerank [claude-haiku-5.5]": {
+      "ndcg@10": 0.7909,
+      "recall@10": 0.9077,
+      "recall@100": 0.9592,
+      "mrr@10": 0.7573,
+      "p@1": 0.6733
+    },
+    "Hybrid(LLM-QE, dense) + rerank [claude-haiku-5.5]": {
+      "ndcg@10": 0.7936,
+      "recall@10": 0.9086,
+      "recall@100": 0.9833,
+      "mrr@10": 0.7603,
+      "p@1": 0.6767
+    },
+    "BM25 + Stage1 LLM-QE [deepseek-v4.1-flash-1017]": {
+      "ndcg@10": 0.6901,
+      "recall@10": 0.8111,
+      "recall@100": 0.9583,
+      "mrr@10": 0.6588,
+      "p@1": 0.5733
+    },
+    "BM25 + Stage1 LLM-QE + rerank [deepseek-v4.1-flash-1017]": {
+      "ndcg@10": 0.7977,
+      "recall@10": 0.9152,
+      "recall@100": 0.9583,
+      "mrr@10": 0.7633,
+      "p@1": 0.68
+    },
+    "Hybrid(LLM-QE, dense) + rerank [deepseek-v4.1-flash-1017]": {
+      "ndcg@10": 0.7945,
+      "recall@10": 0.9119,
+      "recall@100": 0.9833,
+      "mrr@10": 0.7606,
+      "p@1": 0.6767
+    }
+  },
+  "verdict": {
+    "claude-haiku-5.5": {
+      "oracle_3class": {
+        "n": 340,
+        "accuracy": 0.8235,
+        "macro_f1": 0.8163,
+        "per_class_f1": {
+          "SUPPORT": 0.8444,
+          "CONTRADICT": 0.7755,
+          "NEI": 0.8289
+        },
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 57,
+          "CONTRADICT->NEI": 7,
+          "CONTRADICT->SUPPORT": 7,
+          "NEI->CONTRADICT": 11,
+          "NEI->NEI": 109,
+          "NEI->SUPPORT": 11,
+          "SUPPORT->CONTRADICT": 8,
+          "SUPPORT->NEI": 16,
+          "SUPPORT->SUPPORT": 114
+        }
+      },
+      "oracle_abstract_level": {
+        "label_only": {
+          "P": 0.8221,
+          "R": 0.8182,
+          "F1": 0.8201
+        },
+        "rationale_selected": {
+          "P": 0.774,
+          "R": 0.7703,
+          "F1": 0.7722
+        },
+        "n_pred_evidence": 208,
+        "n_gold_evidence": 209
+      },
+      "open_abstract_level": {
+        "label_only": {
+          "P": 0.5547,
+          "R": 0.7273,
+          "F1": 0.6294
+        },
+        "rationale_selected": {
+          "P": 0.5255,
+          "R": 0.689,
+          "F1": 0.5963
+        },
+        "n_pred_evidence": 274,
+        "n_gold_evidence": 209
+      },
+      "open_retrieval_from": "claude-haiku-5.5",
+      "parse_failures": 7
+    },
+    "deepseek-v4.1-flash-1017": {
+      "oracle_3class": {
+        "n": 340,
+        "accuracy": 0.8294,
+        "macro_f1": 0.8273,
+        "per_class_f1": {
+          "SUPPORT": 0.845,
+          "CONTRADICT": 0.8129,
+          "NEI": 0.824
+        },
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 63,
+          "CONTRADICT->NEI": 6,
+          "CONTRADICT->SUPPORT": 2,
+          "NEI->CONTRADICT": 12,
+          "NEI->NEI": 110,
+          "NEI->SUPPORT": 9,
+          "SUPPORT->CONTRADICT": 9,
+          "SUPPORT->NEI": 20,
+          "SUPPORT->SUPPORT": 109
+        }
+      },
+      "oracle_abstract_level": {
+        "label_only": {
+          "P": 0.8431,
+          "R": 0.823,
+          "F1": 0.8329
+        },
+        "rationale_selected": {
+          "P": 0.7941,
+          "R": 0.7751,
+          "F1": 0.7845
+        },
+        "n_pred_evidence": 204,
+        "n_gold_evidence": 209
+      },
+      "open_abstract_level": {
+        "label_only": {
+          "P": 0.5725,
+          "R": 0.7368,
+          "F1": 0.6444
+        },
+        "rationale_selected": {
+          "P": 0.539,
+          "R": 0.6938,
+          "F1": 0.6067
+        },
+        "n_pred_evidence": 269,
+        "n_gold_evidence": 209
+      },
+      "open_retrieval_from": "deepseek-v4.1-flash-1017",
+      "parse_failures": 0
+    },
+    "claude-sonnet-5.5": {
+      "oracle_3class": {
+        "n": 340,
+        "accuracy": 0.8676,
+        "macro_f1": 0.8659,
+        "per_class_f1": {
+          "SUPPORT": 0.8824,
+          "CONTRADICT": 0.8571,
+          "NEI": 0.8583
+        },
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 66,
+          "CONTRADICT->NEI": 1,
+          "CONTRADICT->SUPPORT": 4,
+          "NEI->CONTRADICT": 12,
+          "NEI->NEI": 109,
+          "NEI->SUPPORT": 10,
+          "SUPPORT->CONTRADICT": 5,
+          "SUPPORT->NEI": 13,
+          "SUPPORT->SUPPORT": 120
+        }
+      },
+      "oracle_abstract_level": {
+        "label_only": {
+          "P": 0.8571,
+          "R": 0.89,
+          "F1": 0.8732
+        },
+        "rationale_selected": {
+          "P": 0.8203,
+          "R": 0.8517,
+          "F1": 0.8357
+        },
+        "n_pred_evidence": 217,
+        "n_gold_evidence": 209
+      },
+      "open_abstract_level": {
+        "label_only": {
+          "P": 0.567,
+          "R": 0.7895,
+          "F1": 0.66
+        },
+        "rationale_selected": {
+          "P": 0.543,
+          "R": 0.756,
+          "F1": 0.632
+        },
+        "n_pred_evidence": 291,
+        "n_gold_evidence": 209
+      },
+      "open_retrieval_from": "claude-haiku-5.5",
+      "parse_failures": 8
+    }
+  },
+  "info": {
+    "claude-haiku-5.5": {
+      "stage1_parse_fallbacks": 3,
+      "stage1_mean_queries": 4.9
+    },
+    "deepseek-v4.1-flash-1017": {
+      "stage1_parse_fallbacks": 0,
+      "stage1_mean_queries": 5.0
+    }
+  },
+  "timing_sec": {
+    "rerank (key-free)": 1.4,
+    "LLM stages [claude-haiku-5.5]": 15.8,
+    "LLM stages [deepseek-v4.1-flash-1017]": 13.9
+  },
+  "llm_cost_usd_cumulative": {
+    "anthropic/claude-haiku-5.5": 0.2623,
+    "deepseek/deepseek-v4.1-flash-1017": 0.142,
+    "anthropic/claude-sonnet-5.5": 5.066
+  },
+  "wall_sec": 55.7
+}

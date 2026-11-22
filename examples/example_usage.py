@@ -5,7 +5,7 @@ Run:
     cd examples
     python example_usage.py
 
-Requires OPENAI_API_KEY (query optimization + LLM verification + embeddings).
+Requires OPENAI_API_KEY (query optimization + embeddings).
 The first run downloads the MedCPT cross-encoder (~400MB) for reranking; set
 use_reranker=False to skip it.
 """
