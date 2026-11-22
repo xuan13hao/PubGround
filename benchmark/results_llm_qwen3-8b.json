@@ -69,19 +69,19 @@
   "verdict": {
     "qwen3-8b": {
       "oracle_3class": {
-        "n": 340,
-        "accuracy": 0.6794,
-        "macro_f1": 0.6653,
+        "n": 339,
+        "accuracy": 0.6814,
+        "macro_f1": 0.6673,
         "per_class_f1": {
           "SUPPORT": 0.7801,
-          "CONTRADICT": 0.6117,
-          "NEI": 0.6042
+          "CONTRADICT": 0.6146,
+          "NEI": 0.6073
         },
         "confusion": {
           "CONTRADICT->CONTRADICT": 63,
           "CONTRADICT->NEI": 1,
           "CONTRADICT->SUPPORT": 7,
-          "NEI->CONTRADICT": 46,
+          "NEI->CONTRADICT": 45,
           "NEI->NEI": 58,
           "NEI->SUPPORT": 27,
           "SUPPORT->CONTRADICT": 26,
@@ -129,12 +129,12 @@
   },
   "timing_sec": {
     "rerank (key-free)": 1.2,
-    "LLM stages [qwen3-8b]": 11.1
+    "LLM stages [qwen3-8b]": 11.7
   },
   "llm_cost_usd_cumulative": {
     "anthropic/claude-haiku-5.5": 0.4256,
     "deepseek/deepseek-v4.1-flash-1017": 0.2216,
     "anthropic/claude-sonnet-5.5": 7.7436
   },
-  "wall_sec": 22.9
+  "wall_sec": 17.1
 }

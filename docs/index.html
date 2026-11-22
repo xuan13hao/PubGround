@@ -340,7 +340,7 @@
         <div>
           <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
             <span class="mono" style="font-size:2.6rem;font-weight:600;color:var(--teal-br);letter-spacing:-.02em">1/18</span>
-            <span style="color:#AFCCC7;font-size:.95rem">of the wall-clock time of Qwen3-Reranker-4B, with no significant nDCG@10 gap on SciFact<br>(<span class="mono">0.792 vs 0.802</span>, difference 95% CI −0.013 to 0.032; 59 s vs 1,062 s for 40,634 pairs, single run incl. model loading)</span>
+            <span style="color:#AFCCC7;font-size:.95rem">of the wall-clock time of Qwen3-Reranker-4B, with no significant nDCG@10 gap on SciFact<br>(<span class="mono">0.792 vs 0.802</span>, difference 95% CI −0.013 to 0.032; 59 s vs 1,062 s for 40,634 unique pairs — BM25 ∪ hybrid top-100 — single run incl. model loading)</span>
           </div>
           <p style="color:#AFCCC7;margin-top:20px;font-size:.95rem">At 500K abstracts the larger reranker pulls ahead (<span class="mono">0.806 vs 0.750</span>, significant). Fusing BM25 with MedCPT dense retrieval <b style="color:#EAF5F2">lifts Recall@100 over BM25 on both corpora</b> (best first stage at 500K abstracts) and lifts every reranker tested; LLM query expansion matches it but adds nothing on top. A <b style="color:#EAF5F2">zero-shot LLM judge</b> beats every verifier not trained in-domain — but a supervised model trained on HealthVer still wins there.</p>
         </div>

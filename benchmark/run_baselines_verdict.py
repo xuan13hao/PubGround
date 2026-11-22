@@ -201,7 +201,8 @@ def main():
         r = json.loads(line)
         sci[r["doc_id"]] = r
     claims = {str(json.loads(l)["id"]): json.loads(l) for l in open(f"{DATA}/scifact_raw/data/claims_dev.jsonl")}
-    oracle_pairs = [(c, d) for c, cl in claims.items() for d in cl["cited_doc_ids"]]
+  # dict.fromkeys: SciFact dev claim 1245 lists cited doc 7662395 twice; count each pair once
+    oracle_pairs = list(dict.fromkeys((c, d) for c, cl in claims.items() for d in cl["cited_doc_ids"]))
     gold_oracle = [(claims[c]["evidence"].get(str(d)) or [{"label": "NEI"}])[0]["label"] for c, d in oracle_pairs]
     vin = json.load(open(f"{DATA}/verdict_inputs.json"))[args.open_from]
     open_pairs = [(c, int(d)) for c in claims for d in vin[c]]

@@ -18,7 +18,7 @@ from llm_client import make_llm  # noqa: E402
 
 DATA = f"{HERE}/data"
 B = 2000
-RNG = np.random.default_rng(0)
+SEED = 0  # every statistic re-seeds, so adding a comparison never shifts the others
 LLMS = ["anthropic/claude-haiku-5.5", "deepseek/deepseek-v4.1-flash-1017", "anthropic/claude-sonnet-5.5",
         "local:/N/project/mrust01/LLM_NER/models/qwen3-8b"]
 
@@ -27,6 +27,7 @@ def ci(vals_by_claim, stat):
     """vals_by_claim: list of per-claim items; stat(list_of_items) -> float."""
     n = len(vals_by_claim)
     point = stat(vals_by_claim)
+    RNG = np.random.default_rng(SEED)
     reps = [stat([vals_by_claim[i] for i in RNG.integers(0, n, n)]) for _ in range(B)]
     lo, hi = np.percentile(reps, [2.5, 97.5])
     return {"point": round(point, 4), "lo": round(float(lo), 4), "hi": round(float(hi), 4)}
@@ -36,6 +37,7 @@ def paired(a, b):
     """a, b: per-claim nDCG arrays (same claims). CI of mean(a - b) and bootstrap P(diff <= 0)."""
     d = np.array(a) - np.array(b)
     n = len(d)
+    RNG = np.random.default_rng(SEED)
     reps = np.array([d[RNG.integers(0, n, n)].mean() for _ in range(B)])
     lo, hi = np.percentile(reps, [2.5, 97.5])
     return {"diff": round(float(d.mean()), 4), "lo": round(float(lo), 4), "hi": round(float(hi), 4),
@@ -69,6 +71,7 @@ def retrieval():
         qs = sorted(qr)
         out[ds] = {"ndcg@10": {n: ci([p[q] for q in qs], np.mean) for n, p in per.items()}}
         pairs = [("Hybrid + Qwen3-Reranker-4B", "Hybrid + MedCPT"), ("Hybrid + MedCPT", "Hybrid + monoT5-3B"),
+                 ("Hybrid + MedCPT", "Hybrid + bge-reranker-v2-m3"), ("Hybrid + MedCPT", "Hybrid + MiniLM-L12"),
                  ("Hybrid + MedCPT", "Hybrid"), ("Hybrid + MedCPT", "BM25")]
         if ds == "scifact_open":
             pairs += [("LLM-QE + MedCPT [deepseek-v4.1-flash-1017]", "Hybrid + MedCPT"),
@@ -111,6 +114,40 @@ def per_claim(claims, pairs, pv):
     return items
 
 
+def paired_f1(items_a, items_b):
+    """Paired bootstrap over claims of label-F1(a) - label-F1(b); items are per-claim tuples (same claims)."""
+    n = len(items_a)
+    d0 = label_f1(items_a) - label_f1(items_b)
+    RNG = np.random.default_rng(SEED)
+    reps = []
+    for _ in range(B):
+        idx = RNG.integers(0, n, n)
+        reps.append(label_f1([items_a[i] for i in idx]) - label_f1([items_b[i] for i in idx]))
+    reps = np.array(reps)
+    lo, hi = np.percentile(reps, [2.5, 97.5])
+    return {"diff": round(d0, 4), "lo": round(float(lo), 4), "hi": round(float(hi), 4),
+            "p_le_0": round(float((reps <= 0).mean()), 4)}
+
+
+def diagnostics(pairs, gold, preds):
+    """3-class confusion (gold -> predicted) and the NEI rate on gold SUPPORT/CONTRADICT pairs."""
+    out = {}
+    for k, pv in preds.items():
+        conf = defaultdict(int)
+        for p in pairs:
+            conf[f"{gold.get(p, 'NEI')}->{pv[p][0]}"] += 1
+        ev = [p for p in pairs if p in gold]
+        out[k] = {"confusion": dict(sorted(conf.items())),
+                  "nei_rate_on_gold_evidence": round(sum(pv[p][0] == "NEI" for p in ev) / len(ev), 4),
+                  "n_gold_evidence_pairs": len(ev),
+                  "nei_rate_overall": round(sum(pv[p][0] == "NEI" for p in pairs) / len(pairs), 4)}
+    return out
+
+
+API = ["LLM claude-haiku-5.5", "LLM deepseek-v4.1-flash-1017", "LLM claude-sonnet-5.5"]
+JUDGES = API + ["LLM qwen3-8b"]
+
+
 def verdict_preds(claims, corpus, pairs, store):
     preds = {k: {(c, d): tuple(v[f"{c}|{d}"]) for c, d in pairs} for k, v in store.items()}
     for m in LLMS:
@@ -122,17 +159,26 @@ def verdict_preds(claims, corpus, pairs, store):
 
 
 def verdict():
-    out = {}
+    out, paired, diag = {}, {}, {}
     # SciFact
     sci = {r["doc_id"]: r for r in map(json.loads, open(f"{DATA}/scifact_raw/data/corpus.jsonl"))}
     claims = {str(r["id"]): r for r in map(json.loads, open(f"{DATA}/scifact_raw/data/claims_dev.jsonl"))}
-    oracle = [(c, d) for c, cl in claims.items() for d in cl["cited_doc_ids"]]
+  # dict.fromkeys: SciFact dev claim 1245 lists cited doc 7662395 twice; count each pair once
+    oracle = list(dict.fromkeys((c, d) for c, cl in claims.items() for d in cl["cited_doc_ids"]))
     vin = json.load(open(f"{DATA}/verdict_inputs.json"))["claude-haiku-5.5"]
     opn = [(c, int(d)) for c in claims for d in vin[c]]
     store = json.load(open(f"{DATA}/verdict_baseline_preds.json"))
     pr = verdict_preds(claims, sci, sorted(set(oracle) | set(opn)), store)
     out["scifact_oracle"] = {k: ci(per_claim(claims, oracle, v), label_f1) for k, v in pr.items()}
     out["scifact_open"] = {k: ci(per_claim(claims, opn, v), label_f1) for k, v in pr.items()}
+    paired, diag = {}, {}
+    it = {k: per_claim(claims, oracle, v) for k, v in pr.items()}
+    paired["scifact_oracle"] = {f"{j} - {b}": paired_f1(it[j], it[b]) for j in JUDGES
+                                for b in ("VeriSci", "MultiVerS-zs (fever_sci)")}
+    it = {k: per_claim(claims, opn, v) for k, v in pr.items()}
+    paired["scifact_open"] = {f"{j} - VeriSci": paired_f1(it[j], it["VeriSci"]) for j in JUDGES}
+    gold = {(c, int(d)): ev[0]["label"] for c, cl in claims.items() for d, ev in cl["evidence"].items()}
+    diag["scifact_oracle"] = diagnostics(oracle, gold, pr)
     log("[verdict scifact] done")
     # SciFact-Open and HealthVer
     from run_extra_datasets import load_dataset, load_run
@@ -150,13 +196,26 @@ def verdict():
         allp = sorted(set(pairs) | set(orc))
         pr = verdict_preds(cl, corpus, allp, store)
         out[key] = {k: ci(per_claim(cl, pairs, v), label_f1) for k, v in pr.items()}
+        it = {k: per_claim(cl, pairs, v) for k, v in pr.items()}
+        gold = {(c, int(d)): (ev[0]["label"] if isinstance(ev, list) else ev["label"])
+                for c, x in cl.items() for d, ev in x["evidence"].items()}
+        if ds == "healthver":
+            sup = "MultiVerS-healthver (supervised, HealthVer train)"
+            paired[key] = {f"{sup} - {j}": paired_f1(it[sup], it[j]) for j in JUDGES}
+            diag[key] = diagnostics(pairs, gold, pr)
+        else:
+            sup = "MultiVerS-scifact (supervised, SciFact train+dev)"
+            paired[key] = {f"{j} - {b}": paired_f1(it[j], it[b]) for j in JUDGES for b in (sup, "VeriSci")}
+            diag["scifact_open_gold_evidence"] = diagnostics(orc, gold, pr)
         log(f"[verdict {ds}] done")
-    return out
+    return out, paired, diag
 
 
 def main():
-    res = {"method": f"nonparametric bootstrap over claims, {B} replicates, 95% percentile intervals, seed 0",
-           "retrieval": retrieval(), "verdict_label_f1": verdict()}
+    v, vp, vd = verdict()
+    res = {"method": f"nonparametric bootstrap over claims, {B} replicates, 95% percentile intervals, seed 0 per statistic",
+           "retrieval": retrieval(), "verdict_label_f1": v, "verdict_paired_label_f1": vp,
+           "verdict_diagnostics": vd}
     json.dump(res, open(f"{HERE}/results_ci.json", "w"), indent=2)
     print(json.dumps(res, indent=1))
 

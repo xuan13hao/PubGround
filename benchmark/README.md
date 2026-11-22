@@ -68,19 +68,25 @@ this benchmark. An earlier run on SciFact found it improved nDCG@10 by at most +
      (on SciFact-Open only MedCPT was run on both: +0.031).
 2. **MedCPT reranking is competitive on the small corpus but not at 500K scale.**
    - On SciFact it is within 0.010 of Qwen3-Reranker-4B (difference not significant) with ~1/36 of the parameters
-     and ~1/18 of the wall-clock time (59 s vs 1,062 s for 40,634 pairs on one H100, single run, including model loading).
-   - On SciFact-Open it falls to third (0.750 vs 0.806 for Qwen3-Reranker-4B and 0.778 for monoT5-3B).
+     and ~1/18 of the wall-clock time (59 s vs 1,062 s on one H100, single run, including model loading, for the
+     40,634 unique pairs in the union of the BM25 and hybrid top-100 lists of the 300 claims). It is above bge-reranker-v2-m3
+     (+0.058, 95% CI 0.031–0.087) and MiniLM (+0.100, 0.070–0.131), and marginally above monoT5-3B (+0.022, 0.000–0.043).
+   - On SciFact-Open it falls to third (0.750 vs 0.806 for Qwen3-Reranker-4B and 0.778 for monoT5-3B); it no longer
+     differs from bge-reranker-v2-m3 (+0.013, −0.021–0.047) and still beats MiniLM (+0.111, 0.077–0.146).
    - MedCPT dense likewise trails general-purpose embedders at scale.
 3. **LLM query expansion (Stage 1) adds recall over BM25 but not over hybrid retrieval.**
    - With the MedCPT reranker it matches Hybrid + MedCPT within ±0.01 on both datasets.
    - A local Qwen3-8B is about as good here as API models.
-4. **The zero-shot LLM judge beats every verifier that was not trained in-domain.**
-   - With the right abstract, it beats VeriSci and MultiVerS on both SciFact datasets: label F1 +0.14 over VeriSci,
-     and on SciFact-Open evidence-pair accuracy 0.815–0.874 vs 0.402–0.515.
-   - On SciFact-Open end to end it is comparable to the supervised MultiVerS (0.457–0.470 vs 0.438; 95% intervals overlap).
-   - On HealthVer, the in-domain supervised MultiVerS wins clearly (0.777 vs ≤0.514).
-     The API LLMs predict NEI too often there (recall 0.35–0.40).
-     The verdict prompt requires sentences that *directly* establish the claim, which is stricter than HealthVer's annotation.
+4. **The zero-shot API judges (Haiku, DeepSeek, Sonnet) beat every verifier that was not trained in-domain.**
+   Paired bootstrap differences in label F1 (`results_ci.json` → `verdict_paired_label_f1`):
+   - SciFact gold abstracts: +0.086 (0.017–0.161), +0.099 (0.031–0.172) and +0.139 (0.077–0.207) over VeriSci, which
+     was trained on SciFact; on SciFact-Open, evidence-pair accuracy 0.815–0.874 vs 0.402–0.515.
+   - SciFact-Open end to end: no difference from the supervised MultiVerS (+0.019 to +0.032, every interval includes 0).
+   - HealthVer: the in-domain supervised MultiVerS wins (+0.158 to +0.317 over the judges, all intervals above 0).
+     The API judges' recall (0.35–0.40) is lost almost entirely to NEI answers: they answer NEI on 52–57% of HealthVer
+     evidence pairs vs 7–12% of SciFact evidence pairs (`verdict_diagnostics`). HealthVer counts support for one part
+     of a multi-part claim as SUPPORT (Sarrouti et al. 2021, §3.3), while the verdict prompt asks for direct support;
+     the NEI rates are consistent with that mismatch but do not prove it.
 5. **End-to-end precision is the bottleneck.** Sending the top-3 abstracts to the judge gives
    P = 0.555–0.573 on SciFact: related but uncited abstracts get labelled SUPPORT/CONTRADICT.
 6. **Small local judges are not reliable end to end.** Qwen3-8B labels SciFact-Open gold evidence well (accuracy 0.865)

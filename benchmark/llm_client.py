@@ -115,6 +115,12 @@ class LLM:
         """jobs: list of message lists -> list of responses (same order).
         A job that fails after retries yields None instead of aborting the run."""
         out = [None] * len(jobs)
+        # Identical prompts (e.g. duplicate claim texts) are sent once and share one answer;
+        # otherwise concurrent calls can return different answers for the same prompt.
+        first = {}
+        for i, m in enumerate(jobs):
+            first.setdefault(self._hash(m, temperature, max_tokens), i)
+        uniq = sorted(first.values())
 
         def one(i):
             try:
@@ -125,9 +131,11 @@ class LLM:
             return i
 
         with ThreadPoolExecutor(self.workers) as ex:
-            for n, _ in enumerate(ex.map(one, range(len(jobs)))):
+            for n, _ in enumerate(ex.map(one, uniq)):
                 if log and n % 500 == 0:
-                    log(f"    [{self.model}:{tag}] {n}/{len(jobs)}  new-calls={self.n_calls} cost=${self.cost:.3f}")
+                    log(f"    [{self.model}:{tag}] {n}/{len(uniq)}  new-calls={self.n_calls} cost=${self.cost:.3f}")
+        for i, m in enumerate(jobs):
+            out[i] = out[first[self._hash(m, temperature, max_tokens)]]
         return out
 
 
@@ -183,7 +191,11 @@ class LocalLLM(LLM):
         import torch
         out = [None] * len(jobs)
         keys = [self._hash(m, temperature, max_tokens) for m in jobs]
-        todo = [i for i, k in enumerate(keys) if k not in self.cache]
+        todo, seen = [], set()  # one generation per distinct prompt (duplicates share it below)
+        for i, k in enumerate(keys):
+            if k not in self.cache and k not in seen:
+                todo.append(i)
+                seen.add(k)
         for i, k in enumerate(keys):
             if k in self.cache:
                 out[i] = self.cache[k]
@@ -211,7 +223,7 @@ class LocalLLM(LLM):
             self.n_calls += len(idx)
             if log and (b // self.batch_size) % 10 == 0:
                 log(f"    [{self.model}:{tag}] {b + len(idx)}/{len(todo)} generated")
-        return out
+        return [self.cache.get(k) for k in keys]
 
 
 def make_llm(model, workers=16, reasoning=False):

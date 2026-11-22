@@ -1,25 +1,25 @@
 {
   "dataset": "SciFact dev (= BEIR test claims)",
   "open_input": "top-3 of full pipeline [claude-haiku-5.5]",
-  "n_oracle_pairs": 340,
+  "n_oracle_pairs": 339,
   "n_open_pairs": 900,
   "results": {
     "VeriSci": {
       "oracle_3class": {
-        "n": 340,
-        "accuracy": 0.7529,
-        "macro_f1": 0.7303,
+        "n": 339,
+        "accuracy": 0.7522,
+        "macro_f1": 0.7298,
         "per_class_f1": {
           "SUPPORT": 0.7812,
           "CONTRADICT": 0.6333,
-          "NEI": 0.7763
+          "NEI": 0.7748
         },
         "confusion": {
           "CONTRADICT->CONTRADICT": 38,
           "CONTRADICT->NEI": 25,
           "CONTRADICT->SUPPORT": 8,
           "NEI->CONTRADICT": 3,
-          "NEI->NEI": 118,
+          "NEI->NEI": 117,
           "NEI->SUPPORT": 10,
           "SUPPORT->CONTRADICT": 8,
           "SUPPORT->NEI": 30,
@@ -57,20 +57,20 @@
     },
     "MultiVerS-zs (fever_sci)": {
       "oracle_3class": {
-        "n": 340,
-        "accuracy": 0.6794,
-        "macro_f1": 0.5989,
+        "n": 339,
+        "accuracy": 0.6785,
+        "macro_f1": 0.5983,
         "per_class_f1": {
           "SUPPORT": 0.7341,
           "CONTRADICT": 0.3297,
-          "NEI": 0.7329
+          "NEI": 0.7312
         },
         "confusion": {
           "CONTRADICT->CONTRADICT": 15,
           "CONTRADICT->NEI": 36,
           "CONTRADICT->SUPPORT": 20,
           "NEI->CONTRADICT": 2,
-          "NEI->NEI": 118,
+          "NEI->NEI": 117,
           "NEI->SUPPORT": 11,
           "SUPPORT->CONTRADICT": 3,
           "SUPPORT->NEI": 37,
@@ -108,7 +108,7 @@
     },
     "MultiVerS-sf* (scifact, CONTAMINATED)": {
       "oracle_3class": {
-        "n": 340,
+        "n": 339,
         "accuracy": 1.0,
         "macro_f1": 1.0,
         "per_class_f1": {
@@ -118,7 +118,7 @@
         },
         "confusion": {
           "CONTRADICT->CONTRADICT": 71,
-          "NEI->NEI": 131,
+          "NEI->NEI": 130,
           "SUPPORT->SUPPORT": 138
         }
       },
@@ -153,20 +153,20 @@
     },
     "LLM claude-haiku-5.5": {
       "oracle_3class": {
-        "n": 340,
-        "accuracy": 0.8235,
-        "macro_f1": 0.8163,
+        "n": 339,
+        "accuracy": 0.823,
+        "macro_f1": 0.8158,
         "per_class_f1": {
           "SUPPORT": 0.8444,
           "CONTRADICT": 0.7755,
-          "NEI": 0.8289
+          "NEI": 0.8276
         },
         "confusion": {
           "CONTRADICT->CONTRADICT": 57,
           "CONTRADICT->NEI": 7,
           "CONTRADICT->SUPPORT": 7,
           "NEI->CONTRADICT": 11,
-          "NEI->NEI": 109,
+          "NEI->NEI": 108,
           "NEI->SUPPORT": 11,
           "SUPPORT->CONTRADICT": 8,
           "SUPPORT->NEI": 16,
@@ -205,20 +205,20 @@
     },
     "LLM deepseek-v4.1-flash-1017": {
       "oracle_3class": {
-        "n": 340,
-        "accuracy": 0.8294,
-        "macro_f1": 0.8273,
+        "n": 339,
+        "accuracy": 0.8289,
+        "macro_f1": 0.8268,
         "per_class_f1": {
           "SUPPORT": 0.845,
           "CONTRADICT": 0.8129,
-          "NEI": 0.824
+          "NEI": 0.8226
         },
         "confusion": {
           "CONTRADICT->CONTRADICT": 63,
           "CONTRADICT->NEI": 6,
           "CONTRADICT->SUPPORT": 2,
           "NEI->CONTRADICT": 12,
-          "NEI->NEI": 110,
+          "NEI->NEI": 109,
           "NEI->SUPPORT": 9,
           "SUPPORT->CONTRADICT": 9,
           "SUPPORT->NEI": 20,
@@ -257,20 +257,20 @@
     },
     "LLM claude-sonnet-5.5": {
       "oracle_3class": {
-        "n": 340,
-        "accuracy": 0.8676,
-        "macro_f1": 0.8659,
+        "n": 339,
+        "accuracy": 0.8673,
+        "macro_f1": 0.8655,
         "per_class_f1": {
           "SUPPORT": 0.8824,
           "CONTRADICT": 0.8571,
-          "NEI": 0.8583
+          "NEI": 0.8571
         },
         "confusion": {
           "CONTRADICT->CONTRADICT": 66,
           "CONTRADICT->NEI": 1,
           "CONTRADICT->SUPPORT": 4,
           "NEI->CONTRADICT": 12,
-          "NEI->NEI": 109,
+          "NEI->NEI": 108,
           "NEI->SUPPORT": 10,
           "SUPPORT->CONTRADICT": 5,
           "SUPPORT->NEI": 13,
@@ -309,19 +309,19 @@
     },
     "LLM qwen3-8b": {
       "oracle_3class": {
-        "n": 340,
-        "accuracy": 0.6794,
-        "macro_f1": 0.6653,
+        "n": 339,
+        "accuracy": 0.6814,
+        "macro_f1": 0.6673,
         "per_class_f1": {
           "SUPPORT": 0.7801,
-          "CONTRADICT": 0.6117,
-          "NEI": 0.6042
+          "CONTRADICT": 0.6146,
+          "NEI": 0.6073
         },
         "confusion": {
           "CONTRADICT->CONTRADICT": 63,
           "CONTRADICT->NEI": 1,
           "CONTRADICT->SUPPORT": 7,
-          "NEI->CONTRADICT": 46,
+          "NEI->CONTRADICT": 45,
           "NEI->NEI": 58,
           "NEI->SUPPORT": 27,
           "SUPPORT->CONTRADICT": 26,

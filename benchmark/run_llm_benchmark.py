@@ -351,7 +351,8 @@ def main():
 
     # ---- Verdict ----
     verdict = {}
-    oracle_pairs = [(c, d) for c, cl in claims.items() for d in cl["cited_doc_ids"]]
+  # dict.fromkeys: SciFact dev claim 1245 lists cited doc 7662395 twice; count each pair once
+    oracle_pairs = list(dict.fromkeys((c, d) for c, cl in claims.items() for d in cl["cited_doc_ids"]))
     gold_oracle = []
     for c, d in oracle_pairs:
         ev = claims[c]["evidence"].get(str(d))

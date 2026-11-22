@@ -1,5 +1,5 @@
 {
-  "method": "nonparametric bootstrap over claims, 2000 replicates, 95% percentile intervals, seed 0",
+  "method": "nonparametric bootstrap over claims, 2000 replicates, 95% percentile intervals, seed 0 per statistic",
   "retrieval": {
     "scifact": {
       "ndcg@10": {
@@ -10,113 +10,125 @@
         },
         "MedCPT dense": {
           "point": 0.737,
-          "lo": 0.6971,
-          "hi": 0.7755
+          "lo": 0.6983,
+          "hi": 0.776
         },
         "bge-large-en-v1.5": {
           "point": 0.7464,
-          "lo": 0.705,
-          "hi": 0.7871
+          "lo": 0.7057,
+          "hi": 0.7847
         },
         "Qwen3-Embedding-4B": {
           "point": 0.7836,
-          "lo": 0.7467,
-          "hi": 0.8194
+          "lo": 0.7478,
+          "hi": 0.8201
         },
         "Hybrid + MedCPT": {
           "point": 0.792,
-          "lo": 0.7524,
-          "hi": 0.8278
+          "lo": 0.7557,
+          "hi": 0.8269
         },
         "Hybrid + MiniLM-L12": {
           "point": 0.6923,
-          "lo": 0.6483,
-          "hi": 0.7338
+          "lo": 0.6475,
+          "hi": 0.735
         },
         "Hybrid + bge-reranker-v2-m3": {
           "point": 0.7337,
-          "lo": 0.6925,
-          "hi": 0.7746
+          "lo": 0.6903,
+          "hi": 0.7754
         },
         "Hybrid + monoT5-3B": {
           "point": 0.7703,
-          "lo": 0.7308,
-          "hi": 0.8079
+          "lo": 0.7332,
+          "hi": 0.8067
         },
         "Hybrid + Qwen3-Reranker-4B": {
           "point": 0.802,
-          "lo": 0.7642,
-          "hi": 0.8362
+          "lo": 0.7665,
+          "hi": 0.8366
         },
         "LLM-QE + MedCPT [claude-haiku-5.5]": {
           "point": 0.7909,
-          "lo": 0.7543,
-          "hi": 0.8304
+          "lo": 0.7538,
+          "hi": 0.8266
         },
         "LLM-QE + MedCPT [deepseek-v4.1-flash-1017]": {
           "point": 0.7977,
-          "lo": 0.7611,
-          "hi": 0.8335
+          "lo": 0.7619,
+          "hi": 0.8319
         },
         "LLM-QE + MedCPT [qwen3-8b]": {
           "point": 0.7846,
-          "lo": 0.7439,
-          "hi": 0.8199
+          "lo": 0.7454,
+          "hi": 0.8207
         },
         "Hybrid": {
           "point": 0.7148,
-          "lo": 0.6726,
-          "hi": 0.7556
+          "lo": 0.6738,
+          "hi": 0.7547
         }
       },
       "paired_ndcg@10": {
         "Hybrid + Qwen3-Reranker-4B - Hybrid + MedCPT": {
           "diff": 0.01,
-          "lo": -0.0113,
-          "hi": 0.0331,
-          "p_le_0": 0.1815
+          "lo": -0.0126,
+          "hi": 0.0315,
+          "p_le_0": 0.198
         },
         "Hybrid + MedCPT - Hybrid + monoT5-3B": {
           "diff": 0.0217,
-          "lo": -0.0002,
-          "hi": 0.0428,
-          "p_le_0": 0.0275
+          "lo": 0.0001,
+          "hi": 0.0435,
+          "p_le_0": 0.024
+        },
+        "Hybrid + MedCPT - Hybrid + bge-reranker-v2-m3": {
+          "diff": 0.0583,
+          "lo": 0.0314,
+          "hi": 0.0869,
+          "p_le_0": 0.0
+        },
+        "Hybrid + MedCPT - Hybrid + MiniLM-L12": {
+          "diff": 0.0998,
+          "lo": 0.0697,
+          "hi": 0.1314,
+          "p_le_0": 0.0
         },
         "Hybrid + MedCPT - Hybrid": {
           "diff": 0.0772,
-          "lo": 0.0501,
-          "hi": 0.1043,
+          "lo": 0.0507,
+          "hi": 0.1045,
           "p_le_0": 0.0
         },
         "Hybrid + MedCPT - BM25": {
           "diff": 0.1397,
-          "lo": 0.1059,
-          "hi": 0.1743,
+          "lo": 0.1073,
+          "hi": 0.1736,
           "p_le_0": 0.0
         },
         "Qwen3-Embedding-4B - MedCPT dense": {
           "diff": 0.0466,
-          "lo": 0.0198,
-          "hi": 0.0736,
+          "lo": 0.0201,
+          "hi": 0.0726,
           "p_le_0": 0.0
         },
         "LLM-QE + MedCPT [deepseek-v4.1-flash-1017] - Hybrid + MedCPT": {
           "diff": 0.0057,
-          "lo": -0.0026,
-          "hi": 0.015,
-          "p_le_0": 0.0895
+          "lo": -0.0024,
+          "hi": 0.0153,
+          "p_le_0": 0.0935
         },
         "LLM-QE + MedCPT [claude-haiku-5.5] - Hybrid + MedCPT": {
           "diff": -0.0011,
-          "lo": -0.0141,
+          "lo": -0.0145,
           "hi": 0.011,
-          "p_le_0": 0.566
+          "p_le_0": 0.5615
         },
         "LLM-QE + MedCPT [qwen3-8b] - Hybrid + MedCPT": {
           "diff": -0.0075,
-          "lo": -0.0225,
-          "hi": 0.0073,
-          "p_le_0": 0.8285
+          "lo": -0.0236,
+          "hi": 0.0066,
+          "p_le_0": 0.8405
         }
       }
     },
@@ -125,136 +137,148 @@
         "Qwen3-Embedding-4B": {
           "point": 0.6882,
           "lo": 0.6392,
-          "hi": 0.7363
+          "hi": 0.7367
         },
         "Hybrid + MiniLM-L12": {
           "point": 0.6392,
-          "lo": 0.5907,
-          "hi": 0.6877
+          "lo": 0.5913,
+          "hi": 0.6852
         },
         "LLM-QE [deepseek-v4.1-flash-1017]": {
           "point": 0.5994,
-          "lo": 0.5469,
-          "hi": 0.65
+          "lo": 0.5483,
+          "hi": 0.6502
         },
         "Hybrid + monoT5-3B": {
           "point": 0.7781,
-          "lo": 0.7392,
-          "hi": 0.817
+          "lo": 0.7376,
+          "hi": 0.8155
         },
         "LLM-QE + MedCPT [qwen3-8b]": {
           "point": 0.7448,
-          "lo": 0.6988,
-          "hi": 0.7868
+          "lo": 0.7016,
+          "hi": 0.7862
         },
         "LLM-QE + MedCPT [deepseek-v4.1-flash-1017]": {
           "point": 0.7542,
-          "lo": 0.7123,
-          "hi": 0.7965
+          "lo": 0.7117,
+          "hi": 0.7935
         },
         "bge-large-en-v1.5": {
           "point": 0.6985,
-          "lo": 0.6537,
+          "lo": 0.6525,
           "hi": 0.7413
         },
         "BM25": {
           "point": 0.5614,
-          "lo": 0.5041,
-          "hi": 0.6143
+          "lo": 0.5075,
+          "hi": 0.6131
         },
         "MedCPT dense": {
           "point": 0.6265,
-          "lo": 0.576,
-          "hi": 0.6799
+          "lo": 0.5737,
+          "hi": 0.6768
         },
         "LLM-QE + MedCPT [claude-haiku-5.5]": {
           "point": 0.741,
-          "lo": 0.6996,
-          "hi": 0.7815
+          "lo": 0.6983,
+          "hi": 0.7811
         },
         "LLM-QE [qwen3-8b]": {
           "point": 0.5973,
-          "lo": 0.5436,
-          "hi": 0.6512
+          "lo": 0.5441,
+          "hi": 0.6462
         },
         "Hybrid + MedCPT": {
           "point": 0.7502,
-          "lo": 0.7083,
+          "lo": 0.708,
           "hi": 0.7906
         },
         "Hybrid + Qwen3-Reranker-4B": {
           "point": 0.8061,
-          "lo": 0.7682,
-          "hi": 0.8434
+          "lo": 0.7668,
+          "hi": 0.8433
         },
         "e5-large-v2": {
           "point": 0.6814,
-          "lo": 0.6326,
-          "hi": 0.7305
+          "lo": 0.6318,
+          "hi": 0.7278
         },
         "Hybrid + bge-reranker-v2-m3": {
           "point": 0.7367,
-          "lo": 0.6931,
-          "hi": 0.7775
+          "lo": 0.6947,
+          "hi": 0.7777
         },
         "LLM-QE [claude-haiku-5.5]": {
           "point": 0.6056,
-          "lo": 0.5556,
-          "hi": 0.6579
+          "lo": 0.5542,
+          "hi": 0.6543
         },
         "Hybrid": {
           "point": 0.6426,
-          "lo": 0.5929,
-          "hi": 0.6945
+          "lo": 0.5917,
+          "hi": 0.69
         },
         "BM25 + MedCPT": {
           "point": 0.7192,
-          "lo": 0.6708,
-          "hi": 0.7679
+          "lo": 0.6715,
+          "hi": 0.7629
         }
       },
       "paired_ndcg@10": {
         "Hybrid + Qwen3-Reranker-4B - Hybrid + MedCPT": {
           "diff": 0.0559,
-          "lo": 0.0261,
-          "hi": 0.0852,
-          "p_le_0": 0.001
+          "lo": 0.0267,
+          "hi": 0.0871,
+          "p_le_0": 0.0
         },
         "Hybrid + MedCPT - Hybrid + monoT5-3B": {
           "diff": -0.0278,
-          "lo": -0.0582,
-          "hi": 0.0026,
-          "p_le_0": 0.9625
+          "lo": -0.0569,
+          "hi": 0.0016,
+          "p_le_0": 0.967
+        },
+        "Hybrid + MedCPT - Hybrid + bge-reranker-v2-m3": {
+          "diff": 0.0135,
+          "lo": -0.0211,
+          "hi": 0.0471,
+          "p_le_0": 0.215
+        },
+        "Hybrid + MedCPT - Hybrid + MiniLM-L12": {
+          "diff": 0.111,
+          "lo": 0.0771,
+          "hi": 0.1459,
+          "p_le_0": 0.0
         },
         "Hybrid + MedCPT - Hybrid": {
           "diff": 0.1077,
-          "lo": 0.07,
-          "hi": 0.1477,
+          "lo": 0.0702,
+          "hi": 0.1467,
           "p_le_0": 0.0
         },
         "Hybrid + MedCPT - BM25": {
           "diff": 0.1888,
-          "lo": 0.1469,
-          "hi": 0.2338,
+          "lo": 0.1475,
+          "hi": 0.2322,
           "p_le_0": 0.0
         },
         "LLM-QE + MedCPT [deepseek-v4.1-flash-1017] - Hybrid + MedCPT": {
           "diff": 0.0039,
-          "lo": -0.0145,
-          "hi": 0.0199,
-          "p_le_0": 0.3115
+          "lo": -0.014,
+          "hi": 0.0207,
+          "p_le_0": 0.3085
         },
         "LLM-QE + MedCPT [claude-haiku-5.5] - Hybrid + MedCPT": {
           "diff": -0.0092,
-          "lo": -0.0295,
-          "hi": 0.01,
-          "p_le_0": 0.8125
+          "lo": -0.0305,
+          "hi": 0.0099,
+          "p_le_0": 0.8065
         },
         "LLM-QE + MedCPT [qwen3-8b] - Hybrid + MedCPT": {
           "diff": -0.0054,
-          "lo": -0.0271,
-          "hi": 0.0145,
-          "p_le_0": 0.697
+          "lo": -0.027,
+          "hi": 0.0142,
+          "p_le_0": 0.685
         }
       }
     }
@@ -263,13 +287,13 @@
     "scifact_oracle": {
       "VeriSci": {
         "point": 0.734,
-        "lo": 0.6704,
-        "hi": 0.7916
+        "lo": 0.6699,
+        "hi": 0.7921
       },
       "MultiVerS-zs (fever_sci)": {
         "point": 0.6313,
-        "lo": 0.5626,
-        "hi": 0.697
+        "lo": 0.562,
+        "hi": 0.6994
       },
       "MultiVerS-sf* (scifact, CONTAMINATED)": {
         "point": 1.0,
@@ -278,139 +302,624 @@
       },
       "LLM claude-haiku-5.5": {
         "point": 0.8201,
-        "lo": 0.7737,
-        "hi": 0.8618
+        "lo": 0.7714,
+        "hi": 0.8656
       },
       "LLM deepseek-v4.1-flash-1017": {
         "point": 0.8329,
-        "lo": 0.7862,
+        "lo": 0.7842,
         "hi": 0.8771
       },
       "LLM claude-sonnet-5.5": {
         "point": 0.8732,
-        "lo": 0.8326,
-        "hi": 0.9087
+        "lo": 0.8333,
+        "hi": 0.9095
       },
       "LLM qwen3-8b": {
-        "point": 0.709,
-        "lo": 0.6535,
-        "hi": 0.7588
+        "point": 0.7105,
+        "lo": 0.6542,
+        "hi": 0.7623
       }
     },
     "scifact_open": {
       "VeriSci": {
         "point": 0.552,
-        "lo": 0.4947,
-        "hi": 0.6052
+        "lo": 0.4967,
+        "hi": 0.6067
       },
       "MultiVerS-zs (fever_sci)": {
         "point": 0.5521,
-        "lo": 0.4906,
-        "hi": 0.6158
+        "lo": 0.4874,
+        "hi": 0.6202
       },
       "MultiVerS-sf* (scifact, CONTAMINATED)": {
         "point": 0.8786,
-        "lo": 0.8354,
-        "hi": 0.9201
+        "lo": 0.8341,
+        "hi": 0.9188
       },
       "LLM claude-haiku-5.5": {
         "point": 0.6294,
-        "lo": 0.5731,
-        "hi": 0.6872
+        "lo": 0.572,
+        "hi": 0.6853
       },
       "LLM deepseek-v4.1-flash-1017": {
         "point": 0.6429,
-        "lo": 0.5849,
-        "hi": 0.6968
+        "lo": 0.5861,
+        "hi": 0.6964
       },
       "LLM claude-sonnet-5.5": {
         "point": 0.66,
-        "lo": 0.6089,
-        "hi": 0.7119
+        "lo": 0.6082,
+        "hi": 0.7106
       },
       "LLM qwen3-8b": {
         "point": 0.4189,
-        "lo": 0.3767,
-        "hi": 0.4575
+        "lo": 0.3752,
+        "hi": 0.4611
       }
     },
     "scifact_open_open": {
       "VeriSci": {
         "point": 0.3488,
-        "lo": 0.2937,
-        "hi": 0.4096
+        "lo": 0.2934,
+        "hi": 0.4083
       },
       "MultiVerS-zs (fever_sci)": {
         "point": 0.3136,
-        "lo": 0.2636,
-        "hi": 0.3699
+        "lo": 0.2638,
+        "hi": 0.3677
       },
       "MultiVerS-scifact (supervised, SciFact train+dev)": {
         "point": 0.4382,
-        "lo": 0.3736,
-        "hi": 0.5056
+        "lo": 0.3744,
+        "hi": 0.5096
       },
       "LLM claude-haiku-5.5": {
         "point": 0.4568,
-        "lo": 0.405,
-        "hi": 0.5141
+        "lo": 0.4062,
+        "hi": 0.5125
       },
       "LLM deepseek-v4.1-flash-1017": {
         "point": 0.4701,
-        "lo": 0.4126,
-        "hi": 0.5281
+        "lo": 0.4173,
+        "hi": 0.5302
       },
       "LLM claude-sonnet-5.5": {
         "point": 0.466,
-        "lo": 0.4121,
-        "hi": 0.5271
+        "lo": 0.4148,
+        "hi": 0.5243
       },
       "LLM qwen3-8b": {
         "point": 0.35,
-        "lo": 0.3125,
-        "hi": 0.3892
+        "lo": 0.3141,
+        "hi": 0.3888
       }
     },
     "healthver": {
       "VeriSci": {
         "point": 0.1983,
-        "lo": 0.1476,
-        "hi": 0.2527
+        "lo": 0.1477,
+        "hi": 0.2486
       },
       "MultiVerS-zs (fever_sci)": {
         "point": 0.3067,
-        "lo": 0.243,
-        "hi": 0.3709
+        "lo": 0.2427,
+        "hi": 0.3678
       },
       "MultiVerS-scifact (supervised, SciFact train+dev)": {
         "point": 0.0674,
         "lo": 0.0404,
-        "hi": 0.0973
+        "hi": 0.0954
       },
       "MultiVerS-healthver (supervised, HealthVer train)": {
         "point": 0.7766,
-        "lo": 0.7314,
-        "hi": 0.8194
+        "lo": 0.7291,
+        "hi": 0.818
       },
       "LLM claude-haiku-5.5": {
         "point": 0.4597,
-        "lo": 0.4048,
-        "hi": 0.5153
+        "lo": 0.4013,
+        "hi": 0.5146
       },
       "LLM deepseek-v4.1-flash-1017": {
         "point": 0.4811,
-        "lo": 0.4193,
-        "hi": 0.5393
+        "lo": 0.422,
+        "hi": 0.5391
       },
       "LLM claude-sonnet-5.5": {
         "point": 0.5144,
-        "lo": 0.4581,
-        "hi": 0.572
+        "lo": 0.4552,
+        "hi": 0.5728
       },
       "LLM qwen3-8b": {
         "point": 0.6181,
-        "lo": 0.568,
-        "hi": 0.6672
+        "lo": 0.5683,
+        "hi": 0.6661
+      }
+    }
+  },
+  "verdict_paired_label_f1": {
+    "scifact_oracle": {
+      "LLM claude-haiku-5.5 - VeriSci": {
+        "diff": 0.0861,
+        "lo": 0.0167,
+        "hi": 0.1605,
+        "p_le_0": 0.006
+      },
+      "LLM claude-haiku-5.5 - MultiVerS-zs (fever_sci)": {
+        "diff": 0.1889,
+        "lo": 0.1184,
+        "hi": 0.2565,
+        "p_le_0": 0.0
+      },
+      "LLM deepseek-v4.1-flash-1017 - VeriSci": {
+        "diff": 0.0989,
+        "lo": 0.0309,
+        "hi": 0.1721,
+        "p_le_0": 0.0005
+      },
+      "LLM deepseek-v4.1-flash-1017 - MultiVerS-zs (fever_sci)": {
+        "diff": 0.2016,
+        "lo": 0.126,
+        "hi": 0.274,
+        "p_le_0": 0.0
+      },
+      "LLM claude-sonnet-5.5 - VeriSci": {
+        "diff": 0.1392,
+        "lo": 0.0769,
+        "hi": 0.2068,
+        "p_le_0": 0.0
+      },
+      "LLM claude-sonnet-5.5 - MultiVerS-zs (fever_sci)": {
+        "diff": 0.242,
+        "lo": 0.1752,
+        "hi": 0.3116,
+        "p_le_0": 0.0
+      },
+      "LLM qwen3-8b - VeriSci": {
+        "diff": -0.0236,
+        "lo": -0.0979,
+        "hi": 0.0558,
+        "p_le_0": 0.731
+      },
+      "LLM qwen3-8b - MultiVerS-zs (fever_sci)": {
+        "diff": 0.0792,
+        "lo": -0.0077,
+        "hi": 0.1586,
+        "p_le_0": 0.035
+      }
+    },
+    "scifact_open": {
+      "LLM claude-haiku-5.5 - VeriSci": {
+        "diff": 0.0774,
+        "lo": 0.0191,
+        "hi": 0.1387,
+        "p_le_0": 0.007
+      },
+      "LLM deepseek-v4.1-flash-1017 - VeriSci": {
+        "diff": 0.0908,
+        "lo": 0.0309,
+        "hi": 0.1559,
+        "p_le_0": 0.0015
+      },
+      "LLM claude-sonnet-5.5 - VeriSci": {
+        "diff": 0.108,
+        "lo": 0.0474,
+        "hi": 0.1692,
+        "p_le_0": 0.0
+      },
+      "LLM qwen3-8b - VeriSci": {
+        "diff": -0.1332,
+        "lo": -0.1911,
+        "hi": -0.0725,
+        "p_le_0": 1.0
+      }
+    },
+    "scifact_open_open": {
+      "LLM claude-haiku-5.5 - MultiVerS-scifact (supervised, SciFact train+dev)": {
+        "diff": 0.0186,
+        "lo": -0.0275,
+        "hi": 0.0628,
+        "p_le_0": 0.2
+      },
+      "LLM claude-haiku-5.5 - VeriSci": {
+        "diff": 0.108,
+        "lo": 0.0686,
+        "hi": 0.1494,
+        "p_le_0": 0.0
+      },
+      "LLM deepseek-v4.1-flash-1017 - MultiVerS-scifact (supervised, SciFact train+dev)": {
+        "diff": 0.032,
+        "lo": -0.0085,
+        "hi": 0.072,
+        "p_le_0": 0.0605
+      },
+      "LLM deepseek-v4.1-flash-1017 - VeriSci": {
+        "diff": 0.1213,
+        "lo": 0.0826,
+        "hi": 0.1631,
+        "p_le_0": 0.0
+      },
+      "LLM claude-sonnet-5.5 - MultiVerS-scifact (supervised, SciFact train+dev)": {
+        "diff": 0.0278,
+        "lo": -0.0129,
+        "hi": 0.0694,
+        "p_le_0": 0.0955
+      },
+      "LLM claude-sonnet-5.5 - VeriSci": {
+        "diff": 0.1172,
+        "lo": 0.0764,
+        "hi": 0.1606,
+        "p_le_0": 0.0
+      },
+      "LLM qwen3-8b - MultiVerS-scifact (supervised, SciFact train+dev)": {
+        "diff": -0.0882,
+        "lo": -0.1426,
+        "hi": -0.0372,
+        "p_le_0": 1.0
+      },
+      "LLM qwen3-8b - VeriSci": {
+        "diff": 0.0012,
+        "lo": -0.0434,
+        "hi": 0.0445,
+        "p_le_0": 0.4885
+      }
+    },
+    "healthver": {
+      "MultiVerS-healthver (supervised, HealthVer train) - LLM claude-haiku-5.5": {
+        "diff": 0.3169,
+        "lo": 0.2592,
+        "hi": 0.3767,
+        "p_le_0": 0.0
+      },
+      "MultiVerS-healthver (supervised, HealthVer train) - LLM deepseek-v4.1-flash-1017": {
+        "diff": 0.2955,
+        "lo": 0.2384,
+        "hi": 0.3523,
+        "p_le_0": 0.0
+      },
+      "MultiVerS-healthver (supervised, HealthVer train) - LLM claude-sonnet-5.5": {
+        "diff": 0.2621,
+        "lo": 0.2078,
+        "hi": 0.3189,
+        "p_le_0": 0.0
+      },
+      "MultiVerS-healthver (supervised, HealthVer train) - LLM qwen3-8b": {
+        "diff": 0.1584,
+        "lo": 0.1112,
+        "hi": 0.2073,
+        "p_le_0": 0.0
+      }
+    }
+  },
+  "verdict_diagnostics": {
+    "scifact_oracle": {
+      "VeriSci": {
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 38,
+          "CONTRADICT->NEI": 25,
+          "CONTRADICT->SUPPORT": 8,
+          "NEI->CONTRADICT": 3,
+          "NEI->NEI": 117,
+          "NEI->SUPPORT": 10,
+          "SUPPORT->CONTRADICT": 8,
+          "SUPPORT->NEI": 30,
+          "SUPPORT->SUPPORT": 100
+        },
+        "nei_rate_on_gold_evidence": 0.2632,
+        "n_gold_evidence_pairs": 209,
+        "nei_rate_overall": 0.5074
+      },
+      "MultiVerS-zs (fever_sci)": {
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 15,
+          "CONTRADICT->NEI": 36,
+          "CONTRADICT->SUPPORT": 20,
+          "NEI->CONTRADICT": 2,
+          "NEI->NEI": 117,
+          "NEI->SUPPORT": 11,
+          "SUPPORT->CONTRADICT": 3,
+          "SUPPORT->NEI": 37,
+          "SUPPORT->SUPPORT": 98
+        },
+        "nei_rate_on_gold_evidence": 0.3493,
+        "n_gold_evidence_pairs": 209,
+        "nei_rate_overall": 0.5605
+      },
+      "MultiVerS-sf* (scifact, CONTAMINATED)": {
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 71,
+          "NEI->NEI": 130,
+          "SUPPORT->SUPPORT": 138
+        },
+        "nei_rate_on_gold_evidence": 0.0,
+        "n_gold_evidence_pairs": 209,
+        "nei_rate_overall": 0.3835
+      },
+      "LLM claude-haiku-5.5": {
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 57,
+          "CONTRADICT->NEI": 7,
+          "CONTRADICT->SUPPORT": 7,
+          "NEI->CONTRADICT": 11,
+          "NEI->NEI": 108,
+          "NEI->SUPPORT": 11,
+          "SUPPORT->CONTRADICT": 8,
+          "SUPPORT->NEI": 16,
+          "SUPPORT->SUPPORT": 114
+        },
+        "nei_rate_on_gold_evidence": 0.11,
+        "n_gold_evidence_pairs": 209,
+        "nei_rate_overall": 0.3864
+      },
+      "LLM deepseek-v4.1-flash-1017": {
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 63,
+          "CONTRADICT->NEI": 6,
+          "CONTRADICT->SUPPORT": 2,
+          "NEI->CONTRADICT": 12,
+          "NEI->NEI": 109,
+          "NEI->SUPPORT": 9,
+          "SUPPORT->CONTRADICT": 9,
+          "SUPPORT->NEI": 20,
+          "SUPPORT->SUPPORT": 109
+        },
+        "nei_rate_on_gold_evidence": 0.1244,
+        "n_gold_evidence_pairs": 209,
+        "nei_rate_overall": 0.3982
+      },
+      "LLM claude-sonnet-5.5": {
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 66,
+          "CONTRADICT->NEI": 1,
+          "CONTRADICT->SUPPORT": 4,
+          "NEI->CONTRADICT": 12,
+          "NEI->NEI": 108,
+          "NEI->SUPPORT": 10,
+          "SUPPORT->CONTRADICT": 5,
+          "SUPPORT->NEI": 13,
+          "SUPPORT->SUPPORT": 120
+        },
+        "nei_rate_on_gold_evidence": 0.067,
+        "n_gold_evidence_pairs": 209,
+        "nei_rate_overall": 0.3599
+      },
+      "LLM qwen3-8b": {
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 63,
+          "CONTRADICT->NEI": 1,
+          "CONTRADICT->SUPPORT": 7,
+          "NEI->CONTRADICT": 45,
+          "NEI->NEI": 58,
+          "NEI->SUPPORT": 27,
+          "SUPPORT->CONTRADICT": 26,
+          "SUPPORT->NEI": 2,
+          "SUPPORT->SUPPORT": 110
+        },
+        "nei_rate_on_gold_evidence": 0.0144,
+        "n_gold_evidence_pairs": 209,
+        "nei_rate_overall": 0.1799
+      }
+    },
+    "scifact_open_gold_evidence": {
+      "VeriSci": {
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 97,
+          "CONTRADICT->NEI": 96,
+          "CONTRADICT->SUPPORT": 18,
+          "SUPPORT->CONTRADICT": 13,
+          "SUPPORT->NEI": 96,
+          "SUPPORT->SUPPORT": 140
+        },
+        "nei_rate_on_gold_evidence": 0.4174,
+        "n_gold_evidence_pairs": 460,
+        "nei_rate_overall": 0.4174
+      },
+      "MultiVerS-zs (fever_sci)": {
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 46,
+          "CONTRADICT->NEI": 111,
+          "CONTRADICT->SUPPORT": 54,
+          "SUPPORT->CONTRADICT": 9,
+          "SUPPORT->NEI": 101,
+          "SUPPORT->SUPPORT": 139
+        },
+        "nei_rate_on_gold_evidence": 0.4609,
+        "n_gold_evidence_pairs": 460,
+        "nei_rate_overall": 0.4609
+      },
+      "MultiVerS-scifact (supervised, SciFact train+dev)": {
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 93,
+          "CONTRADICT->NEI": 104,
+          "CONTRADICT->SUPPORT": 14,
+          "SUPPORT->CONTRADICT": 11,
+          "SUPPORT->NEI": 131,
+          "SUPPORT->SUPPORT": 107
+        },
+        "nei_rate_on_gold_evidence": 0.5109,
+        "n_gold_evidence_pairs": 460,
+        "nei_rate_overall": 0.5109
+      },
+      "LLM claude-haiku-5.5": {
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 185,
+          "CONTRADICT->NEI": 19,
+          "CONTRADICT->SUPPORT": 7,
+          "SUPPORT->CONTRADICT": 11,
+          "SUPPORT->NEI": 48,
+          "SUPPORT->SUPPORT": 190
+        },
+        "nei_rate_on_gold_evidence": 0.1457,
+        "n_gold_evidence_pairs": 460,
+        "nei_rate_overall": 0.1457
+      },
+      "LLM deepseek-v4.1-flash-1017": {
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 193,
+          "CONTRADICT->NEI": 14,
+          "CONTRADICT->SUPPORT": 4,
+          "SUPPORT->CONTRADICT": 12,
+          "SUPPORT->NEI": 45,
+          "SUPPORT->SUPPORT": 192
+        },
+        "nei_rate_on_gold_evidence": 0.1283,
+        "n_gold_evidence_pairs": 460,
+        "nei_rate_overall": 0.1283
+      },
+      "LLM claude-sonnet-5.5": {
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 195,
+          "CONTRADICT->NEI": 13,
+          "CONTRADICT->SUPPORT": 3,
+          "SUPPORT->CONTRADICT": 5,
+          "SUPPORT->NEI": 37,
+          "SUPPORT->SUPPORT": 207
+        },
+        "nei_rate_on_gold_evidence": 0.1087,
+        "n_gold_evidence_pairs": 460,
+        "nei_rate_overall": 0.1087
+      },
+      "LLM qwen3-8b": {
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 196,
+          "CONTRADICT->NEI": 2,
+          "CONTRADICT->SUPPORT": 13,
+          "SUPPORT->CONTRADICT": 42,
+          "SUPPORT->NEI": 5,
+          "SUPPORT->SUPPORT": 202
+        },
+        "nei_rate_on_gold_evidence": 0.0152,
+        "n_gold_evidence_pairs": 460,
+        "nei_rate_overall": 0.0152
+      }
+    },
+    "healthver": {
+      "VeriSci": {
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 19,
+          "CONTRADICT->NEI": 192,
+          "CONTRADICT->SUPPORT": 14,
+          "NEI->CONTRADICT": 3,
+          "NEI->NEI": 288,
+          "NEI->SUPPORT": 13,
+          "SUPPORT->CONTRADICT": 7,
+          "SUPPORT->NEI": 316,
+          "SUPPORT->SUPPORT": 51
+        },
+        "nei_rate_on_gold_evidence": 0.8481,
+        "n_gold_evidence_pairs": 599,
+        "nei_rate_overall": 0.8815
+      },
+      "MultiVerS-zs (fever_sci)": {
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 29,
+          "CONTRADICT->NEI": 171,
+          "CONTRADICT->SUPPORT": 25,
+          "NEI->CONTRADICT": 7,
+          "NEI->NEI": 268,
+          "NEI->SUPPORT": 29,
+          "SUPPORT->CONTRADICT": 19,
+          "SUPPORT->NEI": 261,
+          "SUPPORT->SUPPORT": 94
+        },
+        "nei_rate_on_gold_evidence": 0.7212,
+        "n_gold_evidence_pairs": 599,
+        "nei_rate_overall": 0.7752
+      },
+      "MultiVerS-scifact (supervised, SciFact train+dev)": {
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 3,
+          "CONTRADICT->NEI": 222,
+          "NEI->NEI": 303,
+          "NEI->SUPPORT": 1,
+          "SUPPORT->CONTRADICT": 2,
+          "SUPPORT->NEI": 354,
+          "SUPPORT->SUPPORT": 18
+        },
+        "nei_rate_on_gold_evidence": 0.9616,
+        "n_gold_evidence_pairs": 599,
+        "nei_rate_overall": 0.9734
+      },
+      "MultiVerS-healthver (supervised, HealthVer train)": {
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 155,
+          "CONTRADICT->NEI": 29,
+          "CONTRADICT->SUPPORT": 41,
+          "NEI->CONTRADICT": 21,
+          "NEI->NEI": 245,
+          "NEI->SUPPORT": 38,
+          "SUPPORT->CONTRADICT": 21,
+          "SUPPORT->NEI": 51,
+          "SUPPORT->SUPPORT": 302
+        },
+        "nei_rate_on_gold_evidence": 0.1336,
+        "n_gold_evidence_pairs": 599,
+        "nei_rate_overall": 0.3599
+      },
+      "LLM claude-haiku-5.5": {
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 98,
+          "CONTRADICT->NEI": 112,
+          "CONTRADICT->SUPPORT": 15,
+          "NEI->CONTRADICT": 20,
+          "NEI->NEI": 261,
+          "NEI->SUPPORT": 23,
+          "SUPPORT->CONTRADICT": 40,
+          "SUPPORT->NEI": 224,
+          "SUPPORT->SUPPORT": 110
+        },
+        "nei_rate_on_gold_evidence": 0.5609,
+        "n_gold_evidence_pairs": 599,
+        "nei_rate_overall": 0.6611
+      },
+      "LLM deepseek-v4.1-flash-1017": {
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 81,
+          "CONTRADICT->NEI": 119,
+          "CONTRADICT->SUPPORT": 25,
+          "NEI->CONTRADICT": 12,
+          "NEI->NEI": 262,
+          "NEI->SUPPORT": 30,
+          "SUPPORT->CONTRADICT": 16,
+          "SUPPORT->NEI": 223,
+          "SUPPORT->SUPPORT": 135
+        },
+        "nei_rate_on_gold_evidence": 0.571,
+        "n_gold_evidence_pairs": 599,
+        "nei_rate_overall": 0.6689
+      },
+      "LLM claude-sonnet-5.5": {
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 79,
+          "CONTRADICT->NEI": 115,
+          "CONTRADICT->SUPPORT": 31,
+          "NEI->CONTRADICT": 10,
+          "NEI->NEI": 253,
+          "NEI->SUPPORT": 41,
+          "SUPPORT->CONTRADICT": 15,
+          "SUPPORT->NEI": 197,
+          "SUPPORT->SUPPORT": 162
+        },
+        "nei_rate_on_gold_evidence": 0.5209,
+        "n_gold_evidence_pairs": 599,
+        "nei_rate_overall": 0.6257
+      },
+      "LLM qwen3-8b": {
+        "confusion": {
+          "CONTRADICT->CONTRADICT": 140,
+          "CONTRADICT->NEI": 36,
+          "CONTRADICT->SUPPORT": 49,
+          "NEI->CONTRADICT": 59,
+          "NEI->NEI": 165,
+          "NEI->SUPPORT": 80,
+          "SUPPORT->CONTRADICT": 67,
+          "SUPPORT->NEI": 65,
+          "SUPPORT->SUPPORT": 242
+        },
+        "nei_rate_on_gold_evidence": 0.1686,
+        "n_gold_evidence_pairs": 599,
+        "nei_rate_overall": 0.2946
       }
     }
   }

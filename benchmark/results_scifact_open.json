@@ -359,16 +359,16 @@
       },
       "open_abstract_level": {
         "label_only": {
-          "P": 0.5478,
+          "P": 0.5494,
           "R": 0.4109,
-          "F1": 0.4696
+          "F1": 0.4701
         },
         "rationale_selected": {
-          "P": 0.3623,
+          "P": 0.3634,
           "R": 0.2717,
-          "F1": 0.3106
+          "F1": 0.3109
         },
-        "n_pred_evidence": 345,
+        "n_pred_evidence": 344,
         "n_gold_evidence": 460
       }
     },

@@ -93,20 +93,20 @@
   "verdict": {
     "claude-haiku-5.5": {
       "oracle_3class": {
-        "n": 340,
-        "accuracy": 0.8235,
-        "macro_f1": 0.8163,
+        "n": 339,
+        "accuracy": 0.823,
+        "macro_f1": 0.8158,
         "per_class_f1": {
           "SUPPORT": 0.8444,
           "CONTRADICT": 0.7755,
-          "NEI": 0.8289
+          "NEI": 0.8276
         },
         "confusion": {
           "CONTRADICT->CONTRADICT": 57,
           "CONTRADICT->NEI": 7,
           "CONTRADICT->SUPPORT": 7,
           "NEI->CONTRADICT": 11,
-          "NEI->NEI": 109,
+          "NEI->NEI": 108,
           "NEI->SUPPORT": 11,
           "SUPPORT->CONTRADICT": 8,
           "SUPPORT->NEI": 16,
@@ -146,20 +146,20 @@
     },
     "deepseek-v4.1-flash-1017": {
       "oracle_3class": {
-        "n": 340,
-        "accuracy": 0.8294,
-        "macro_f1": 0.8273,
+        "n": 339,
+        "accuracy": 0.8289,
+        "macro_f1": 0.8268,
         "per_class_f1": {
           "SUPPORT": 0.845,
           "CONTRADICT": 0.8129,
-          "NEI": 0.824
+          "NEI": 0.8226
         },
         "confusion": {
           "CONTRADICT->CONTRADICT": 63,
           "CONTRADICT->NEI": 6,
           "CONTRADICT->SUPPORT": 2,
           "NEI->CONTRADICT": 12,
-          "NEI->NEI": 110,
+          "NEI->NEI": 109,
           "NEI->SUPPORT": 9,
           "SUPPORT->CONTRADICT": 9,
           "SUPPORT->NEI": 20,
@@ -199,20 +199,20 @@
     },
     "claude-sonnet-5.5": {
       "oracle_3class": {
-        "n": 340,
-        "accuracy": 0.8676,
-        "macro_f1": 0.8659,
+        "n": 339,
+        "accuracy": 0.8673,
+        "macro_f1": 0.8655,
         "per_class_f1": {
           "SUPPORT": 0.8824,
           "CONTRADICT": 0.8571,
-          "NEI": 0.8583
+          "NEI": 0.8571
         },
         "confusion": {
           "CONTRADICT->CONTRADICT": 66,
           "CONTRADICT->NEI": 1,
           "CONTRADICT->SUPPORT": 4,
           "NEI->CONTRADICT": 12,
-          "NEI->NEI": 109,
+          "NEI->NEI": 108,
           "NEI->SUPPORT": 10,
           "SUPPORT->CONTRADICT": 5,
           "SUPPORT->NEI": 13,
@@ -262,14 +262,14 @@
     }
   },
   "timing_sec": {
-    "rerank (key-free)": 1.4,
+    "rerank (key-free)": 1.3,
     "LLM stages [claude-haiku-5.5]": 14.7,
-    "LLM stages [deepseek-v4.1-flash-1017]": 14.8
+    "LLM stages [deepseek-v4.1-flash-1017]": 12.9
   },
   "llm_cost_usd_cumulative": {
     "anthropic/claude-haiku-5.5": 0.4256,
     "deepseek/deepseek-v4.1-flash-1017": 0.2216,
     "anthropic/claude-sonnet-5.5": 7.7436
   },
-  "wall_sec": 35.4
+  "wall_sec": 33.3
 }
