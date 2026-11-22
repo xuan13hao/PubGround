@@ -25,7 +25,7 @@ sys.path.insert(0, HERE)
 from run_benchmark import load_data, tok, log  # noqa: E402
 from run_llm_benchmark import rrf, evaluate  # noqa: E402
 
-DATA = os.path.join(HERE, "data")
+DATA = os.environ.get("PUBGROUND_BENCH_DATA") or os.path.join(HERE, "data")  # override with PUBGROUND_BENCH_DATA
 RUNS = f"{DATA}/baseline_runs"
 TOPK = 100
 QWEN_TASK = "Given a scientific claim, retrieve documents that support or refute the claim"
@@ -132,12 +132,15 @@ class PairScorer:
         import torch
         self.name = name
         self.d = dev()
-        if name in ("MedCPT", "MiniLM-L12", "bge-reranker-v2-m3"):
+        if name in ("MedCPT", "MiniLM-L12", "bge-reranker-v2-m3", "OpenScholar-Reranker", "bge-reranker-large"):
             from transformers import AutoTokenizer, AutoModelForSequenceClassification
             hf = {"MedCPT": "ncbi/MedCPT-Cross-Encoder",
                   "MiniLM-L12": "cross-encoder/ms-marco-MiniLM-L-12-v2",
-                  "bge-reranker-v2-m3": "BAAI/bge-reranker-v2-m3"}[name]
-            self.t = AutoTokenizer.from_pretrained(hf)
+                  "bge-reranker-v2-m3": "BAAI/bge-reranker-v2-m3",
+                  "OpenScholar-Reranker": "OpenSciLM/OpenScholar_Reranker",
+                  "bge-reranker-large": "BAAI/bge-reranker-large"}[name]  # OpenScholar reranker's base model
+            # OpenScholar ships only a sentencepiece model: use the slow tokenizer (no protobuf conversion)
+            self.t = AutoTokenizer.from_pretrained(hf, use_fast=name != "OpenScholar-Reranker")
             self.m = AutoModelForSequenceClassification.from_pretrained(
                 hf, torch_dtype=torch.float16).to(self.d).eval()
             self.kind, self.bs = "ce", 64

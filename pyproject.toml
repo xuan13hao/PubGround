@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pubground"
+version = "1.1.0"
+description = "PubGround: training-free grounding of biomedical claims in PubMed, with a reproducible benchmark"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [{name = "Hao Xuan"}]
+requires-python = ">=3.10"
+keywords = ["pubmed", "citation", "retrieval", "reranking", "claim verification", "mcp", "biomedical"]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+dependencies = [
+    "biopython>=1.81",
+    "nltk>=3.8",
+    "python-dotenv>=1.0.0",
+    "langchain>=0.1.0",
+    "langchain-openai>=0.0.5",
+    "numpy>=1.24",
+    "scipy>=1.10",
+]
+
+[project.optional-dependencies]
+rerank = ["torch>=2.1", "transformers>=4.44"]
+mcp = ["mcp>=1.2.0"]
+bench = ["torch>=2.1", "transformers>=4.44", "pandas", "pyarrow", "huggingface_hub", "requests",
+         "sentencepiece", "rank_bm25"]
+all = ["pubground[rerank,mcp,bench]"]
+
+[project.scripts]
+pubground-bench = "pubground_bench.cli:main"
+pubground-mcp = "mcp_servers.citation_server:main"
+
+[project.urls]
+Homepage = "https://github.com/xuan13hao/citation_agents_system"
+Documentation = "https://xuan13hao.github.io/citation_agents_system/"
+
+[tool.setuptools]
+packages = ["pubmed_sentence_matcher", "mcp_servers", "pubground_bench"]
+
+[tool.setuptools.package-dir]
+pubground_bench = "benchmark"
+
+[tool.setuptools.package-data]
+pubground_bench = ["*.md", "*.json"]

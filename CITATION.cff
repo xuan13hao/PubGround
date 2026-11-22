@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use PubGround or its benchmark, please cite it as below."
+title: "PubGround: a benchmarked, training-free pipeline for grounding biomedical claims"
+version: 1.1.0
+date-released: 2026-11-22
+authors:
+  - family-names: Xuan
+    given-names: Hao
+license: MIT
+repository-code: "https://github.com/xuan13hao/citation_agents_system"
+url: "https://xuan13hao.github.io/citation_agents_system/"
+keywords:
+  - PubMed
+  - citation grounding
+  - retrieval
+  - reranking
+  - claim verification
+  - Model Context Protocol

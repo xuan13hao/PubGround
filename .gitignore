@@ -21,3 +21,8 @@ benchmark/*.stdout
 
 # Third-party repos cloned for reading baseline code
 benchmark/ext/
+
+# Python build artifacts
+build/
+dist/
+*.egg-info/

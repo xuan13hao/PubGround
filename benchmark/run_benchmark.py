@@ -18,12 +18,12 @@ Published anchors (for sanity): BM25 nDCG@10 ~0.665; MedCPT dense ~0.761
 Usage:
   python benchmark/run_benchmark.py [--max-queries N] [--skip-dense] [--topk 100]
 """
-import argparse, json, math, re, sys, time
+import argparse, json, math, os, re, sys, time
 from collections import defaultdict
 
 import pandas as pd
 
-DATA = __file__.rsplit("/", 1)[0] + "/data"
+DATA = os.environ.get("PUBGROUND_BENCH_DATA") or __file__.rsplit("/", 1)[0] + "/data"  # override with PUBGROUND_BENCH_DATA
 
 
 def log(*a):

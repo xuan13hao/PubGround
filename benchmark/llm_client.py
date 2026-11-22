@@ -12,7 +12,7 @@ from concurrent.futures import ThreadPoolExecutor
 import requests
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DATA = os.path.join(HERE, "data")
+DATA = os.environ.get("PUBGROUND_BENCH_DATA") or os.path.join(HERE, "data")  # override with PUBGROUND_BENCH_DATA
 REFUSAL = "__CONTENT_FILTER_REFUSAL__"  # cached marker; parse_json() -> None -> caller fallback
 BASE_URL = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
 

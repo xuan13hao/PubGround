@@ -1,0 +1,1633 @@
+{
+ "method": "bootstrap over claims, 2000 replicates, 95% percentile intervals, seed 0 per statistic",
+ "scifact": {
+  "retrieval": {
+   "n_claims": 300,
+   "metrics": {
+    "OpenScholar retriever -> OpenScholar-Reranker": {
+     "ndcg@10": 0.6957,
+     "recall@10": 0.8178,
+     "recall@100": 0.9633,
+     "mrr@10": 0.6641,
+     "p@1": 0.5933
+    },
+    "OpenScholar retriever": {
+     "ndcg@10": 0.7067,
+     "recall@10": 0.8481,
+     "recall@100": 0.9633,
+     "mrr@10": 0.6642,
+     "p@1": 0.5633
+    },
+    "PubGround BM25": {
+     "ndcg@10": 0.6611,
+     "recall@10": 0.7784,
+     "recall@100": 0.8852,
+     "mrr@10": 0.6304,
+     "p@1": 0.5433
+    },
+    "PubGround MedCPT dense": {
+     "ndcg@10": 0.7369,
+     "recall@10": 0.8758,
+     "recall@100": 0.9817,
+     "mrr@10": 0.7008,
+     "p@1": 0.6067
+    },
+    "PubGround Stage1 [claude-haiku-5.5] + hybrid + MedCPT": {
+     "ndcg@10": 0.7916,
+     "recall@10": 0.9079,
+     "recall@100": 0.9667,
+     "mrr@10": 0.7581,
+     "p@1": 0.6767
+    },
+    "PubGround Stage1 [deepseek-v4.1-flash-1017] + hybrid + MedCPT": {
+     "ndcg@10": 0.7966,
+     "recall@10": 0.9112,
+     "recall@100": 0.97,
+     "mrr@10": 0.7633,
+     "p@1": 0.68
+    },
+    "PubGround Stage1 [qwen3-8b] + hybrid + MedCPT": {
+     "ndcg@10": 0.79,
+     "recall@10": 0.9046,
+     "recall@100": 0.9533,
+     "mrr@10": 0.7567,
+     "p@1": 0.6733
+    },
+    "PubGround hybrid + MedCPT": {
+     "ndcg@10": 0.7921,
+     "recall@10": 0.9079,
+     "recall@100": 0.9733,
+     "mrr@10": 0.7587,
+     "p@1": 0.6767
+    },
+    "PubGround hybrid -> MiniLM-L12": {
+     "ndcg@10": 0.6899,
+     "recall@10": 0.8039,
+     "recall@100": 0.9733,
+     "mrr@10": 0.6595,
+     "p@1": 0.5767
+    },
+    "PubGround hybrid -> OpenScholar-Reranker": {
+     "ndcg@10": 0.6852,
+     "recall@10": 0.7912,
+     "recall@100": 0.9733,
+     "mrr@10": 0.6585,
+     "p@1": 0.5967
+    },
+    "PubGround hybrid -> Qwen3-Reranker-4B": {
+     "ndcg@10": 0.801,
+     "recall@10": 0.9209,
+     "recall@100": 0.9733,
+     "mrr@10": 0.7677,
+     "p@1": 0.7
+    },
+    "PubGround hybrid -> bge-reranker-v2-m3": {
+     "ndcg@10": 0.7338,
+     "recall@10": 0.8462,
+     "recall@100": 0.9733,
+     "mrr@10": 0.704,
+     "p@1": 0.6333
+    },
+    "PubGround hybrid -> monoT5-3B": {
+     "ndcg@10": 0.7711,
+     "recall@10": 0.9113,
+     "recall@100": 0.9733,
+     "mrr@10": 0.7335,
+     "p@1": 0.6433
+    },
+    "PubGround hybrid": {
+     "ndcg@10": 0.7202,
+     "recall@10": 0.8514,
+     "recall@100": 0.9733,
+     "mrr@10": 0.6841,
+     "p@1": 0.5933
+    },
+    "e5-large-v2 (external)": {
+     "ndcg@10": 0.7213,
+     "recall@10": 0.8478,
+     "recall@100": 0.9627,
+     "mrr@10": 0.685,
+     "p@1": 0.5967
+    },
+    "bge-large-en-v1.5 (external)": {
+     "ndcg@10": 0.7464,
+     "recall@10": 0.8732,
+     "recall@100": 0.9517,
+     "mrr@10": 0.7125,
+     "p@1": 0.64
+    },
+    "SPLADE (external)": {
+     "ndcg@10": 0.7079,
+     "recall@10": 0.8186,
+     "recall@100": 0.9487,
+     "mrr@10": 0.6788,
+     "p@1": 0.5933
+    },
+    "Qwen3-Embedding-4B (external)": {
+     "ndcg@10": 0.7836,
+     "recall@10": 0.925,
+     "recall@100": 0.9767,
+     "mrr@10": 0.7416,
+     "p@1": 0.6433
+    }
+   },
+   "ndcg_ci": {
+    "OpenScholar retriever -> OpenScholar-Reranker": {
+     "point": 0.6957,
+     "lo": 0.6491,
+     "hi": 0.7386
+    },
+    "OpenScholar retriever": {
+     "point": 0.7067,
+     "lo": 0.6627,
+     "hi": 0.7482
+    },
+    "PubGround BM25": {
+     "point": 0.6611,
+     "lo": 0.6142,
+     "hi": 0.7064
+    },
+    "PubGround MedCPT dense": {
+     "point": 0.7369,
+     "lo": 0.6948,
+     "hi": 0.7778
+    },
+    "PubGround Stage1 [claude-haiku-5.5] + hybrid + MedCPT": {
+     "point": 0.7916,
+     "lo": 0.7543,
+     "hi": 0.8287
+    },
+    "PubGround Stage1 [deepseek-v4.1-flash-1017] + hybrid + MedCPT": {
+     "point": 0.7966,
+     "lo": 0.7597,
+     "hi": 0.8331
+    },
+    "PubGround Stage1 [qwen3-8b] + hybrid + MedCPT": {
+     "point": 0.79,
+     "lo": 0.7528,
+     "hi": 0.8273
+    },
+    "PubGround hybrid + MedCPT": {
+     "point": 0.7921,
+     "lo": 0.7534,
+     "hi": 0.8286
+    },
+    "PubGround hybrid -> MiniLM-L12": {
+     "point": 0.6899,
+     "lo": 0.6441,
+     "hi": 0.7338
+    },
+    "PubGround hybrid -> OpenScholar-Reranker": {
+     "point": 0.6852,
+     "lo": 0.6359,
+     "hi": 0.7298
+    },
+    "PubGround hybrid -> Qwen3-Reranker-4B": {
+     "point": 0.801,
+     "lo": 0.7627,
+     "hi": 0.8368
+    },
+    "PubGround hybrid -> bge-reranker-v2-m3": {
+     "point": 0.7338,
+     "lo": 0.6874,
+     "hi": 0.7757
+    },
+    "PubGround hybrid -> monoT5-3B": {
+     "point": 0.7711,
+     "lo": 0.7317,
+     "hi": 0.8094
+    },
+    "PubGround hybrid": {
+     "point": 0.7202,
+     "lo": 0.6766,
+     "hi": 0.762
+    },
+    "e5-large-v2 (external)": {
+     "point": 0.7213,
+     "lo": 0.6761,
+     "hi": 0.7614
+    },
+    "bge-large-en-v1.5 (external)": {
+     "point": 0.7464,
+     "lo": 0.7037,
+     "hi": 0.7872
+    },
+    "SPLADE (external)": {
+     "point": 0.7079,
+     "lo": 0.6629,
+     "hi": 0.7512
+    },
+    "Qwen3-Embedding-4B (external)": {
+     "point": 0.7836,
+     "lo": 0.7465,
+     "hi": 0.8179
+    }
+   },
+   "paired_ndcg": {
+    "PubGround hybrid + MedCPT - OpenScholar retriever -> OpenScholar-Reranker": {
+     "diff": 0.0964,
+     "lo": 0.0643,
+     "hi": 0.1295,
+     "p_le_0": 0.0
+    },
+    "PubGround hybrid + MedCPT - OpenScholar retriever": {
+     "diff": 0.0855,
+     "lo": 0.0553,
+     "hi": 0.1158,
+     "p_le_0": 0.0
+    },
+    "PubGround hybrid + MedCPT - PubGround Stage1 [claude-haiku-5.5] + hybrid + MedCPT": {
+     "diff": 0.0005,
+     "lo": -0.0107,
+     "hi": 0.0124,
+     "p_le_0": 0.4685
+    },
+    "PubGround hybrid + MedCPT - PubGround Stage1 [deepseek-v4.1-flash-1017] + hybrid + MedCPT": {
+     "diff": -0.0045,
+     "lo": -0.0124,
+     "hi": 0.0012,
+     "p_le_0": 0.92
+    },
+    "PubGround hybrid + MedCPT - PubGround Stage1 [qwen3-8b] + hybrid + MedCPT": {
+     "diff": 0.0022,
+     "lo": -0.0092,
+     "hi": 0.0146,
+     "p_le_0": 0.358
+    },
+    "PubGround hybrid + MedCPT - PubGround hybrid -> MiniLM-L12": {
+     "diff": 0.1022,
+     "lo": 0.0726,
+     "hi": 0.1336,
+     "p_le_0": 0.0
+    },
+    "PubGround hybrid + MedCPT - PubGround hybrid -> OpenScholar-Reranker": {
+     "diff": 0.1069,
+     "lo": 0.075,
+     "hi": 0.1405,
+     "p_le_0": 0.0
+    },
+    "PubGround hybrid + MedCPT - PubGround hybrid -> Qwen3-Reranker-4B": {
+     "diff": -0.0089,
+     "lo": -0.0322,
+     "hi": 0.0141,
+     "p_le_0": 0.7735
+    },
+    "PubGround hybrid + MedCPT - PubGround hybrid -> bge-reranker-v2-m3": {
+     "diff": 0.0583,
+     "lo": 0.0305,
+     "hi": 0.0878,
+     "p_le_0": 0.0
+    },
+    "PubGround hybrid + MedCPT - PubGround hybrid -> monoT5-3B": {
+     "diff": 0.021,
+     "lo": -0.0002,
+     "hi": 0.042,
+     "p_le_0": 0.026
+    },
+    "PubGround hybrid + MedCPT - PubGround hybrid": {
+     "diff": 0.0719,
+     "lo": 0.0456,
+     "hi": 0.1002,
+     "p_le_0": 0.0
+    },
+    "PubGround hybrid + MedCPT - PubGround BM25": {
+     "diff": 0.1311,
+     "lo": 0.096,
+     "hi": 0.1659,
+     "p_le_0": 0.0
+    },
+    "PubGround hybrid + MedCPT - PubGround MedCPT dense": {
+     "diff": 0.0552,
+     "lo": 0.0294,
+     "hi": 0.0819,
+     "p_le_0": 0.0
+    }
+   }
+  },
+  "verdict": {
+   "oracle": {
+    "n_pairs": 339,
+    "label_f1": {
+     "PubGround judge: claude-haiku-5.5": {
+      "F1": 0.8201,
+      "P": 0.8221,
+      "R": 0.8182,
+      "lo": 0.7714,
+      "hi": 0.8656
+     },
+     "PubGround judge: deepseek-v4.1-flash-1017": {
+      "F1": 0.8329,
+      "P": 0.8431,
+      "R": 0.823,
+      "lo": 0.7842,
+      "hi": 0.8771
+     },
+     "PubGround judge: claude-sonnet-5.5": {
+      "F1": 0.8732,
+      "P": 0.8571,
+      "R": 0.89,
+      "lo": 0.8333,
+      "hi": 0.9095
+     },
+     "PubGround judge: qwen3-8b": {
+      "F1": 0.7105,
+      "P": 0.6223,
+      "R": 0.8278,
+      "lo": 0.6542,
+      "hi": 0.7623
+     },
+     "VeriSci": {
+      "F1": 0.734,
+      "P": 0.8263,
+      "R": 0.6603,
+      "lo": 0.6699,
+      "hi": 0.7921
+     },
+     "MultiVerS-zs (fever_sci)": {
+      "F1": 0.6313,
+      "P": 0.7584,
+      "R": 0.5407,
+      "lo": 0.562,
+      "hi": 0.6994
+     },
+     "MultiVerS-scifact (supervised, SciFact train+dev)": {
+      "F1": 1.0,
+      "P": 1.0,
+      "R": 1.0,
+      "lo": 1.0,
+      "hi": 1.0
+     }
+    },
+    "paired": {
+     "PubGround judge: claude-haiku-5.5 - VeriSci": {
+      "diff": 0.0861,
+      "lo": 0.0167,
+      "hi": 0.1605,
+      "p_le_0": 0.006
+     },
+     "PubGround judge: claude-haiku-5.5 - MultiVerS-zs (fever_sci)": {
+      "diff": 0.1889,
+      "lo": 0.1184,
+      "hi": 0.2565,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: deepseek-v4.1-flash-1017 - VeriSci": {
+      "diff": 0.0989,
+      "lo": 0.0309,
+      "hi": 0.1721,
+      "p_le_0": 0.0005
+     },
+     "PubGround judge: deepseek-v4.1-flash-1017 - MultiVerS-zs (fever_sci)": {
+      "diff": 0.2016,
+      "lo": 0.126,
+      "hi": 0.274,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: claude-sonnet-5.5 - VeriSci": {
+      "diff": 0.1392,
+      "lo": 0.0769,
+      "hi": 0.2068,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: claude-sonnet-5.5 - MultiVerS-zs (fever_sci)": {
+      "diff": 0.242,
+      "lo": 0.1752,
+      "hi": 0.3116,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: qwen3-8b - VeriSci": {
+      "diff": -0.0236,
+      "lo": -0.0979,
+      "hi": 0.0558,
+      "p_le_0": 0.731
+     },
+     "PubGround judge: qwen3-8b - MultiVerS-zs (fever_sci)": {
+      "diff": 0.0792,
+      "lo": -0.0077,
+      "hi": 0.1586,
+      "p_le_0": 0.035
+     }
+    },
+    "nei_rate_on_gold_evidence": {
+     "PubGround judge: claude-haiku-5.5": 0.11,
+     "PubGround judge: deepseek-v4.1-flash-1017": 0.1244,
+     "PubGround judge: claude-sonnet-5.5": 0.067,
+     "PubGround judge: qwen3-8b": 0.0144,
+     "VeriSci": 0.2632,
+     "MultiVerS-zs (fever_sci)": 0.3493,
+     "MultiVerS-scifact (supervised, SciFact train+dev)": 0.0
+    },
+    "three_class": {
+     "PubGround judge: claude-haiku-5.5": {
+      "accuracy": 0.823,
+      "macro_f1": 0.8158,
+      "confusion": {
+       "CONTRADICT->CONTRADICT": 57,
+       "CONTRADICT->NEI": 7,
+       "CONTRADICT->SUPPORT": 7,
+       "NEI->CONTRADICT": 11,
+       "NEI->NEI": 108,
+       "NEI->SUPPORT": 11,
+       "SUPPORT->CONTRADICT": 8,
+       "SUPPORT->NEI": 16,
+       "SUPPORT->SUPPORT": 114
+      }
+     },
+     "PubGround judge: deepseek-v4.1-flash-1017": {
+      "accuracy": 0.8289,
+      "macro_f1": 0.8268,
+      "confusion": {
+       "CONTRADICT->CONTRADICT": 63,
+       "CONTRADICT->NEI": 6,
+       "CONTRADICT->SUPPORT": 2,
+       "NEI->CONTRADICT": 12,
+       "NEI->NEI": 109,
+       "NEI->SUPPORT": 9,
+       "SUPPORT->CONTRADICT": 9,
+       "SUPPORT->NEI": 20,
+       "SUPPORT->SUPPORT": 109
+      }
+     },
+     "PubGround judge: claude-sonnet-5.5": {
+      "accuracy": 0.8673,
+      "macro_f1": 0.8655,
+      "confusion": {
+       "CONTRADICT->CONTRADICT": 66,
+       "CONTRADICT->NEI": 1,
+       "CONTRADICT->SUPPORT": 4,
+       "NEI->CONTRADICT": 12,
+       "NEI->NEI": 108,
+       "NEI->SUPPORT": 10,
+       "SUPPORT->CONTRADICT": 5,
+       "SUPPORT->NEI": 13,
+       "SUPPORT->SUPPORT": 120
+      }
+     },
+     "PubGround judge: qwen3-8b": {
+      "accuracy": 0.6814,
+      "macro_f1": 0.6674,
+      "confusion": {
+       "CONTRADICT->CONTRADICT": 63,
+       "CONTRADICT->NEI": 1,
+       "CONTRADICT->SUPPORT": 7,
+       "NEI->CONTRADICT": 45,
+       "NEI->NEI": 58,
+       "NEI->SUPPORT": 27,
+       "SUPPORT->CONTRADICT": 26,
+       "SUPPORT->NEI": 2,
+       "SUPPORT->SUPPORT": 110
+      }
+     },
+     "VeriSci": {
+      "accuracy": 0.7522,
+      "macro_f1": 0.7298,
+      "confusion": {
+       "CONTRADICT->CONTRADICT": 38,
+       "CONTRADICT->NEI": 25,
+       "CONTRADICT->SUPPORT": 8,
+       "NEI->CONTRADICT": 3,
+       "NEI->NEI": 117,
+       "NEI->SUPPORT": 10,
+       "SUPPORT->CONTRADICT": 8,
+       "SUPPORT->NEI": 30,
+       "SUPPORT->SUPPORT": 100
+      }
+     },
+     "MultiVerS-zs (fever_sci)": {
+      "accuracy": 0.6785,
+      "macro_f1": 0.5983,
+      "confusion": {
+       "CONTRADICT->CONTRADICT": 15,
+       "CONTRADICT->NEI": 36,
+       "CONTRADICT->SUPPORT": 20,
+       "NEI->CONTRADICT": 2,
+       "NEI->NEI": 117,
+       "NEI->SUPPORT": 11,
+       "SUPPORT->CONTRADICT": 3,
+       "SUPPORT->NEI": 37,
+       "SUPPORT->SUPPORT": 98
+      }
+     },
+     "MultiVerS-scifact (supervised, SciFact train+dev)": {
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "confusion": {
+       "CONTRADICT->CONTRADICT": 71,
+       "NEI->NEI": 130,
+       "SUPPORT->SUPPORT": 138
+      }
+     }
+    }
+   },
+   "open": {
+    "n_pairs": 900,
+    "label_f1": {
+     "PubGround judge: claude-haiku-5.5": {
+      "F1": 0.6364,
+      "P": 0.56,
+      "R": 0.7368,
+      "lo": 0.5811,
+      "hi": 0.6902
+     },
+     "PubGround judge: deepseek-v4.1-flash-1017": {
+      "F1": 0.6457,
+      "P": 0.5746,
+      "R": 0.7368,
+      "lo": 0.589,
+      "hi": 0.6987
+     },
+     "PubGround judge: claude-sonnet-5.5": {
+      "F1": 0.664,
+      "P": 0.568,
+      "R": 0.799,
+      "lo": 0.6114,
+      "hi": 0.714
+     },
+     "PubGround judge: qwen3-8b": {
+      "F1": 0.4328,
+      "P": 0.3072,
+      "R": 0.7321,
+      "lo": 0.3876,
+      "hi": 0.4762
+     },
+     "VeriSci": {
+      "F1": 0.5624,
+      "P": 0.5345,
+      "R": 0.5933,
+      "lo": 0.507,
+      "hi": 0.6184
+     },
+     "MultiVerS-zs (fever_sci)": {
+      "F1": 0.561,
+      "P": 0.6136,
+      "R": 0.5167,
+      "lo": 0.4963,
+      "hi": 0.6266
+     },
+     "MultiVerS-scifact (supervised, SciFact train+dev)": {
+      "F1": 0.8883,
+      "P": 0.9015,
+      "R": 0.8756,
+      "lo": 0.8465,
+      "hi": 0.9267
+     }
+    },
+    "paired": {
+     "PubGround judge: claude-haiku-5.5 - VeriSci": {
+      "diff": 0.074,
+      "lo": 0.0154,
+      "hi": 0.1343,
+      "p_le_0": 0.0085
+     },
+     "PubGround judge: claude-haiku-5.5 - MultiVerS-zs (fever_sci)": {
+      "diff": 0.0753,
+      "lo": 0.0088,
+      "hi": 0.1398,
+      "p_le_0": 0.014
+     },
+     "PubGround judge: deepseek-v4.1-flash-1017 - VeriSci": {
+      "diff": 0.0833,
+      "lo": 0.0222,
+      "hi": 0.149,
+      "p_le_0": 0.0025
+     },
+     "PubGround judge: deepseek-v4.1-flash-1017 - MultiVerS-zs (fever_sci)": {
+      "diff": 0.0847,
+      "lo": 0.0197,
+      "hi": 0.152,
+      "p_le_0": 0.0065
+     },
+     "PubGround judge: claude-sonnet-5.5 - VeriSci": {
+      "diff": 0.1017,
+      "lo": 0.0413,
+      "hi": 0.163,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: claude-sonnet-5.5 - MultiVerS-zs (fever_sci)": {
+      "diff": 0.103,
+      "lo": 0.0399,
+      "hi": 0.1636,
+      "p_le_0": 0.0025
+     },
+     "PubGround judge: qwen3-8b - VeriSci": {
+      "diff": -0.1295,
+      "lo": -0.1864,
+      "hi": -0.0714,
+      "p_le_0": 1.0
+     },
+     "PubGround judge: qwen3-8b - MultiVerS-zs (fever_sci)": {
+      "diff": -0.1282,
+      "lo": -0.1941,
+      "hi": -0.064,
+      "p_le_0": 1.0
+     }
+    }
+   }
+  },
+  "timing": {
+   "gpu": "NVIDIA H100 80GB HBM3",
+   "note": "model loaded before timing; warm-up excluded",
+   "results": {
+    "MedCPT (PubGround)": {
+     "pairs": 2000,
+     "seconds_median": 5.81,
+     "pairs_per_second": 344.5,
+     "runs_s": [
+      5.8,
+      5.81,
+      5.81
+     ]
+    },
+    "MiniLM-L12": {
+     "pairs": 2000,
+     "seconds_median": 1.23,
+     "pairs_per_second": 1621.5,
+     "runs_s": [
+      1.23,
+      1.23,
+      1.23
+     ]
+    },
+    "bge-reranker-v2-m3": {
+     "pairs": 2000,
+     "seconds_median": 2.81,
+     "pairs_per_second": 710.5,
+     "runs_s": [
+      2.81,
+      2.81,
+      2.82
+     ]
+    },
+    "monoT5-3B": {
+     "pairs": 2000,
+     "seconds_median": 17.18,
+     "pairs_per_second": 116.4,
+     "runs_s": [
+      17.19,
+      17.18,
+      17.18
+     ]
+    },
+    "Qwen3-Reranker-4B": {
+     "pairs": 2000,
+     "seconds_median": 52.74,
+     "pairs_per_second": 37.9,
+     "runs_s": [
+      52.73,
+      52.74,
+      52.74
+     ]
+    },
+    "OpenScholar-Reranker": {
+     "pairs": 2000,
+     "seconds_median": 4.02,
+     "pairs_per_second": 498.0,
+     "runs_s": [
+      4.01,
+      4.02,
+      4.02
+     ]
+    }
+   }
+  }
+ },
+ "scifact_open": {
+  "retrieval": {
+   "n_claims": 206,
+   "metrics": {
+    "OpenScholar retriever -> OpenScholar-Reranker": {
+     "ndcg@10": 0.651,
+     "recall@10": 0.7413,
+     "recall@100": 0.8769,
+     "mrr@10": 0.6755,
+     "p@1": 0.5777
+    },
+    "OpenScholar retriever": {
+     "ndcg@10": 0.5799,
+     "recall@10": 0.6874,
+     "recall@100": 0.8769,
+     "mrr@10": 0.6098,
+     "p@1": 0.4951
+    },
+    "PubGround BM25": {
+     "ndcg@10": 0.5614,
+     "recall@10": 0.6448,
+     "recall@100": 0.8636,
+     "mrr@10": 0.5905,
+     "p@1": 0.5146
+    },
+    "PubGround MedCPT dense": {
+     "ndcg@10": 0.6265,
+     "recall@10": 0.7284,
+     "recall@100": 0.9278,
+     "mrr@10": 0.6511,
+     "p@1": 0.5534
+    },
+    "PubGround Stage1 [claude-haiku-5.5] + hybrid + MedCPT": {
+     "ndcg@10": 0.7504,
+     "recall@10": 0.8537,
+     "recall@100": 0.9553,
+     "mrr@10": 0.7677,
+     "p@1": 0.6602
+    },
+    "PubGround Stage1 [deepseek-v4.1-flash-1017] + hybrid + MedCPT": {
+     "ndcg@10": 0.7463,
+     "recall@10": 0.8498,
+     "recall@100": 0.9522,
+     "mrr@10": 0.7633,
+     "p@1": 0.6602
+    },
+    "PubGround Stage1 [qwen3-8b] + hybrid + MedCPT": {
+     "ndcg@10": 0.75,
+     "recall@10": 0.8465,
+     "recall@100": 0.9521,
+     "mrr@10": 0.7719,
+     "p@1": 0.6748
+    },
+    "PubGround hybrid + MedCPT": {
+     "ndcg@10": 0.7504,
+     "recall@10": 0.8499,
+     "recall@100": 0.9643,
+     "mrr@10": 0.7677,
+     "p@1": 0.665
+    },
+    "PubGround hybrid -> MiniLM-L12": {
+     "ndcg@10": 0.6392,
+     "recall@10": 0.7475,
+     "recall@100": 0.9643,
+     "mrr@10": 0.6693,
+     "p@1": 0.5485
+    },
+    "PubGround hybrid -> OpenScholar-Reranker": {
+     "ndcg@10": 0.693,
+     "recall@10": 0.7987,
+     "recall@100": 0.9643,
+     "mrr@10": 0.7071,
+     "p@1": 0.5971
+    },
+    "PubGround hybrid -> Qwen3-Reranker-4B": {
+     "ndcg@10": 0.8061,
+     "recall@10": 0.8731,
+     "recall@100": 0.9643,
+     "mrr@10": 0.8394,
+     "p@1": 0.7621
+    },
+    "PubGround hybrid -> bge-reranker-v2-m3": {
+     "ndcg@10": 0.7366,
+     "recall@10": 0.8322,
+     "recall@100": 0.9643,
+     "mrr@10": 0.7634,
+     "p@1": 0.665
+    },
+    "PubGround hybrid -> monoT5-3B": {
+     "ndcg@10": 0.7781,
+     "recall@10": 0.8858,
+     "recall@100": 0.9643,
+     "mrr@10": 0.7954,
+     "p@1": 0.7087
+    },
+    "PubGround hybrid": {
+     "ndcg@10": 0.6426,
+     "recall@10": 0.7551,
+     "recall@100": 0.9643,
+     "mrr@10": 0.663,
+     "p@1": 0.5728
+    },
+    "e5-large-v2 (external)": {
+     "ndcg@10": 0.6814,
+     "recall@10": 0.7636,
+     "recall@100": 0.928,
+     "mrr@10": 0.7199,
+     "p@1": 0.6262
+    },
+    "bge-large-en-v1.5 (external)": {
+     "ndcg@10": 0.6985,
+     "recall@10": 0.7965,
+     "recall@100": 0.9326,
+     "mrr@10": 0.7413,
+     "p@1": 0.6359
+    },
+    "Qwen3-Embedding-4B (external)": {
+     "ndcg@10": 0.6882,
+     "recall@10": 0.7728,
+     "recall@100": 0.9441,
+     "mrr@10": 0.7173,
+     "p@1": 0.6359
+    }
+   },
+   "ndcg_ci": {
+    "OpenScholar retriever -> OpenScholar-Reranker": {
+     "point": 0.651,
+     "lo": 0.5983,
+     "hi": 0.7034
+    },
+    "OpenScholar retriever": {
+     "point": 0.5799,
+     "lo": 0.5289,
+     "hi": 0.6342
+    },
+    "PubGround BM25": {
+     "point": 0.5614,
+     "lo": 0.505,
+     "hi": 0.6164
+    },
+    "PubGround MedCPT dense": {
+     "point": 0.6265,
+     "lo": 0.576,
+     "hi": 0.6772
+    },
+    "PubGround Stage1 [claude-haiku-5.5] + hybrid + MedCPT": {
+     "point": 0.7504,
+     "lo": 0.7087,
+     "hi": 0.7916
+    },
+    "PubGround Stage1 [deepseek-v4.1-flash-1017] + hybrid + MedCPT": {
+     "point": 0.7463,
+     "lo": 0.7017,
+     "hi": 0.7887
+    },
+    "PubGround Stage1 [qwen3-8b] + hybrid + MedCPT": {
+     "point": 0.75,
+     "lo": 0.7065,
+     "hi": 0.7901
+    },
+    "PubGround hybrid + MedCPT": {
+     "point": 0.7504,
+     "lo": 0.7073,
+     "hi": 0.793
+    },
+    "PubGround hybrid -> MiniLM-L12": {
+     "point": 0.6392,
+     "lo": 0.5888,
+     "hi": 0.6899
+    },
+    "PubGround hybrid -> OpenScholar-Reranker": {
+     "point": 0.693,
+     "lo": 0.6427,
+     "hi": 0.7394
+    },
+    "PubGround hybrid -> Qwen3-Reranker-4B": {
+     "point": 0.8061,
+     "lo": 0.766,
+     "hi": 0.8419
+    },
+    "PubGround hybrid -> bge-reranker-v2-m3": {
+     "point": 0.7366,
+     "lo": 0.6907,
+     "hi": 0.7788
+    },
+    "PubGround hybrid -> monoT5-3B": {
+     "point": 0.7781,
+     "lo": 0.7358,
+     "hi": 0.8165
+    },
+    "PubGround hybrid": {
+     "point": 0.6426,
+     "lo": 0.5902,
+     "hi": 0.6909
+    },
+    "e5-large-v2 (external)": {
+     "point": 0.6814,
+     "lo": 0.6289,
+     "hi": 0.7283
+    },
+    "bge-large-en-v1.5 (external)": {
+     "point": 0.6985,
+     "lo": 0.6531,
+     "hi": 0.7419
+    },
+    "Qwen3-Embedding-4B (external)": {
+     "point": 0.6882,
+     "lo": 0.6381,
+     "hi": 0.74
+    }
+   },
+   "paired_ndcg": {
+    "PubGround hybrid + MedCPT - OpenScholar retriever -> OpenScholar-Reranker": {
+     "diff": 0.0994,
+     "lo": 0.0624,
+     "hi": 0.1368,
+     "p_le_0": 0.0
+    },
+    "PubGround hybrid + MedCPT - OpenScholar retriever": {
+     "diff": 0.1705,
+     "lo": 0.1363,
+     "hi": 0.2067,
+     "p_le_0": 0.0
+    },
+    "PubGround hybrid + MedCPT - PubGround Stage1 [claude-haiku-5.5] + hybrid + MedCPT": {
+     "diff": -0.0,
+     "lo": -0.0072,
+     "hi": 0.0066,
+     "p_le_0": 0.512
+    },
+    "PubGround hybrid + MedCPT - PubGround Stage1 [deepseek-v4.1-flash-1017] + hybrid + MedCPT": {
+     "diff": 0.0041,
+     "lo": -0.006,
+     "hi": 0.0178,
+     "p_le_0": 0.2555
+    },
+    "PubGround hybrid + MedCPT - PubGround Stage1 [qwen3-8b] + hybrid + MedCPT": {
+     "diff": 0.0004,
+     "lo": -0.0143,
+     "hi": 0.0162,
+     "p_le_0": 0.4795
+    },
+    "PubGround hybrid + MedCPT - PubGround hybrid -> MiniLM-L12": {
+     "diff": 0.1112,
+     "lo": 0.0764,
+     "hi": 0.1475,
+     "p_le_0": 0.0
+    },
+    "PubGround hybrid + MedCPT - PubGround hybrid -> OpenScholar-Reranker": {
+     "diff": 0.0574,
+     "lo": 0.0235,
+     "hi": 0.0915,
+     "p_le_0": 0.0
+    },
+    "PubGround hybrid + MedCPT - PubGround hybrid -> Qwen3-Reranker-4B": {
+     "diff": -0.0557,
+     "lo": -0.0855,
+     "hi": -0.0254,
+     "p_le_0": 1.0
+    },
+    "PubGround hybrid + MedCPT - PubGround hybrid -> bge-reranker-v2-m3": {
+     "diff": 0.0138,
+     "lo": -0.0203,
+     "hi": 0.0471,
+     "p_le_0": 0.178
+    },
+    "PubGround hybrid + MedCPT - PubGround hybrid -> monoT5-3B": {
+     "diff": -0.0276,
+     "lo": -0.0561,
+     "hi": 0.0026,
+     "p_le_0": 0.9615
+    },
+    "PubGround hybrid + MedCPT - PubGround hybrid": {
+     "diff": 0.1079,
+     "lo": 0.0684,
+     "hi": 0.1495,
+     "p_le_0": 0.0
+    },
+    "PubGround hybrid + MedCPT - PubGround BM25": {
+     "diff": 0.189,
+     "lo": 0.1478,
+     "hi": 0.2318,
+     "p_le_0": 0.0
+    },
+    "PubGround hybrid + MedCPT - PubGround MedCPT dense": {
+     "diff": 0.1239,
+     "lo": 0.0806,
+     "hi": 0.1665,
+     "p_le_0": 0.0
+    }
+   }
+  },
+  "verdict": {
+   "oracle": {
+    "n_pairs": 460,
+    "label_f1": {
+     "PubGround judge: claude-haiku-5.5": {
+      "F1": 0.8792,
+      "P": 0.9542,
+      "R": 0.8152,
+      "lo": 0.8436,
+      "hi": 0.9097
+     },
+     "PubGround judge: deepseek-v4.1-flash-1017": {
+      "F1": 0.8943,
+      "P": 0.9601,
+      "R": 0.837,
+      "lo": 0.8564,
+      "hi": 0.9239
+     },
+     "PubGround judge: claude-sonnet-5.5": {
+      "F1": 0.9241,
+      "P": 0.9805,
+      "R": 0.8739,
+      "lo": 0.8952,
+      "hi": 0.9494
+     },
+     "PubGround judge: qwen3-8b": {
+      "F1": 0.8719,
+      "P": 0.8786,
+      "R": 0.8652,
+      "lo": 0.8254,
+      "hi": 0.9113
+     },
+     "VeriSci": {
+      "F1": 0.6511,
+      "P": 0.8843,
+      "R": 0.5152,
+      "lo": 0.5974,
+      "hi": 0.7043
+     },
+     "MultiVerS-zs (fever_sci)": {
+      "F1": 0.5226,
+      "P": 0.746,
+      "R": 0.4022,
+      "lo": 0.4644,
+      "hi": 0.5781
+     },
+     "MultiVerS-scifact (supervised, SciFact train+dev)": {
+      "F1": 0.5839,
+      "P": 0.8889,
+      "R": 0.4348,
+      "lo": 0.5171,
+      "hi": 0.6471
+     }
+    },
+    "paired": {
+     "PubGround judge: claude-haiku-5.5 - VeriSci": {
+      "diff": 0.2282,
+      "lo": 0.16,
+      "hi": 0.2924,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: claude-haiku-5.5 - MultiVerS-zs (fever_sci)": {
+      "diff": 0.3567,
+      "lo": 0.292,
+      "hi": 0.4188,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: claude-haiku-5.5 - MultiVerS-scifact (supervised, SciFact train+dev)": {
+      "diff": 0.2953,
+      "lo": 0.2199,
+      "hi": 0.3705,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: deepseek-v4.1-flash-1017 - VeriSci": {
+      "diff": 0.2432,
+      "lo": 0.1723,
+      "hi": 0.3079,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: deepseek-v4.1-flash-1017 - MultiVerS-zs (fever_sci)": {
+      "diff": 0.3717,
+      "lo": 0.3049,
+      "hi": 0.4381,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: deepseek-v4.1-flash-1017 - MultiVerS-scifact (supervised, SciFact train+dev)": {
+      "diff": 0.3104,
+      "lo": 0.2336,
+      "hi": 0.3861,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: claude-sonnet-5.5 - VeriSci": {
+      "diff": 0.273,
+      "lo": 0.2081,
+      "hi": 0.3348,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: claude-sonnet-5.5 - MultiVerS-zs (fever_sci)": {
+      "diff": 0.4015,
+      "lo": 0.3423,
+      "hi": 0.4645,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: claude-sonnet-5.5 - MultiVerS-scifact (supervised, SciFact train+dev)": {
+      "diff": 0.3402,
+      "lo": 0.2703,
+      "hi": 0.4165,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: qwen3-8b - VeriSci": {
+      "diff": 0.2208,
+      "lo": 0.1456,
+      "hi": 0.2917,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: qwen3-8b - MultiVerS-zs (fever_sci)": {
+      "diff": 0.3493,
+      "lo": 0.2759,
+      "hi": 0.4181,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: qwen3-8b - MultiVerS-scifact (supervised, SciFact train+dev)": {
+      "diff": 0.2879,
+      "lo": 0.2075,
+      "hi": 0.3668,
+      "p_le_0": 0.0
+     }
+    },
+    "nei_rate_on_gold_evidence": {
+     "PubGround judge: claude-haiku-5.5": 0.1457,
+     "PubGround judge: deepseek-v4.1-flash-1017": 0.1283,
+     "PubGround judge: claude-sonnet-5.5": 0.1087,
+     "PubGround judge: qwen3-8b": 0.0152,
+     "VeriSci": 0.4174,
+     "MultiVerS-zs (fever_sci)": 0.4609,
+     "MultiVerS-scifact (supervised, SciFact train+dev)": 0.5109
+    },
+    "three_class": {
+     "PubGround judge: claude-haiku-5.5": {
+      "accuracy": 0.8152,
+      "macro_f1": 0.587,
+      "confusion": {
+       "CONTRADICT->CONTRADICT": 185,
+       "CONTRADICT->NEI": 19,
+       "CONTRADICT->SUPPORT": 7,
+       "SUPPORT->CONTRADICT": 11,
+       "SUPPORT->NEI": 48,
+       "SUPPORT->SUPPORT": 190
+      }
+     },
+     "PubGround judge: deepseek-v4.1-flash-1017": {
+      "accuracy": 0.837,
+      "macro_f1": 0.5969,
+      "confusion": {
+       "CONTRADICT->CONTRADICT": 193,
+       "CONTRADICT->NEI": 14,
+       "CONTRADICT->SUPPORT": 4,
+       "SUPPORT->CONTRADICT": 12,
+       "SUPPORT->NEI": 45,
+       "SUPPORT->SUPPORT": 192
+      }
+     },
+     "PubGround judge: claude-sonnet-5.5": {
+      "accuracy": 0.8739,
+      "macro_f1": 0.617,
+      "confusion": {
+       "CONTRADICT->CONTRADICT": 195,
+       "CONTRADICT->NEI": 13,
+       "CONTRADICT->SUPPORT": 3,
+       "SUPPORT->CONTRADICT": 5,
+       "SUPPORT->NEI": 37,
+       "SUPPORT->SUPPORT": 207
+      }
+     },
+     "PubGround judge: qwen3-8b": {
+      "accuracy": 0.8652,
+      "macro_f1": 0.5812,
+      "confusion": {
+       "CONTRADICT->CONTRADICT": 196,
+       "CONTRADICT->NEI": 2,
+       "CONTRADICT->SUPPORT": 13,
+       "SUPPORT->CONTRADICT": 42,
+       "SUPPORT->NEI": 5,
+       "SUPPORT->SUPPORT": 202
+      }
+     },
+     "VeriSci": {
+      "accuracy": 0.5152,
+      "macro_f1": 0.4308,
+      "confusion": {
+       "CONTRADICT->CONTRADICT": 97,
+       "CONTRADICT->NEI": 96,
+       "CONTRADICT->SUPPORT": 18,
+       "SUPPORT->CONTRADICT": 13,
+       "SUPPORT->NEI": 96,
+       "SUPPORT->SUPPORT": 140
+      }
+     },
+     "MultiVerS-zs (fever_sci)": {
+      "accuracy": 0.4022,
+      "macro_f1": 0.3249,
+      "confusion": {
+       "CONTRADICT->CONTRADICT": 46,
+       "CONTRADICT->NEI": 111,
+       "CONTRADICT->SUPPORT": 54,
+       "SUPPORT->CONTRADICT": 9,
+       "SUPPORT->NEI": 101,
+       "SUPPORT->SUPPORT": 139
+      }
+     },
+     "MultiVerS-scifact (supervised, SciFact train+dev)": {
+      "accuracy": 0.4348,
+      "macro_f1": 0.3896,
+      "confusion": {
+       "CONTRADICT->CONTRADICT": 93,
+       "CONTRADICT->NEI": 104,
+       "CONTRADICT->SUPPORT": 14,
+       "SUPPORT->CONTRADICT": 11,
+       "SUPPORT->NEI": 131,
+       "SUPPORT->SUPPORT": 107
+      }
+     }
+    }
+   },
+   "open": {
+    "n_pairs": 837,
+    "label_f1": {
+     "PubGround judge: claude-haiku-5.5": {
+      "F1": 0.4557,
+      "P": 0.5256,
+      "R": 0.4022,
+      "lo": 0.4046,
+      "hi": 0.5119
+     },
+     "PubGround judge: deepseek-v4.1-flash-1017": {
+      "F1": 0.4701,
+      "P": 0.5494,
+      "R": 0.4109,
+      "lo": 0.4173,
+      "hi": 0.5302
+     },
+     "PubGround judge: claude-sonnet-5.5": {
+      "F1": 0.466,
+      "P": 0.5275,
+      "R": 0.4174,
+      "lo": 0.4148,
+      "hi": 0.5243
+     },
+     "PubGround judge: qwen3-8b": {
+      "F1": 0.351,
+      "P": 0.3154,
+      "R": 0.3957,
+      "lo": 0.3151,
+      "hi": 0.3901
+     },
+     "VeriSci": {
+      "F1": 0.3488,
+      "P": 0.494,
+      "R": 0.2696,
+      "lo": 0.2934,
+      "hi": 0.4083
+     },
+     "MultiVerS-zs (fever_sci)": {
+      "F1": 0.3136,
+      "P": 0.427,
+      "R": 0.2478,
+      "lo": 0.2638,
+      "hi": 0.3677
+     },
+     "MultiVerS-scifact (supervised, SciFact train+dev)": {
+      "F1": 0.4382,
+      "P": 0.7821,
+      "R": 0.3043,
+      "lo": 0.3744,
+      "hi": 0.5096
+     }
+    },
+    "paired": {
+     "PubGround judge: claude-haiku-5.5 - VeriSci": {
+      "diff": 0.1069,
+      "lo": 0.0677,
+      "hi": 0.1487,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: claude-haiku-5.5 - MultiVerS-zs (fever_sci)": {
+      "diff": 0.142,
+      "lo": 0.098,
+      "hi": 0.1889,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: claude-haiku-5.5 - MultiVerS-scifact (supervised, SciFact train+dev)": {
+      "diff": 0.0175,
+      "lo": -0.0295,
+      "hi": 0.0612,
+      "p_le_0": 0.2135
+     },
+     "PubGround judge: deepseek-v4.1-flash-1017 - VeriSci": {
+      "diff": 0.1213,
+      "lo": 0.0826,
+      "hi": 0.1631,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: deepseek-v4.1-flash-1017 - MultiVerS-zs (fever_sci)": {
+      "diff": 0.1565,
+      "lo": 0.1094,
+      "hi": 0.2082,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: deepseek-v4.1-flash-1017 - MultiVerS-scifact (supervised, SciFact train+dev)": {
+      "diff": 0.032,
+      "lo": -0.0085,
+      "hi": 0.072,
+      "p_le_0": 0.0605
+     },
+     "PubGround judge: claude-sonnet-5.5 - VeriSci": {
+      "diff": 0.1172,
+      "lo": 0.0764,
+      "hi": 0.1606,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: claude-sonnet-5.5 - MultiVerS-zs (fever_sci)": {
+      "diff": 0.1524,
+      "lo": 0.1093,
+      "hi": 0.2001,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: claude-sonnet-5.5 - MultiVerS-scifact (supervised, SciFact train+dev)": {
+      "diff": 0.0278,
+      "lo": -0.0129,
+      "hi": 0.0694,
+      "p_le_0": 0.0955
+     },
+     "PubGround judge: qwen3-8b - VeriSci": {
+      "diff": 0.0022,
+      "lo": -0.0425,
+      "hi": 0.0451,
+      "p_le_0": 0.4695
+     },
+     "PubGround judge: qwen3-8b - MultiVerS-zs (fever_sci)": {
+      "diff": 0.0374,
+      "lo": -0.0094,
+      "hi": 0.0851,
+      "p_le_0": 0.0585
+     },
+     "PubGround judge: qwen3-8b - MultiVerS-scifact (supervised, SciFact train+dev)": {
+      "diff": -0.0872,
+      "lo": -0.1416,
+      "hi": -0.0364,
+      "p_le_0": 1.0
+     }
+    }
+   }
+  }
+ },
+ "healthver": {
+  "verdict": {
+   "oracle": {
+    "n_pairs": 903,
+    "label_f1": {
+     "PubGround judge: claude-haiku-5.5": {
+      "F1": 0.4597,
+      "P": 0.6797,
+      "R": 0.3472,
+      "lo": 0.4013,
+      "hi": 0.5146
+     },
+     "PubGround judge: deepseek-v4.1-flash-1017": {
+      "F1": 0.4811,
+      "P": 0.7224,
+      "R": 0.3606,
+      "lo": 0.422,
+      "hi": 0.5391
+     },
+     "PubGround judge: claude-sonnet-5.5": {
+      "F1": 0.5144,
+      "P": 0.713,
+      "R": 0.4023,
+      "lo": 0.4552,
+      "hi": 0.5728
+     },
+     "PubGround judge: qwen3-8b": {
+      "F1": 0.6181,
+      "P": 0.5997,
+      "R": 0.6377,
+      "lo": 0.5683,
+      "hi": 0.6661
+     },
+     "VeriSci": {
+      "F1": 0.1983,
+      "P": 0.6542,
+      "R": 0.1169,
+      "lo": 0.1477,
+      "hi": 0.2486
+     },
+     "MultiVerS-zs (fever_sci)": {
+      "F1": 0.3067,
+      "P": 0.6059,
+      "R": 0.2053,
+      "lo": 0.2427,
+      "hi": 0.3678
+     },
+     "MultiVerS-scifact (supervised, SciFact train+dev)": {
+      "F1": 0.0674,
+      "P": 0.875,
+      "R": 0.0351,
+      "lo": 0.0404,
+      "hi": 0.0954
+     },
+     "MultiVerS-healthver (supervised, HealthVer train)": {
+      "F1": 0.7766,
+      "P": 0.7907,
+      "R": 0.7629,
+      "lo": 0.7291,
+      "hi": 0.818
+     }
+    },
+    "paired": {
+     "PubGround judge: claude-haiku-5.5 - VeriSci": {
+      "diff": 0.2614,
+      "lo": 0.2045,
+      "hi": 0.3155,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: claude-haiku-5.5 - MultiVerS-zs (fever_sci)": {
+      "diff": 0.1529,
+      "lo": 0.0893,
+      "hi": 0.218,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: claude-haiku-5.5 - MultiVerS-scifact (supervised, SciFact train+dev)": {
+      "diff": 0.3923,
+      "lo": 0.3411,
+      "hi": 0.4416,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: claude-haiku-5.5 - MultiVerS-healthver (supervised, HealthVer train)": {
+      "diff": -0.3169,
+      "lo": -0.3767,
+      "hi": -0.2592,
+      "p_le_0": 1.0
+     },
+     "PubGround judge: deepseek-v4.1-flash-1017 - VeriSci": {
+      "diff": 0.2828,
+      "lo": 0.2277,
+      "hi": 0.3354,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: deepseek-v4.1-flash-1017 - MultiVerS-zs (fever_sci)": {
+      "diff": 0.1743,
+      "lo": 0.1161,
+      "hi": 0.2374,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: deepseek-v4.1-flash-1017 - MultiVerS-scifact (supervised, SciFact train+dev)": {
+      "diff": 0.4137,
+      "lo": 0.3634,
+      "hi": 0.4624,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: deepseek-v4.1-flash-1017 - MultiVerS-healthver (supervised, HealthVer train)": {
+      "diff": -0.2955,
+      "lo": -0.3523,
+      "hi": -0.2384,
+      "p_le_0": 1.0
+     },
+     "PubGround judge: claude-sonnet-5.5 - VeriSci": {
+      "diff": 0.3161,
+      "lo": 0.2593,
+      "hi": 0.371,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: claude-sonnet-5.5 - MultiVerS-zs (fever_sci)": {
+      "diff": 0.2077,
+      "lo": 0.1489,
+      "hi": 0.2714,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: claude-sonnet-5.5 - MultiVerS-scifact (supervised, SciFact train+dev)": {
+      "diff": 0.447,
+      "lo": 0.3948,
+      "hi": 0.498,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: claude-sonnet-5.5 - MultiVerS-healthver (supervised, HealthVer train)": {
+      "diff": -0.2621,
+      "lo": -0.3189,
+      "hi": -0.2078,
+      "p_le_0": 1.0
+     },
+     "PubGround judge: qwen3-8b - VeriSci": {
+      "diff": 0.4198,
+      "lo": 0.3589,
+      "hi": 0.479,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: qwen3-8b - MultiVerS-zs (fever_sci)": {
+      "diff": 0.3114,
+      "lo": 0.2442,
+      "hi": 0.3838,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: qwen3-8b - MultiVerS-scifact (supervised, SciFact train+dev)": {
+      "diff": 0.5507,
+      "lo": 0.5002,
+      "hi": 0.6016,
+      "p_le_0": 0.0
+     },
+     "PubGround judge: qwen3-8b - MultiVerS-healthver (supervised, HealthVer train)": {
+      "diff": -0.1584,
+      "lo": -0.2073,
+      "hi": -0.1112,
+      "p_le_0": 1.0
+     }
+    },
+    "nei_rate_on_gold_evidence": {
+     "PubGround judge: claude-haiku-5.5": 0.5609,
+     "PubGround judge: deepseek-v4.1-flash-1017": 0.571,
+     "PubGround judge: claude-sonnet-5.5": 0.5209,
+     "PubGround judge: qwen3-8b": 0.1686,
+     "VeriSci": 0.8481,
+     "MultiVerS-zs (fever_sci)": 0.7212,
+     "MultiVerS-scifact (supervised, SciFact train+dev)": 0.9616,
+     "MultiVerS-healthver (supervised, HealthVer train)": 0.1336
+    },
+    "three_class": {
+     "PubGround judge: claude-haiku-5.5": {
+      "accuracy": 0.5194,
+      "macro_f1": 0.5042,
+      "confusion": {
+       "CONTRADICT->CONTRADICT": 98,
+       "CONTRADICT->NEI": 112,
+       "CONTRADICT->SUPPORT": 15,
+       "NEI->CONTRADICT": 20,
+       "NEI->NEI": 261,
+       "NEI->SUPPORT": 23,
+       "SUPPORT->CONTRADICT": 40,
+       "SUPPORT->NEI": 224,
+       "SUPPORT->SUPPORT": 110
+      }
+     },
+     "PubGround judge: deepseek-v4.1-flash-1017": {
+      "accuracy": 0.5293,
+      "macro_f1": 0.5136,
+      "confusion": {
+       "CONTRADICT->CONTRADICT": 81,
+       "CONTRADICT->NEI": 119,
+       "CONTRADICT->SUPPORT": 25,
+       "NEI->CONTRADICT": 12,
+       "NEI->NEI": 262,
+       "NEI->SUPPORT": 30,
+       "SUPPORT->CONTRADICT": 16,
+       "SUPPORT->NEI": 223,
+       "SUPPORT->SUPPORT": 135
+      }
+     },
+     "PubGround judge: claude-sonnet-5.5": {
+      "accuracy": 0.5471,
+      "macro_f1": 0.5318,
+      "confusion": {
+       "CONTRADICT->CONTRADICT": 79,
+       "CONTRADICT->NEI": 115,
+       "CONTRADICT->SUPPORT": 31,
+       "NEI->CONTRADICT": 10,
+       "NEI->NEI": 253,
+       "NEI->SUPPORT": 41,
+       "SUPPORT->CONTRADICT": 15,
+       "SUPPORT->NEI": 197,
+       "SUPPORT->SUPPORT": 162
+      }
+     },
+     "PubGround judge: qwen3-8b": {
+      "accuracy": 0.6058,
+      "macro_f1": 0.5996,
+      "confusion": {
+       "CONTRADICT->CONTRADICT": 140,
+       "CONTRADICT->NEI": 36,
+       "CONTRADICT->SUPPORT": 49,
+       "NEI->CONTRADICT": 59,
+       "NEI->NEI": 165,
+       "NEI->SUPPORT": 80,
+       "SUPPORT->CONTRADICT": 67,
+       "SUPPORT->NEI": 65,
+       "SUPPORT->SUPPORT": 242
+      }
+     },
+     "VeriSci": {
+      "accuracy": 0.3965,
+      "macro_f1": 0.2996,
+      "confusion": {
+       "CONTRADICT->CONTRADICT": 19,
+       "CONTRADICT->NEI": 192,
+       "CONTRADICT->SUPPORT": 14,
+       "NEI->CONTRADICT": 3,
+       "NEI->NEI": 288,
+       "NEI->SUPPORT": 13,
+       "SUPPORT->CONTRADICT": 7,
+       "SUPPORT->NEI": 316,
+       "SUPPORT->SUPPORT": 51
+      }
+     },
+     "MultiVerS-zs (fever_sci)": {
+      "accuracy": 0.433,
+      "macro_f1": 0.3671,
+      "confusion": {
+       "CONTRADICT->CONTRADICT": 29,
+       "CONTRADICT->NEI": 171,
+       "CONTRADICT->SUPPORT": 25,
+       "NEI->CONTRADICT": 7,
+       "NEI->NEI": 268,
+       "NEI->SUPPORT": 29,
+       "SUPPORT->CONTRADICT": 19,
+       "SUPPORT->NEI": 261,
+       "SUPPORT->SUPPORT": 94
+      }
+     },
+     "MultiVerS-scifact (supervised, SciFact train+dev)": {
+      "accuracy": 0.3588,
+      "macro_f1": 0.21,
+      "confusion": {
+       "CONTRADICT->CONTRADICT": 3,
+       "CONTRADICT->NEI": 222,
+       "NEI->NEI": 303,
+       "NEI->SUPPORT": 1,
+       "SUPPORT->CONTRADICT": 2,
+       "SUPPORT->NEI": 354,
+       "SUPPORT->SUPPORT": 18
+      }
+     },
+     "MultiVerS-healthver (supervised, HealthVer train)": {
+      "accuracy": 0.7774,
+      "macro_f1": 0.7712,
+      "confusion": {
+       "CONTRADICT->CONTRADICT": 155,
+       "CONTRADICT->NEI": 29,
+       "CONTRADICT->SUPPORT": 41,
+       "NEI->CONTRADICT": 21,
+       "NEI->NEI": 245,
+       "NEI->SUPPORT": 38,
+       "SUPPORT->CONTRADICT": 21,
+       "SUPPORT->NEI": 51,
+       "SUPPORT->SUPPORT": 302
+      }
+     }
+    }
+   }
+  }
+ }
+}

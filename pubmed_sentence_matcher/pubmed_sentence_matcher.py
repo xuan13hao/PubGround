@@ -41,6 +41,28 @@ from .embeddings import Memory
 from .config import Config
 from .pubmed_citation import PubMedCitationEnhancer
 from .reranker import CrossEncoderReranker, DEFAULT_RERANKER_MODEL
+from .retrieval import LitSenseRetriever, LocalCorpus, doc_abstract_text, doc_text, rrf_fuse, RRF_K
+from .verdict import VerdictJudge, LLMCall
+
+
+def _parse_query_list(response: Optional[str]) -> List[str]:
+    """JSON array of query strings; from a truncated array keep every complete "..." element."""
+    if not response:
+        return []
+    t = re.sub(r"\s*```$", "", re.sub(r"^```(?:json)?\s*", "", response.strip()))
+    try:
+        qs = json.loads(t)
+    except Exception:
+        m = re.search(r"\[.*\]", t, re.S)
+        try:
+            qs = json.loads(m.group(0)) if m else None
+        except Exception:
+            qs = None
+        if qs is None:
+            qs = [json.loads(f'"{x}"') for x in re.findall(r'"((?:[^"\\]|\\.)*)"\s*[,\]]', t)]
+    if isinstance(qs, list) and qs and all(isinstance(q, str) for q in qs):
+        return qs
+    return []
 
 
 class PubMedSentenceMatcher:
@@ -64,6 +86,10 @@ class PubMedSentenceMatcher:
         reranker_model: str = DEFAULT_RERANKER_MODEL,
         rerank_candidates: int = 50,
         reranker_device: Optional[str] = None,
+        dense_recall: Optional[str] = "litsense",
+        local_corpus: Optional[LocalCorpus] = None,
+        rrf_k: int = RRF_K,
+        llm_call: Optional[LLMCall] = None,
     ):
         """
         Initialize the PubMed sentence matcher.
@@ -84,6 +110,13 @@ class PubMedSentenceMatcher:
             rerank_candidates: Max candidates (by first-pass score) sent to the
                 reranker. Cross-encoders are expensive, so we bound the top-N.
             reranker_device: Force 'cuda' / 'cpu' (None = auto-detect).
+            dense_recall: Second first-stage retriever fused with E-utilities by RRF when
+                searching PubMed: "litsense" (NCBI LitSense 2.0, MedCPT dense search over
+                PubMed) or None for keyword search only.
+            local_corpus: Search this LocalCorpus (BM25 + MedCPT dense) instead of PubMed.
+            rrf_k: Reciprocal Rank Fusion constant.
+            llm_call: Optional async (messages, temperature, max_tokens) -> str used for
+                every LLM call (query expansion, verification); defaults to Config's LLM.
         """
         self.email = email
         self.tool = tool
@@ -114,13 +147,16 @@ class PubMedSentenceMatcher:
         # Initialize PubMed enhancer
         self.pubmed_enhancer = PubMedCitationEnhancer(email=email, tool=tool)
         
-        # Initialize embedding model
-        self.memory = Memory(
-            self.config.embedding_provider,
-            self.config.embedding_model,
-            **self.config.embedding_kwargs
-        )
-        self.embeddings = self.memory.get_embeddings()
+        # First-stage retrieval: E-utilities (+ LitSense dense recall) or a local corpus, fused by RRF
+        self.local_corpus = local_corpus
+        self.dense = LitSenseRetriever() if (dense_recall == "litsense" and local_corpus is None) else None
+        if dense_recall not in (None, "litsense"):
+            raise ValueError(f"dense_recall must be 'litsense' or None, got {dense_recall!r}")
+        self.rrf_k = rrf_k
+        self.llm_call = llm_call
+
+        # Embedding model for the Stage 4 shortlist, created on first use
+        self._embeddings = None
         
         # Initialize sentence tokenizer
         self._init_sentence_tokenizer()
@@ -146,6 +182,23 @@ class PubMedSentenceMatcher:
         sentences = re.split(r'[.!?]+', text)
         return [s.strip() for s in sentences if s.strip()]
     
+    @property
+    def embeddings(self):
+        if self._embeddings is None:
+            self.memory = Memory(self.config.embedding_provider, self.config.embedding_model,
+                                 **self.config.embedding_kwargs)
+            self._embeddings = self.memory.get_embeddings()
+        return self._embeddings
+
+    async def _llm(self, messages: List[Dict], temperature: float, max_tokens: int) -> str:
+        """Single entry point for LLM calls (injectable via ``llm_call``)."""
+        if self.llm_call is not None:
+            return await self.llm_call(messages, temperature, max_tokens)
+        return await create_chat_completion(
+            messages=messages, model=self.config.smart_llm_model,
+            llm_provider=self.config.smart_llm_provider, temperature=temperature,
+            max_tokens=max_tokens, llm_kwargs=self.config.llm_kwargs)
+
     # ==================== Stage 1: LLM Query Optimization ====================
     
     async def _generate_optimized_queries(self, input_sentence: str) -> List[str]:
@@ -180,28 +233,12 @@ Respond with ONLY a JSON array of query strings, no other text:
         ]
         
         try:
-            response = await create_chat_completion(
-                messages=messages,
-                model=self.config.smart_llm_model,
-                llm_provider=self.config.smart_llm_provider,
-                temperature=0.3,
-                max_tokens=500,
-                llm_kwargs=self.config.llm_kwargs,
-            )
-            
-            # Parse JSON response
-            response = response.strip()
-            # Remove markdown code blocks if present
-            if response.startswith("```"):
-                response = re.sub(r'^```(?:json)?\s*', '', response)
-                response = re.sub(r'\s*```$', '', response)
-            
-            queries = json.loads(response)
-            if isinstance(queries, list) and len(queries) > 0:
-                return queries[:5]  # Limit to 5 queries
-            else:
-                return [input_sentence]  # Fallback to original sentence
-                
+            # 1,200 tokens: verbose models write long Boolean/MeSH queries that overflow 500
+            response = await self._llm(messages, 0.3, 1200)
+            queries = _parse_query_list(response)
+            if queries:
+                return queries[:5]
+            return self._extract_keyword_queries(input_sentence)
         except Exception as e:
             print(f"Error generating optimized queries: {e}")
             # Fallback: extract keywords from sentence
@@ -232,38 +269,108 @@ Respond with ONLY a JSON array of query strings, no other text:
     
     # ==================== Stage 2: Multi-Strategy PubMed Search ====================
     
+    async def _candidate_rankings(self, claim: str, queries: List[str], k: int = 100) -> List[list]:
+        """One best-first ranking per retriever/query (fused later by RRF).
+
+        Local corpus: BM25(claim), BM25(each expanded query), MedCPT dense(claim).
+        PubMed: E-utilities relevance ranking per expanded query, a keyword query, and
+        LitSense dense recall for the claim (if enabled).
+        """
+        if self.local_corpus is not None:
+            return await asyncio.to_thread(self.local_corpus.rankings, claim, queries, k)
+        rankings: List[list] = []
+        for query in queries:
+            ids = await self._search_pubmed_with_query(query, max_results=20)
+            if ids:
+                rankings.append(ids)
+            time.sleep(0.35)  # Respect rate limits
+        keyword_query = ' '.join(self._extract_keywords(claim))
+        if keyword_query:
+            ids = await self._search_pubmed_with_query(keyword_query, max_results=10)
+            if ids:
+                rankings.append(ids)
+            time.sleep(0.35)
+        if self.dense is not None:
+            dense = await asyncio.to_thread(self.dense.search, claim, k)
+            if dense:
+                rankings.append(dense)
+        return rankings
+
     async def _search_pubmed_multi_strategy(
-        self, 
-        input_sentence: str, 
-        optimized_queries: List[str]
+        self,
+        input_sentence: str,
+        optimized_queries: List[str],
+        k: int = 100,
     ) -> List[str]:
         """
-        Stage 2: Search PubMed using multiple strategies and merge results.
-        
-        Args:
-            input_sentence: Original input sentence
-            optimized_queries: LLM-generated queries
-            
+        Stage 2: run every retriever and fuse the rankings with Reciprocal Rank Fusion.
+
         Returns:
-            List of unique PMIDs
+            Document ids (PMIDs, or local ids) best-first
         """
-        all_pmids = set()
-        
-        # Strategy 1: Search with optimized queries
-        for query in optimized_queries:
-            pmids = await self._search_pubmed_with_query(query, max_results=20)
-            all_pmids.update(pmids)
-            time.sleep(0.35)  # Respect rate limits
-        
-        # Strategy 2: Direct keyword search (as supplement)
-        keyword_query = ' '.join(self._extract_keywords(input_sentence))
-        if keyword_query:
-            pmids = await self._search_pubmed_with_query(keyword_query, max_results=10)
-            all_pmids.update(pmids)
+        rankings = await self._candidate_rankings(input_sentence, optimized_queries, k)
+        return [d for d, _ in rrf_fuse(rankings, self.rrf_k, top_n=k)]
+
+    # ==================== Stage 2.5: Abstract-level reranking ====================
+
+    def _local_abstract(self, doc_id: str) -> Tuple[str, List[str]]:
+        doc = self.local_corpus.docs[doc_id]
+        a = doc.get("abstract") or ""
+        sents = list(a) if isinstance(a, (list, tuple)) else self.sent_tokenize(str(a))
+        return str(doc.get("title") or ""), [x for x in sents if str(x).strip()]
+
+    async def _abstract_texts(self, ids: List[str]) -> Dict[str, Tuple[str, List[str]]]:
+        """{id: (title, abstract sentences)} for local documents or PubMed (one batched efetch)."""
+        if self.local_corpus is not None:
+            return {d: self._local_abstract(d) for d in ids if d in self.local_corpus.docs}
+        out: Dict[str, Tuple[str, List[str]]] = {}
+        for i in range(0, len(ids), 200):
+            params = {'db': 'pubmed', 'id': ','.join(ids[i:i + 200]), 'retmode': 'xml',
+                      'tool': self.tool, 'email': self.email}
+            url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?" + urllib.parse.urlencode(params)
+            try:
+                with urllib.request.urlopen(url, timeout=60) as r:
+                    root = ET.fromstring(r.read())
+            except Exception as e:
+                print(f"Error fetching abstracts: {e}")
+                continue
+            for art in root.iter('PubmedArticle'):
+                pmid = art.findtext('.//MedlineCitation/PMID') or ''
+                title = ''.join(art.find('.//ArticleTitle').itertext()) if art.find('.//ArticleTitle') is not None else ''
+                abstract = ' '.join(''.join(x.itertext()) for x in art.iter('AbstractText'))
+                if pmid and (title or abstract):
+                    out[pmid] = (title, [x for x in self.sent_tokenize(abstract) if x.strip()])
             time.sleep(0.35)
-        
-        return list(all_pmids)[:100]  # Limit to top 100 PMIDs
-    
+        return out
+
+    async def _rerank_abstracts(self, claim: str, fused: List[Tuple[str, float]],
+                                texts: Dict[str, Tuple[str, List[str]]]) -> List[Tuple[str, float]]:
+        """MedCPT cross-encoder on (claim, title + abstract); falls back to the fused order."""
+        cand = [d for d, _ in fused if d in texts]
+        if self.reranker is None or not cand or not self.reranker.available:
+            return fused
+        passages = [(texts[d][0] + " " + " ".join(texts[d][1])).strip() for d in cand]
+        scores = await self.reranker.score(claim, passages)
+        return sorted(zip(cand, scores), key=lambda x: -x[1])
+
+    async def rank_abstracts(self, claim: str, top_n: int = 100, expand_queries: bool = True,
+                             rerank: bool = True) -> List[Tuple[str, float]]:
+        """
+        PubGround's abstract ranking: Stage 1 query expansion (optional) -> every retriever ->
+        RRF fusion -> MedCPT cross-encoder rerank. This is the ranking the sentence pipeline
+        starts from, and what benchmark/ evaluates.
+
+        Returns:
+            [(doc_id, score)] best-first (rerank logits, or RRF scores if rerank=False)
+        """
+        queries = await self._generate_optimized_queries(claim) if expand_queries else []
+        rankings = await self._candidate_rankings(claim, queries, top_n)
+        fused = rrf_fuse(rankings, self.rrf_k, top_n=top_n)
+        if not rerank:
+            return fused
+        texts = await self._abstract_texts([d for d, _ in fused])
+        return await self._rerank_abstracts(claim, fused, texts)
+
     def _extract_keywords(self, sentence: str) -> List[str]:
         """Extract meaningful keywords from sentence."""
         stop_words = {
@@ -286,6 +393,7 @@ Respond with ONLY a JSON array of query strings, no other text:
                     db="pubmed",
                     term=query,
                     retmax=max_results,
+                    sort="relevance",
                     retmode="json"
                 )
                 # When retmode="json", read as text and parse JSON
@@ -299,6 +407,7 @@ Respond with ONLY a JSON array of query strings, no other text:
                     'db': 'pubmed',
                     'term': query,
                     'retmax': max_results,
+                    'sort': 'relevance',
                     'retmode': 'json',
                     'tool': self.tool,
                     'email': self.email
@@ -325,6 +434,9 @@ Respond with ONLY a JSON array of query strings, no other text:
         Returns:
             List of article dictionaries with sentences
         """
+        if self.local_corpus is not None:
+            return [self._local_article(d) for d in pmids if d in self.local_corpus.docs]
+
         articles = []
         
         # Process in batches to respect rate limits
@@ -345,6 +457,34 @@ Respond with ONLY a JSON array of query strings, no other text:
         
         return articles
     
+    def _local_article(self, doc_id: str) -> Dict:
+        """Article dict for a LocalCorpus document (same shape as the PubMed path)."""
+        doc = self.local_corpus.docs[doc_id]
+        title, sents = self._local_abstract(doc_id)
+        article_data = {'pmid': str(doc.get('pmid', doc_id)), 'title': title,
+                        'authors': doc.get('authors', []), 'journal': doc.get('journal', ''),
+                        'pub_year': str(doc.get('year', '') or '')}
+        abstract = " ".join(sents)
+        return {'pmid': doc_id, 'metadata': article_data,
+                'sentences': self._intelligent_sentence_split(abstract, article_data),
+                'abstract': abstract, 'abstract_sentences': sents, 'full_text': '',
+                'title': title, 'authors': article_data['authors'],
+                'journal': article_data['journal'], 'year': article_data['pub_year']}
+
+    # ==================== Stage 6 (optional): verdict ====================
+
+    async def _attach_verdicts(self, claim: str, results: List[Dict],
+                               abstracts: Dict[str, Tuple[str, List[str]]]) -> None:
+        """Label each result's abstract SUPPORT / CONTRADICT / NEI with the benchmarked judge prompt.
+        Each abstract is judged once; every result from it gets the same verdict."""
+        doc = lambda r: (r.get('article') or {}).get('_doc_id')
+        ids = list(dict.fromkeys(doc(r) for r in results if doc(r) in abstracts))
+        verdicts = await VerdictJudge(self._llm).judge_many(
+            [(claim, abstracts[d][0], abstracts[d][1]) for d in ids])
+        by_id = dict(zip(ids, verdicts))
+        for r in results:
+            r['verdict'] = by_id.get(doc(r))
+
     async def _fetch_single_article(self, pmid: str) -> Optional[Dict]:
         """Fetch and parse a single article."""
         # Check cache
@@ -820,19 +960,24 @@ Respond with ONLY a JSON array of query strings, no other text:
         input_sentence: str,
         top_k: int = 10,
         max_articles: int = 50,
-        citation_format: str = "mla"
+        citation_format: str = "mla",
+        verify: bool = False,
+        candidate_pool: int = 100,
     ) -> List[Dict]:
         """
-        Main function: Find top matching sentences in PubMed articles.
+        Main function: Find top matching sentences in PubMed (or the local corpus).
         
         Args:
             input_sentence: Input sentence to match
             top_k: Number of top results to return
-            max_articles: Maximum number of articles to process
+            max_articles: Number of top-ranked abstracts whose sentences are scored
             citation_format: Citation format (mla, apa, nature)
+            verify: Also label each result's abstract SUPPORT / CONTRADICT / NEI with the
+                benchmarked judge prompt (one LLM call per distinct abstract)
+            candidate_pool: Abstracts kept after RRF fusion and reranked by MedCPT
             
         Returns:
-            List of matched sentences with citations
+            List of matched sentences with citations (and ``verdict`` when verify=True)
         """
         print(f"🔍 Starting sentence matching for: '{input_sentence[:100]}...'")
         
@@ -841,15 +986,23 @@ Respond with ONLY a JSON array of query strings, no other text:
         optimized_queries = await self._generate_optimized_queries(input_sentence)
         print(f"   Generated {len(optimized_queries)} queries")
         
-        # Stage 2: Multi-Strategy Search
-        print("🔎 Stage 2: Searching PubMed...")
-        pmids = await self._search_pubmed_multi_strategy(input_sentence, optimized_queries)
-        pmids = pmids[:max_articles]  # Limit articles
-        print(f"   Found {len(pmids)} articles")
+        # Stage 2: first-stage retrieval, fused by RRF
+        source = "local corpus (BM25 + MedCPT dense)" if self.local_corpus is not None else \
+            ("PubMed (E-utilities + LitSense dense)" if self.dense is not None else "PubMed (E-utilities)")
+        print(f"🔎 Stage 2: Retrieving from {source}, RRF fusion...")
+        rankings = await self._candidate_rankings(input_sentence, optimized_queries, candidate_pool)
+        fused = rrf_fuse(rankings, self.rrf_k, top_n=candidate_pool)
+        print(f"   {len(rankings)} rankings -> {len(fused)} candidate abstracts")
         
-        if not pmids:
+        if not fused:
             print("   No articles found")
             return []
+
+        # Stage 2.5: rank abstracts with the MedCPT cross-encoder (same as rank_abstracts)
+        abstracts = await self._abstract_texts([d for d, _ in fused])
+        ranked = await self._rerank_abstracts(input_sentence, fused, abstracts)
+        pmids = [d for d, _ in ranked][:max_articles]
+        print(f"   Kept the top {len(pmids)} abstracts")
         
         # Stage 3: Fetch and Parse Articles
         print("📚 Stage 3: Fetching article content...")
@@ -859,6 +1012,8 @@ Respond with ONLY a JSON array of query strings, no other text:
         if not articles:
             print("   No article content available")
             return []
+        for article in articles:
+            article['metadata']['_doc_id'] = article['pmid']
         
         # Extract all candidate sentences
         all_candidates = []
@@ -908,6 +1063,11 @@ Respond with ONLY a JSON array of query strings, no other text:
             
             result['citation'] = citation
             result['citation_format'] = citation_format
+
+        # Stage 6 (optional): verdict per abstract
+        if verify and final_results:
+            print("⚖️  Stage 6: Verifying support (SUPPORT / CONTRADICT / NEI)...")
+            await self._attach_verdicts(input_sentence, final_results, abstracts)
         
         print(f"✅ Found {len(final_results)} final matches")
         return final_results

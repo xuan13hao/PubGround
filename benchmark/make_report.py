@@ -7,7 +7,7 @@ import json, os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-DATA = f"{HERE}/data"
+DATA = os.environ.get("PUBGROUND_BENCH_DATA") or f"{HERE}/data"  # override with PUBGROUND_BENCH_DATA
 M = ["ndcg@10", "recall@10", "recall@100", "mrr@10", "p@1"]
 OURS = ("MedCPT", "Hybrid", "LLM-QE", "Stage1")
 

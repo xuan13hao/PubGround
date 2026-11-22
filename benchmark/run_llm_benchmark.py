@@ -32,7 +32,7 @@ from run_benchmark import (load_data, metrics_for, aggregate, run_bm25, tok,  # 
                            run_medcpt_dense, _device, log)
 from llm_client import make_llm as LLM, parse_json  # noqa: E402
 
-DATA = os.path.join(HERE, "data")
+DATA = os.environ.get("PUBGROUND_BENCH_DATA") or os.path.join(HERE, "data")  # override with PUBGROUND_BENCH_DATA
 RRF_K = 60
 # Models whose OpenRouter endpoint refuses reasoning={"enabled": false}.
 REASONING_MANDATORY = ("anthropic/claude-sonnet-5.5",)

@@ -49,6 +49,8 @@ def _get_matcher() -> PubMedSentenceMatcher:
             config=Config(),
             similarity_threshold=float(os.getenv("CITATION_SIM_THRESHOLD", "0.5")),
             use_reranker=use_reranker,
+            # second first-stage retriever fused by RRF: LitSense (MedCPT dense over PubMed)
+            dense_recall=None if os.getenv("CITATION_DENSE_RECALL", "litsense") in ("0", "none", "None") else "litsense",
         )
     return _matcher
 
@@ -76,6 +78,7 @@ def _trim_result(r: dict) -> dict:
             "semantic": round(scores.get("semantic", 0.0), 4),
             "multi_signal": round(scores.get("final", 0.0), 4),
         },
+        **({"verdict": {k: r["verdict"][k] for k in ("label", "rationale_text")}} if r.get("verdict") else {}),
     }
 
 
@@ -85,14 +88,16 @@ async def find_citations(
     top_k: int = 10,
     citation_format: str = "mla",
     max_articles: int = 30,
+    verify: bool = False,
 ) -> dict:
     """
     Find the best PubMed sentences to cite for a given claim/sentence.
 
-    Runs the full multi-stage pipeline: LLM query optimization -> multi-strategy
-    PubMed search -> abstract retrieval -> multi-signal similarity -> MedCPT
-    cross-encoder reranking -> ranking, then formats a
-    citation for each match.
+    Runs the full pipeline: LLM query expansion -> PubMed E-utilities search plus
+    LitSense dense recall, fused by reciprocal rank fusion -> MedCPT cross-encoder
+    reranking of abstracts and sentences -> ranking, then formats a citation for each
+    match. With verify=True each cited abstract is also labelled SUPPORT /
+    CONTRADICT / NEI by an LLM judge, with its rationale sentences.
 
     Args:
         sentence: The input claim/sentence to ground in the literature.
@@ -100,10 +105,12 @@ async def find_citations(
         citation_format: One of "mla", "apa", "nature" (default "mla").
         max_articles: Max PubMed articles to process (default 30; higher = slower
             but better recall).
+        verify: Label each result's abstract SUPPORT / CONTRADICT / NEI (one LLM
+            call per distinct abstract; default False).
 
     Returns:
         {"query": str, "count": int, "results": [ {sentence, citation, article,
-        scores}, ... ]}
+        scores, verdict?}, ... ]}
     """
     matcher = _get_matcher()
     with contextlib.redirect_stdout(sys.stderr):
@@ -112,6 +119,7 @@ async def find_citations(
             top_k=top_k,
             max_articles=max_articles,
             citation_format=citation_format,
+            verify=verify,
         )
     return {
         "query": sentence,
@@ -141,6 +149,10 @@ async def pubmed_search(query: str, max_results: int = 20) -> dict:
     return {"query": query, "pmids": pmids}
 
 
-if __name__ == "__main__":
-    # Default transport is stdio.
+def main() -> None:
+    """Console entry point (``pubground-mcp``); stdio transport."""
     mcp.run()
+
+
+if __name__ == "__main__":
+    main()

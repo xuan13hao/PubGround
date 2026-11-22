@@ -32,7 +32,7 @@ from run_llm_benchmark import (scifact_abstract_metrics, three_class, run_verdic
                                REASONING_MANDATORY)
 from llm_client import make_llm as LLM  # noqa: E402
 
-DATA = os.path.join(HERE, "data")
+DATA = os.environ.get("PUBGROUND_BENCH_DATA") or os.path.join(HERE, "data")  # override with PUBGROUND_BENCH_DATA
 MV_CKPT = f"{DATA}/ext_multivers/ckpt"
 VS_DIR = f"{DATA}/ext_verisci"
 
@@ -51,10 +51,10 @@ class VeriSci:
         from transformers import AutoTokenizer, AutoModelForSequenceClassification
         self.rt = AutoTokenizer.from_pretrained(f"{VS_DIR}/rationale_roberta_large_scifact")
         self.rm = AutoModelForSequenceClassification.from_pretrained(
-            f"{VS_DIR}/rationale_roberta_large_scifact").to(dev()).eval()
+            f"{VS_DIR}/rationale_roberta_large_scifact", low_cpu_mem_usage=False).to(dev()).eval()
         self.lt = AutoTokenizer.from_pretrained(f"{VS_DIR}/label_roberta_large_fever_scifact")
         self.lm = AutoModelForSequenceClassification.from_pretrained(
-            f"{VS_DIR}/label_roberta_large_fever_scifact", num_labels=3).to(dev()).eval()
+            f"{VS_DIR}/label_roberta_large_fever_scifact", num_labels=3, low_cpu_mem_usage=False).to(dev()).eval()
         self.torch = torch
 
     def predict(self, claim, title, sentences):

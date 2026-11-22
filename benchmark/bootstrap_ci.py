@@ -16,7 +16,7 @@ from run_benchmark import load_data, metrics_for, log  # noqa: E402
 from run_llm_benchmark import run_verdict, REASONING_MANDATORY  # noqa: E402
 from llm_client import make_llm  # noqa: E402
 
-DATA = f"{HERE}/data"
+DATA = os.environ.get("PUBGROUND_BENCH_DATA") or f"{HERE}/data"  # override with PUBGROUND_BENCH_DATA
 B = 2000
 SEED = 0  # every statistic re-seeds, so adding a comparison never shifts the others
 LLMS = ["anthropic/claude-haiku-5.5", "deepseek/deepseek-v4.1-flash-1017", "anthropic/claude-sonnet-5.5",

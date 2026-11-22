@@ -29,7 +29,7 @@ from run_llm_benchmark import (rrf, run_stage1,  # noqa: E402
                                run_verdict, scifact_abstract_metrics, three_class, REASONING_MANDATORY)
 from llm_client import make_llm  # noqa: E402
 
-DATA = os.path.join(HERE, "data")
+DATA = os.environ.get("PUBGROUND_BENCH_DATA") or os.path.join(HERE, "data")  # override with PUBGROUND_BENCH_DATA
 TOPK = 100
 QWEN_TASK = "Given a scientific claim, retrieve documents that support or refute the claim"
 
