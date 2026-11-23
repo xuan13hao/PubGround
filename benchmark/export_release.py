@@ -23,7 +23,7 @@ from run_pubground import load, load_run, out  # noqa: E402
 
 VERSION = "1.0.0"
 TITLE = "PubGround-Bench: retrieval rankings and claim-verification predictions on SciFact, SciFact-Open and HealthVer"
-REPO = "https://github.com/xuan13hao/citation_agents_system"
+REPO = "https://github.com/xuan13hao/PubGround"
 
 
 def main():

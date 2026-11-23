@@ -7,8 +7,8 @@ authors:
   - family-names: Xuan
     given-names: Hao
 license: MIT
-repository-code: "https://github.com/xuan13hao/citation_agents_system"
-url: "https://xuan13hao.github.io/citation_agents_system/"
+repository-code: "https://github.com/xuan13hao/PubGround"
+url: "https://xuan13hao.github.io/PubGround/"
 keywords:
   - PubMed
   - citation grounding

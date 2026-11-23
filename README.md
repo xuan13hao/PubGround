@@ -6,7 +6,7 @@
 
 Every configuration is benchmarked against open retrievers, rerankers and claim verifiers on SciFact, SciFact-Open and HealthVer — see [benchmark/](benchmark/), runnable with `pubground-bench`.
 
-🔬 **Live demo & overview:** [xuan13hao.github.io/citation_agents_system](https://xuan13hao.github.io/citation_agents_system/)
+🔬 **Live demo & overview:** [xuan13hao.github.io/PubGround](https://xuan13hao.github.io/PubGround/)
 
 > The task behind citation recommendation, claim attribution, and RAG faithfulness: a sentence can be *similar* to your claim without actually *supporting* it. A cheap first-pass similarity lets those false positives through — so a sharper second pass (a cross-encoder reranker) does the deciding.
 
@@ -196,7 +196,7 @@ Each result is a dict containing:
 ## Project Structure
 
 ```
-citation_agents_system/
+PubGround/
 ├── pubmed_sentence_matcher/
 │   ├── pubmed_sentence_matcher.py  # Main matcher (the multi-stage pipeline)
 │   ├── reranker.py                 # MedCPT cross-encoder reranker (Stage 4.5)
@@ -250,7 +250,7 @@ If you use PubGround in your work, please cite the software repository:
   author = {Xuan, Hao},
   title = {PubGround: training-free grounding of biomedical claims in PubMed},
   year = {2026},
-  url = {https://github.com/xuan13hao/citation_agents_system}
+  url = {https://github.com/xuan13hao/PubGround}
 }
 ```
 ## License
